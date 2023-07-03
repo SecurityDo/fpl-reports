@@ -1,0 +1,422 @@
+== Data types
+
+* Primitive Value
+** string 
+** int64
+** float64
+** bool
+** null
+** list of primitive value // []*primitive_value
+** map of primitive value  // map[string]*primitive_value
+** list of interface       // Json Array []interface{}
+** map of interface        // Json Object map[string]interface{}
+** undefined
+
+== Object Types
+
+* Lambda
+** simple expression:  (x, y) => x+y
+** block statements:    (x, y) => {
+      let a = x + 1
+      return a + y 
+   }  // explicit return is required
+* FplTable
+** Columns
+** Rows
+
+* FplMetric 
+** from,to
+** interval
+** dimensions
+** Metrics
+
+* FplAlert
+
+* Tuple:  list of Data Types or Object Types
+
+* Map:   map of Data Types or Object Types
+
+== control blocks
+
+* if/elseif/else support
+* return <value>
+
+== function 
+
+* function <name> (parameters) { }
+* function main() {}   // main function is the execuion starting point
+
+== utility library (both input and output are primitive values)
+
+* toLower(string) string
+* toUpper(string) string
+* startsWith(string, prefix) bool
+* endsWith(string, suffix) bool
+* contains(string, subString) bool
+* content(string1, string2) bool
+* split(variable, delim)
+** split the input string
+** [_, s1, _] = split("1.2.3.4", ".")   => generate a new column s1 = "2"
+* coalesce(v1, v2, v3 ...)
+** return the first argument that is a non-empty string value
+* regexp(pattern, field)
+** this function extract the captured "named group" from the regular expression pattern.
+** for username "foo@gmail.com", two new columns "Name" and "Domain" will be added with value "foo" and "gmail.com"
+```
+let Email = f("Email")
+let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
+```
+* sprintf(format, arguments...)
+** golang's printf format
+* printf(format, arguments...)
+** golang printf format
+* case(condition_1, value_1, [condition_2, value_2, ...] default_value)
+** evaluate a list of conditions and returns the first value whose condition is evaluated to true. If all conditions are false, the default value is returned
+* trim(s, cutset) 
+** returns a string s with all leading and trailing Unicode code points contained in cutset removed.
+* trimPrefix(s, prefix)
+** returns s without the provided leading prefix string. If s doesn't start with prefix, s is returned unchanged.
+* trimSuffix(s, suffix)
+** returns s without the provided trailing suffix string. If s doesn't end with suffix, s is returned unchanged.
+
+== system functions
+
+* AWS_AccountRegionLambda(accounts, regions, (account, region) => { return {}  })
+** Run lambda function on specific AWS accounts and regions
+** accounts: "*" enable all configured AWS accounts. account could also be one account name or one array of names
+** accounts: "Production" or ["Production", "UnitTest"]
+** regions: "*" enable all configured regions
+** regions: "us-east-1" or ["us-east-1", "us-east-2"]
+** this function returns a map of objects
+** results from different regions will be merged into one 
+* AWS_AccountLambda(accounts, regions, (account) => { return {}  })
+** lambda function on specific AWS accounts (One example is AWS Cost and Usage API, which does not limit to one specific region)
+* transform(stream, lambda) 
+** create a new stream. The data series of the new stream is the result of the lambda function.
+** lambda function interface: (ts, key, value) => {  }
+```
+let duration = AWS_GetMetric("Duration", options, filters)
+let invocation = AWS_GetMetric("Invocations", options, filters)
+let durationCost = transform(duration, (ts, key, value) => (value/1000) * assetTable[key].lambdaMemoryRate)
+let invocationCost = transform(invocation, (ts, key, value) => value * assetTable[key].lambdaRequestRate)
+```
+* anomaly(stream, {seasonal:"auto", minDiff: 3.0, minDiffPercent: 10.0})
+** anomaly detection on one stream
+** seasonal: auto | weekday-end-hourly | hourly | weekday-hourly | ""
+** minDiff: absolute difference over mean: abs(value - mean)
+** minDiffPercent: relative percent over mean: (value - mean)/mean
+** return FplAlert object 
+
+* RxFPL_GetMetric(metricName, {options} ) 
+** Load metric from rxfpl database
+** from: range from  
+** to:   range to
+** order: desc | asc  // default is desc
+** limit: number of metrics // default is 10
+** filters: search filters 
+```
+function main() {
+  let cost = RxFPL_GetMetric("PureCloudOps.AWS.Billing.InstanceCost", {from:"-2h@h", to:"@h", filters:[{name:"lvdb-app", values:"archiveSearchV3", exclude: true}]})
+  return {cost}
+}
+```
+* alert(<stream>, window(condition,n,m))
+** sliding window detection
+```
+function queueAlerts(queues) {
+  let options = {from: "-1h@h", to: "@h", dimensions: ["QueueName"], namespace: "AWS/SQS", period: "5m", stat: "Maximum", unit:"Second"}
+  let filters = {QueueName: queues}
+  let ages = AWS_GetMetric("ApproximateAgeOfOldestMessage", options, filters)
+  let ageAlerts = alert(ages, window(ages > 3600, 2, 2))
+  options.stat = "Sum"
+  let received = AWS_GetMetric("NumberOfMessagesReceived", options, filters)
+  options.stat = "Average"
+  let queueLength = AWS_GetMetric("ApproximateNumberOfMessagesVisible", options, filters)
+  let consumerStopAlerts = alert(queueLength, window(received == 0 && queueLength > 1, 2, 2))
+  return {ageAlerts, consumerStopAlerts}
+}
+
+```
+
+== Object method
+
+=== Table methods
+
+* IsEmpty() 
+** return true if table is empty
+
+* RemoveColumn(columnName)
+** remove one column from the table
+
+* GetColumnValues(columnName)
+** return a list of values from one column
+
+* GetKeys()
+** return list of values from the key column: "ID" before the merge, "_globalID" after the merge.
+
+* SetColumnUnit(column, unit)
+** set unit for one column
+
+* Sort(limit, "+col1", "-col2"...)
+** sort the table by column values. 
+** limit set to 0 will return all results.
+** default is descending order
+```
+// return top N rows, sort by "Cost" column in descending order
+natGateways.Sort(10, "Cost")
+```
+
+* Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
+** join sourceTable on keyColumn(s). if the third table is not provided, all columns from the sourceTable will be merged.
+** {ID:"ID"} => Both left column and right column is named "ID"
+** {ID:"VpcId"} => right column is "ID", left column is "VpcId"
+```
+bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:"Total_Cost"})
+// if keycolumn(s) is not provided, the default key column will be "ID"
+bucketTable.Join(byteSummary)
+
+```
+* GroupBy(RowSplitFields, ColumnAggregateOptions)
+** RowSplitFields: one or more fields for row groupBy
+** ColumnAggregateOptions {column:"", unit:"", aggregate:"", lambda: (row) => row.Col, source:"" }
+** lambda field is optional.  If lambda field is not defined.  The input will be taken from the source column.  The source field is also optional, default value is the same as the column name
+** aggregate functions: count, sum, avg, min, max, values, coalesce
+```
+table.GroupBy("Customer", [{column:"Count", aggregate:"sum", lambda: (row) => true}, {column:"Total", aggregate:"sum", lambda: (row) => row.Total}])
+table.GroupBy("Customer", [{column:"Count", aggregate:"sum"}, {column:"Total", aggregate:"sum"}])
+``` 
+* Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
+** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
+```
+// simple sum of all columns from the table named "bucketTable"
+// new table "byteSummary" has the same ID column plus one "Total_Bytes" column
+let byteSummary = bucketTable.Aggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
+      return sum + value
+},0)
+
+// more complicate example, the lambda calls AWSPrice API to get the monthly cost of different S3 storage types.
+// the table "bucketTable" is derived from the "DimensionTable" method of a metric stream, each storage type has one column
+let costSummary = bucketTable.Aggregate("Total_Monthly_Cost", "Dollar", (ID, col, value, sum) => {
+      return sum + AWSPrice("S3", "StorageType", {Size:value, Type:col})
+}, 0)
+
+```
+
+* NewColumnLambda(columnName, unit, (Col1, col2, ..) => {   })
+** Generate one new column on the calling table. The column value is the return value of the lambda function.
+```
+// create a new column "AverageSize"  on table "bucketTable".  The new column will read the two column named "Total_Bytes" and "Total_Object_count" respectively and calculate the the average as column value.  
+bucketTable.NewColumnLambda("AverageSize", "Byte", (row) => row.Total_Bytes / row.Total_Object_Count)
+```
+
+* JoinStream(stream, aggregationType, columnName, unit)
+** Generate one new column on the calling table. The column value is the aggregated result of each data series.
+```
+function getNatBandwidth(assetTable) {
+  let options = {from: "-24h@h", to: "@h", dimensions: "NatGatewayId", namespace: "AWS/NATGateway", period: "1h", unit:"Byte", stat: "Sum"}
+  let filters = {NatGatewayId: assetTable}
+  let download = AWS_GetMetric("BytesInFromDestination", options, filters)
+  let upload = AWS_GetMetric("BytesOutToDestination", options, filters)
+  let localUpload = AWS_GetMetric("BytesInFromSource", options, filters)
+  let localDownload = AWS_GetMetric("BytesOutToSource", options, filters)
+  let totalBytes = download + upload + localUpload + localDownload
+  let processCost = AWS_GetPrice("NatGateway", "GB")
+  let hourlyCost =  AWS_GetPrice("NatGateway", "Hour")
+  let cost = (hourlyCost * 3600 / totalBytes.GetInterval()) +  totalBytes * processCost / (1024 * 1024 * 1024)
+  return {download, upload, totalBytes, cost}
+}
+
+function main() {
+  return AWS_AccountRegionLambda("*", "*", (account, region) => {
+    let natGateways = AWS_LoadAsset("ec2:natgateway", (obj) => {
+       let {NatGatewayId:ID, State, VpcId} = obj
+       let PublicIp = obj.NatGatewayAddresses[0].PublicIp
+       return {ID, State, VpcId, PublicIp}
+    })
+
+    let {totalBytes} = getNatBandwidth(natGateways)
+    natGateways.JoinStream(totalBytes,"Sum", "TotalBytes", "Byte")
+    return {natGateways}
+  })
+}
+
+```
+
+== metric stream method
+
+* IsEmpty()
+** return true is the stream has no data series
+
+* Sort(limit, "AggregationType1", "AggregationType2"...)
+** sort the stream by aggregation(s)
+```
+  // top 10 CPU utilizations
+  cpu.Sort(10, "Average")
+```
+
+* SummaryTable(column, unit, aggregationType)
+** create a new table with a new column which holds the aggreation results for each data series
+** aggregationType:  Sum|Average|Min|Max|Count|Last
+```
+// create a new table "invocationSummary" with a column "Total_Invocations"
+let invocationSummary = lambdaInvocations.SummaryTable("Total_Invocations", "Count", "Sum")
+```
+
+* TimeTable(timeFormat, unit)
+** create a new table. each column is a time slot rendered with the format.
+** the time format Golang Time Format
+```
+let timeTable = balance.TimeTable("Jan 02 15:04:05", "Percent")
+```
+
+* DimensionTable(dimension, unit, aggregationType)
+** for metric stream with two dimensions. choose one dimension as the key dimension. the value of the other dimension will become a new column in the created new table
+```
+function getS3BucketSize(assetTable) {
+ let options = {from:"-48h@d", to:"@d", dimensions=["BucketName","StorageType"], namespace:"AWS/S3", period:"24h", stat:"Average"}
+ let filters = {BucketName:assetTable}
+ let size = AWS_GetMetric("BucketSizeBytes", options, filters)
+ let objCount = AWS_GetMetric("NumberOfObjects", options, filters)
+ return {size, objCount}
+}
+
+function main() {
+  return AWS_AccountRegionLambda("*", "*", (account, region) => {
+    let buckets = AWS_LoadAsset("s3:bucket", (obj) => { return {ID: obj.Name} })
+    let {size, objCount} = getS3BucketSize(buckets)
+    let bucketTable = size.DimensionTable("StorageType","Byte","Last")
+    let countTable = objCount.DimensionTable("StorageType","Count","Last") 
+    return {bucketTable, countTable}
+  })
+}
+
+
+```
+* SetTags(assetTable) 
+** convert asset table columns into tags for the metric stream key
+* SetUnit(unit)
+** set unit for metric stream
+
+=== FplAlert methods
+
+* Limit(n)
+** keep the topN anomalies
+
+* Emit(name, description, severity, OffDelay)
+** severity: error | warn | info
+** OffDelay: alert will be cleared after OffDelay seconds. -1 means never expires
+
+== bulit-in resource loading support
+
+* AWS_Cli_List(<cmd_line>, (obj) => { }) 
+** list AWS assets via AWS cli
+* AWS_Cli_Get(<cmd_line>, idList, (id, obj) => {})
+** get asset attributes from a list of ID
+```
+let natGateways = AWS_Cli_List("ec2 describe-nat-gateways", (obj) => {
+      let ID = obj.NatGatewayId
+      let State = obj.State
+      let VpcId = obj.VpcId
+      let PublicIp = obj.NatGatewayAddresses[0].PublicIp
+      return {ID, State, VpcId, PublicIp}
+})
+// call AWS cli:  "aws ec2 describe-nat-gateways"
+// same as AWS_LoadAsset( "ec2:natgateway", ...
+function main() {
+   return AWS_AccountRegionLambda("*", "us-west-2", () => {
+      let queues = AWS_Cli_List("sqs list-queues", (url) => {
+         let QueueUrl = url
+         let segments = split(QueueUrl, "/")
+         let ID = segments[len(segments)-1]
+         let fifo = endsWith(ID, ".fifo")
+         return { ID, QueueUrl, fifo }
+      })
+
+      let queueTags = AWS_Cli_Get("sqs list-queue-tags --queue-url", queues.GetColumnValues("QueueUrl"), (id, obj) => {
+           let QueueUrl = id
+           let TagCount = len(obj.Tags)
+           return {QueueUrl, TagCount}
+      })
+
+      let queueAttributes = AWS_Cli_Get("sqs get-queue-attributes --attribute-names All  --queue-url", queues.GetColumnValues("QueueUrl"), (id, obj) => {
+           let QueueUrl = id
+           let QueueArn = obj.Attributes.QueueArn
+           return {QueueUrl, QueueArn}
+      })
+      queues.Join(queueTags, {QueueUrl:"QueueUrl"})
+      queues.Join(queueAttributes, {QueueUrl:"QueueUrl"})
+      return {queues}
+   })
+}
+```
+* AWS_LoadAsset(<resource>, (obj) => { })  // load AWS resources and convert them into a table
+** lambda:function
+** ec2:vpc
+** ec2:instance
+** ec2:volume
+** s3:bucket
+** ec2:natgateway
+** sqs:queue
+** elasticloadbalancing:loadbalancer
+** elasticloadbalancing:targetgroup
+** apigateway:apis
+** if the lambda function return null, the entry will be skipped (filterMap function)
+** jsonGetTag(obj, <tagArrayPath>,  <keyField>, <keyValue>, <valueField>)
+```
+   "Tags": [
+       {
+        "Key": "Name",
+        "Value": "my-instance"
+       }
+   ],
+   // let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
+   // OR let Name = jsonGetAWSTag(obj, "Name") 
+``` 
+** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
+
+
+== built-in metric loading support
+
+* AWS_GetMetric(metricName, options, filters)  // load AWS metrics
+** options: {from, to, dimensions, namespace, period, stat, unit, timezone}
+** options.dimensions could be one string or a list of strings
+** filters: {dimensionName: assetTable}
+```
+function getLambdaCost(assetTable) {
+  let options = {from: "-60m@m", to: "@m", dimensions: "FunctionName", namespace: "AWS/Lambda", period: "5m", stat: "Sum"}
+  let filters = {FunctionName:assetTable}
+  options.unit = "Millisecond"
+  let duration = AWS_GetMetric("Duration", options, filters)
+  options.unit = "Count"
+  let invocation = AWS_GetMetric("Invocations", options, filters)
+  return {duration, invocation}
+}
+```
+
+== built-in AWS pricing API
+
+* AWS_GetPrice(service, resource, options)
+** service: "Lambda", resource: "GB-Second" , "Request"
+** service: "S3",  resource: "StorageType"
+** service: "NatGateway", resource "GB" , "Hour"
+** service: "ApplicationLoadBalancer", resource "Hour", "LCU-Hour"
+* AWS_GetCostUsage(options)
+** from: report start time
+** to:  report end time
+** metric: AmortizedCost | BlendedCost | UnblendedCost | UsageQuantity
+** granularity:  DAILY |  HOURLY
+** dimensions:  AZ, INSTANCE_TYPE, LEGAL_ENTITY_NAME, INVOICING_ENTITY, LINKED_ACCOUNT, OPERATION, PLATFORM, PURCHASE_TYPE, SERVICE, TENANCY, RECORD_TYPE, and USAGE_TYPE
+** tags:  customer defined cost allocation tags
+```
+function main() {
+ return AWS_AccountLambda("Production", () => {
+    let dailyUsage=AWS_GetCostUsage({from:"-60d@d", to:"-1d@d", metric:"UsageQuantity", granularity:"DAILY"})
+    let dailyBlended=AWS_GetCostUsage({from:"-30d@d", to:"-1d@d", metric:"BlendedCost", granularity:"DAILY"})
+    let dailyUnBlended=AWS_GetCostUsage({from:"-30d@d", to:"-1d@d", metric:"UnblendedCost", granularity:"DAILY"})
+    let dailyAmortized=AWS_GetCostUsage({from:"-60d@d", to:"-1d@d", metric:"AmortizedCost", granularity:"DAILY"})
+    let dailyCostByService=AWS_GetCostUsage({from:"-30d@d", to:"-1d@d", metric:"AmortizedCost", granularity:"DAILY", dimensions:"SERVICE"})
+    dailyCostByService.Sort(10)
+    return {dailyUsage, dailyBlended, dailyUnBlended, dailyAmortized, dailyCostByService}
+ })
+} 
+```
