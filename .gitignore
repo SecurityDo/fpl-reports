@@ -1,0 +1,49 @@
+## MAC OS
+.DS_Store
+
+## TEXTMATE
+*.tmproj
+tmtags
+
+## EMACS
+*~
+\#*
+.\#*
+
+## VIM
+*.swp
+
+## PROJECT::GENERAL
+coverage
+rdoc
+pkg
+
+## PROJECT::SPECIFIC
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+CVS
+.svn
+.cproject
+.cdtproject
+.project
+.settings
+build
+aclocal.m4
+autom4te.cache
+Makefile.in
+*.o
+Debug
+config.log
+config.status
+config.guess
+config.h.in
+config.sub
+depcomp
+install-sh
+ltmain.sh
+Makefile.in
+missing
