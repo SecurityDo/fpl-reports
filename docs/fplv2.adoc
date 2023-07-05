@@ -356,6 +356,8 @@ function main() {
 ** ec2:volume
 ** s3:bucket
 ** ec2:natgateway
+** eks:cluster
+** eks:nodegroup
 ** sqs:queue
 ** elasticloadbalancing:loadbalancer
 ** elasticloadbalancing:targetgroup
