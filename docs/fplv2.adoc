@@ -36,24 +36,30 @@
 
 * Map:   map of Data Types or Object Types
 
-== control blocks
+== Control blocks
 
 * if/elseif/else support
 * return <value>
 
-== function 
+== Function 
 
 * function <name> (parameters) { }
-* function main() {}   // main function is the execuion starting point
+* function main() {}   // main function is the execution starting point
 
-== utility library (both input and output are primitive values)
+== Utility library (both input and output are primitive values)
 
-* toLower(string) string
-* toUpper(string) string
-* startsWith(string, prefix) bool
-* endsWith(string, suffix) bool
-* contains(string, subString) bool
-* content(string1, string2) bool
+* toLower(string) => string
+** returns the string in lowercase
+* toUpper(string) => string
+** returns the string in uppercase
+* startsWith(string, prefix) => bool
+** returns true if string starts with prefix, false otherwise
+* endsWith(string, suffix) => bool
+** returns true if string ends with suffix, false otherwise
+* contains(string, subString) => bool
+** returns true if subString exists in string false otherwise
+* content(string1, string2) => bool
+** returns true if string1 equals string2 false otherwise
 * split(variable, delim)
 ** split the input string
 ** [_, s1, _] = split("1.2.3.4", ".")   => generate a new column s1 = "2"
@@ -61,7 +67,7 @@
 ** return the first argument that is a non-empty string value
 * regexp(pattern, field)
 ** this function extract the captured "named group" from the regular expression pattern.
-** for username "foo@gmail.com", two new columns "Name" and "Domain" will be added with value "foo" and "gmail.com"
+** for username "foo@gmail.com", two new columns "Name" and "Domain" will be added with value "foo" and "gmail.com" respectively
 ```
 let Email = f("Email")
 let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
@@ -70,16 +76,16 @@ let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
 ** golang's printf format
 * printf(format, arguments...)
 ** golang printf format
-* case(condition_1, value_1, [condition_2, value_2, ...] default_value)
+* case(condition_1, value_1, [condition_2, value_2, ...], default_value)
 ** evaluate a list of conditions and returns the first value whose condition is evaluated to true. If all conditions are false, the default value is returned
-* trim(s, cutset) 
+* trim(s, cutset) => string
 ** returns a string s with all leading and trailing Unicode code points contained in cutset removed.
-* trimPrefix(s, prefix)
+* trimPrefix(s, prefix) => string
 ** returns s without the provided leading prefix string. If s doesn't start with prefix, s is returned unchanged.
-* trimSuffix(s, suffix)
+* trimSuffix(s, suffix) => string
 ** returns s without the provided trailing suffix string. If s doesn't end with suffix, s is returned unchanged.
 
-== system functions
+== System functions
 
 * AWS_AccountRegionLambda(accounts, regions, (account, region) => { return {}  })
 ** Run lambda function on specific AWS accounts and regions
@@ -167,7 +173,7 @@ natGateways.Sort(10, "Cost")
 ```
 
 * Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
-** join sourceTable on keyColumn(s). if the third table is not provided, all columns from the sourceTable will be merged.
+** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
 ** {ID:"ID"} => Both left column and right column is named "ID"
 ** {ID:"VpcId"} => right column is "ID", left column is "VpcId"
 ```
@@ -242,7 +248,7 @@ function main() {
 
 ```
 
-== metric stream method
+== Metric stream method
 
 * IsEmpty()
 ** return true is the stream has no data series
@@ -306,7 +312,7 @@ function main() {
 ** severity: error | warn | info
 ** OffDelay: alert will be cleared after OffDelay seconds. -1 means never expires
 
-== bulit-in resource loading support
+== Bulit-in resource loading support
 
 * AWS_Cli_List(<cmd_line>, (obj) => { }) 
 ** list AWS assets via AWS cli
@@ -377,7 +383,7 @@ function main() {
 ** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
 
 
-== built-in metric loading support
+== Built-in metric loading support
 
 * AWS_GetMetric(metricName, options, filters)  // load AWS metrics
 ** options: {from, to, dimensions, namespace, period, stat, unit, timezone}
