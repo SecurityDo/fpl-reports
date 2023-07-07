@@ -547,8 +547,9 @@ function main() {
 ** the return is one array. [ "groupBy", {groupByKey1,...}, { aggregates }
 ** the groupBy fields and aggregates use the same format as table.GroupBy()
 ----
-return AWS_AccountRegionLambda("FluencySIEM","us-west-2", () => {
+return AWS_AccountRegionLambda("*","*", () => {
       let volumes = AWS_LoadAsset("ec2:volume",({VolumeType, State, Iops, Size}) => ["groupBy", {VolumeType}, {Sum:{Size}}])             
+      volumes.SetColumnUnit("Size", "GB")
       return {volumes}
 })
 ----
