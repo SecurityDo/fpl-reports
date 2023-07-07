@@ -181,7 +181,7 @@ len({Name: "foo", Domain: "@gmail.com"}) // return an int64 value of 2
 ** if variable is primitive value, returns the type of the primitive value: 
 **       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
 ** else return the type of the object: 
-**       "Tuple", "Map", "Lambda", "Table", "Metric", "Alert"
+**       "Tuple", "Map", "Lambda", "Table", "MetricStream", "Alert"
 ----
 typeof(2) // return the string "int64"
 typeof([1, 2, 3]) // return the string "list"
@@ -310,14 +310,22 @@ bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:
 bucketTable.Join(byteSummary)
 ----
 
-* GroupBy(RowSplitFields, ColumnAggregateOptions)
-** RowSplitFields: one or more fields for row groupBy
-** ColumnAggregateOptions {column:"", unit:"", aggregate:"", lambda: (row) => row.Col, source:"" }
-** lambda field is optional.  If lambda field is not defined.  The input will be taken from the source column.  The source field is also optional, default value is the same as the column name
-** aggregate functions: count, sum, avg, min, max, values, coalesce
+* GroupBy(({col1, col2 ... }) => [ {col1}, {sum:{Total: col2}} ])
+** the input is a lambda function. 
+** the input object destructuring pick up the columns in the table 
+** the return is one array. the first object specify the groupBy fields
+** the second object specify the aggregatioin columns.
+** sum is the aggregation function 
+** Total is the column name.
+** sum:{Total: col2} define a new column "Total" which is the sum of the column "col2".  this is equivalent to "sum(col2) as Total" in SQL
+** sum:{col2} is equivalent to sum:{col2:col2}
+** for "count" aggregate, a bool expression is expected.
+** count: {Count:true}
+** available aggregate functions: count, sum, avg, min, max, values, coalesce, first
 ----
-table.GroupBy("Customer", [{column:"Count", aggregate:"sum", lambda: (row) => true}, {column:"Total", aggregate:"sum", lambda: (row) => row.Total}])
-table.GroupBy("Customer", [{column:"Count", aggregate:"sum"}, {column:"Total", aggregate:"sum"}])
+   let customerTable = bucketTable.GroupBy(({Customer, S3_Cost}) =>  {
+      return [{Customer}, { sum:{S3_Cost} }]
+   })
 ----
 
 * Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
@@ -336,11 +344,13 @@ let costSummary = bucketTable.Aggregate("Total_Monthly_Cost", "Dollar", (ID, col
 }, 0)
 ----
 
-* NewColumnLambda(columnName, unit, (Col1, col2, ..) => {   })
+* NewColumnLambda(columnName, unit, (row) => {   })
 ** Generate one new column on the calling table. The column value is the return value of the lambda function.
 ----
 // create a new column "AverageSize"  on table "bucketTable".  The new column will read the two column named "Total_Bytes" and "Total_Object_count" respectively and calculate the the average as column value.  
 bucketTable.NewColumnLambda("AverageSize", "Byte", (row) => row.Total_Bytes / row.Total_Object_Count)
+// OR 
+bucketTable.NewColumnLambda("AverageSize", "Byte", ({Total_Bytes, Total_Object_Count}) => Total_Bytes / Total_Object_Count)
 ----
 
 * JoinStream(stream, aggregationType, columnName, unit)
