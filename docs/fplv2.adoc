@@ -523,6 +523,16 @@ function main() {
 ----
 ** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
 
+* LoadAsset with GroupBy
+** the return is one array. [ "groupBy", {groupByKey1,...}, { aggregates }
+** the groupBy fields and aggregates use the same format as table.GroupBy()
+----
+return AWS_AccountRegionLambda("FluencySIEM","us-west-2", () => {
+      let volumes = AWS_LoadAsset("ec2:volume",({VolumeType, State, Iops, Size}) => ["groupBy", {VolumeType}, {Sum:{Size}}])             
+      return {volumes}
+})
+----
+
 == Built-in Metric Loading Support
 
 * AWS_GetMetric(metricName, options, filters)  // load AWS metrics
