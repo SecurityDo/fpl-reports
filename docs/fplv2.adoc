@@ -338,6 +338,7 @@ function main() {
 ** list AWS assets via AWS cli
 * AWS_Cli_Get(<cmd_line>, idList, (id, obj) => {})
 ** get asset attributes from a list of ID
+* NOTE the AWS_Cli_List and AWS_Cli_Get are not open for production deployment. For security concerns.  If the role IAM policy is not properly configured, it may cause security issues.
 ```
 let natGateways = AWS_Cli_List("ec2 describe-nat-gateways", (obj) => {
       let ID = obj.NatGatewayId
