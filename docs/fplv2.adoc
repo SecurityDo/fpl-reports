@@ -1,4 +1,4 @@
-== Data types
+== Data Types
 
 * Primitive Value
 ** string 
@@ -15,7 +15,7 @@
 == Object Types
 
 * Lambda
-** simple expression:  (x, y) => x+y
+** simple expression: (x, y) => x+y
 ** block statements:  
 ---- 
   (x, y) => {
@@ -39,42 +39,126 @@
 
 * Map:   map of Data Types or Object Types
 
-== Control blocks
+== Control Blocks
 
 * if/elseif/else support
+----
+if <condition> {
+  // code block
+} elseif <condition> {
+  // code block
+} else {
+  // code block
+}
+----
 * return <value>
+* single-line comments //
 
 == Function 
 
 * function <name> (parameters) { }
 * function main() {}   // main function is the execution starting point
 
-== Utility library (both input and output are primitive values)
+== Utility Library (both input and output are primitive values)
 
 * toLower(string) => string
 ** returns the string in lowercase
+----
+toLower("HELLO") // return the string "hello"
+toLower(" World") // return the string " world"
+----
+
 * toUpper(string) => string
 ** returns the string in uppercase
+----
+toUpper("hello") // return the string "HELLO"
+toUpper("wORld") // return the string "WORLD"
+----
+
 * startsWith(string, prefix) => bool
 ** returns true if string starts with prefix, false otherwise
+** is case and whitespace sensitive
+----
+startsWith("hello", "he") // return true
+startsWith("hello", "He") // return false
+----
+
 * endsWith(string, suffix) => bool
 ** returns true if string ends with suffix, false otherwise
+** is case and whitespace sensitive
+----
+endsWith("hello", "llo") // return true
+endsWith("hello", "LLO") // return false
+----
+
 * contains(string, subString) => bool
 ** returns true if subString exists in string false otherwise
+** is case and whitespace sensitive
+----
+contains("hello", "ello") // return true
+contains("hello", "hi") // return false
+contains("hello", "He") // return false
+----
+
 * content(string1, string2) => bool
 ** returns true if string1 equals string2 false otherwise
+** is case and whitespace sensitive
+----
+content("hello", "hello") // return true
+content("hello", "Hello") // return false
+content("hello", "hello ") // return false
+----
+
+* trim(s, cutset) => string
+** returns a string s with all leading and trailing Unicode code points contained in cutset removed.
+** removes all leading and trailing whitespaces
+** is case sensitive
+----
+trim("Hello and Hello", "Hello") // return the string "and"
+trim(" Hello and Hello", "hi") // return the string "Hello and Hello"
+----
+
+* trimPrefix(s, prefix) => string
+** returns s without the provided leading prefix string. If s doesn't start with prefix, s is returned unchanged.
+** is case and whitespace sensitive
+----
+trimPrefix("Hello World", "Hello ") // return the string "World"
+trimPrefix("Hello World", "hello") // return the string "Hello World"
+----
+
+* trimSuffix(s, suffix) => string
+** returns s without the provided trailing suffix string. If s doesn't end with suffix, s is returned unchanged.
+** is case and whitespace sensitive
+----
+trimSuffix("Hello World", "World") // return the string "Hello "
+trimSuffix("Hello World", "Hello") // return the string "Hello World"
+----
+
 * split(variable, delim)
-** split the input string
-** [_, s1, _] = split("1.2.3.4", ".")   => generate a new column s1 = "2"
-* coalesce(v1, v2, v3 ...)
-** return the first argument that is a non-empty string value
-* regexp(pattern, field)
-** this function extract the captured "named group" from the regular expression pattern.
-** for username "foo@gmail.com", two new columns "Name" and "Domain" will be added with value "foo" and "gmail.com" respectively
-```
+** split the input string on delim and returns a list of string
+----
+split("1,2,3", ",") // return a list ["1", "2", "3"]
+split("1,2,3", "2") // return a list ["1,", ",3"]
+split("1,2,3", "1") // return a list ["", ",2,3"]
+----
+
+* coalesce(var1, var2, var3, ...)
+** return the first argument that is a non-empty string value, undefined otherwise
+----
+coalesce("str1", "str2", "str3", ...) // return the string "str1"
+coalesce("", 15, "str3", ...) // return the string "str3"
+coalesce("", "", "") // return undefined
+----
+
+* regexp(pattern, s)
+** this function extracts the captured "named group" matching the regular expression pattern from s.
+** for Email="foo@gmail.com", the function returns a map with Name = "foo" and Domain = "gmail.com"
+----
 let Email = f("Email")
-let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
-```
+let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email) // return {Name: "foo", "Domain: "@gmail.com}
+let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", "foo") // return {}
+----
+
 * len(variable) 
 ** if variable is primitive string, returns the length of the input string
 ** if variable is primitive list, returns the length of the list
@@ -87,25 +171,45 @@ let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
 ** if variable is Metric, returns the number of data series in the metric
 ** if variable is Alert, returns the number of entries in the alert
 ** else return 0
+----
+len("Hello") // return an int64 value of 5
+len([1, 2, 3] // return an int64 value of 3
+len({Name: "foo", Domain: "@gmail.com"}) // return an int64 value of 2
+----
+
 * typeof(variable)
 ** if variable is primitive value, returns the type of the primitive value: 
 **       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
 ** else return the type of the object: 
 **       "Tuple", "Map", "Lambda", "Table", "Metric", "Alert"
+----
+typeof(2) // return the string "int64"
+typeof([1, 2, 3]) // return the string "list"
+----
+
 * sprintf(format, arguments...)
 ** golang's printf format
+** if format is not given, will default to string
+
 * printf(format, arguments...)
 ** golang printf format
+** if format is not given, will default to string
+----
+printf("int64", 2) // prints 2 as a string to traces
+printf(2) // ERROR: expected string but int64 given
+printf("2") // prints the string 2 to traces
+----
+
 * case(condition_1, value_1, [condition_2, value_2, ...], default_value)
 ** evaluate a list of conditions and returns the first value whose condition is evaluated to true. If all conditions are false, the default value is returned
-* trim(s, cutset) => string
-** returns a string s with all leading and trailing Unicode code points contained in cutset removed.
-* trimPrefix(s, prefix) => string
-** returns s without the provided leading prefix string. If s doesn't start with prefix, s is returned unchanged.
-* trimSuffix(s, suffix) => string
-** returns s without the provided trailing suffix string. If s doesn't end with suffix, s is returned unchanged.
+----
+let i = 10
+case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "positive"
+let i = -10
+case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
+----
 
-== System functions
+== System Functions
 
 * AWS_AccountRegionLambda(accounts, regions, (account, region) => { return {}  })
 ** Run lambda function on specific AWS accounts and regions
@@ -115,17 +219,20 @@ let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
 ** regions: "us-east-1" or ["us-east-1", "us-east-2"]
 ** this function returns a map of objects
 ** results from different regions will be merged into one 
+
 * AWS_AccountLambda(accounts, regions, (account) => { return {}  })
 ** lambda function on specific AWS accounts (One example is AWS Cost and Usage API, which does not limit to one specific region)
+
 * transform(stream, lambda) 
 ** create a new stream. The data series of the new stream is the result of the lambda function.
 ** lambda function interface: (ts, key, value) => {  }
-```
+----
 let duration = AWS_GetMetric("Duration", options, filters)
 let invocation = AWS_GetMetric("Invocations", options, filters)
 let durationCost = transform(duration, (ts, key, value) => (value/1000) * assetTable[key].lambdaMemoryRate)
 let invocationCost = transform(invocation, (ts, key, value) => value * assetTable[key].lambdaRequestRate)
-```
+----
+
 * anomaly(stream, {seasonal:"auto", minDiff: 3.0, minDiffPercent: 10.0})
 ** anomaly detection on one stream
 ** seasonal: auto | weekday-end-hourly | hourly | weekday-hourly | ""
@@ -147,9 +254,10 @@ function main() {
   return {cost}
 }
 ----
+
 * alert(<stream>, window(condition,n,m))
 ** sliding window detection
-```
+----
 function queueAlerts(queues) {
   let options = {from: "-1h@h", to: "@h", dimensions: ["QueueName"], namespace: "AWS/SQS", period: "5m", stat: "Maximum", unit:"Second"}
   let filters = {QueueName: queues}
@@ -162,12 +270,11 @@ function queueAlerts(queues) {
   let consumerStopAlerts = alert(queueLength, window(received == 0 && queueLength > 1, 2, 2))
   return {ageAlerts, consumerStopAlerts}
 }
+----
 
-```
+== Object Methods
 
-== Object method
-
-=== Table methods
+=== Table Methods
 
 * IsEmpty() 
 ** return true if table is empty
@@ -188,32 +295,34 @@ function queueAlerts(queues) {
 ** sort the table by column values. 
 ** limit set to 0 will return all results.
 ** default is descending order
-```
+----
 // return top N rows, sort by "Cost" column in descending order
 natGateways.Sort(10, "Cost")
-```
+----
+
 * Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
 ** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
 ** {ID:"ID"} => Both left column and right column is named "ID"
 ** {ID:"VpcId"} => right column is "ID", left column is "VpcId"
-```
+----
 bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:"Total_Cost"})
 // if keycolumn(s) is not provided, the default key column will be "ID"
 bucketTable.Join(byteSummary)
+----
 
-```
 * GroupBy(RowSplitFields, ColumnAggregateOptions)
 ** RowSplitFields: one or more fields for row groupBy
 ** ColumnAggregateOptions {column:"", unit:"", aggregate:"", lambda: (row) => row.Col, source:"" }
 ** lambda field is optional.  If lambda field is not defined.  The input will be taken from the source column.  The source field is also optional, default value is the same as the column name
 ** aggregate functions: count, sum, avg, min, max, values, coalesce
-```
+----
 table.GroupBy("Customer", [{column:"Count", aggregate:"sum", lambda: (row) => true}, {column:"Total", aggregate:"sum", lambda: (row) => row.Total}])
 table.GroupBy("Customer", [{column:"Count", aggregate:"sum"}, {column:"Total", aggregate:"sum"}])
-``` 
+----
+
 * Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
 ** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
-```
+----
 // simple sum of all columns from the table named "bucketTable"
 // new table "byteSummary" has the same ID column plus one "Total_Bytes" column
 let byteSummary = bucketTable.Aggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
@@ -225,15 +334,14 @@ let byteSummary = bucketTable.Aggregate("Total_Bytes", "Byte", (ID, col, value, 
 let costSummary = bucketTable.Aggregate("Total_Monthly_Cost", "Dollar", (ID, col, value, sum) => {
       return sum + AWSPrice("S3", "StorageType", {Size:value, Type:col})
 }, 0)
-
-```
+----
 
 * NewColumnLambda(columnName, unit, (Col1, col2, ..) => {   })
 ** Generate one new column on the calling table. The column value is the return value of the lambda function.
-```
+----
 // create a new column "AverageSize"  on table "bucketTable".  The new column will read the two column named "Total_Bytes" and "Total_Object_count" respectively and calculate the the average as column value.  
 bucketTable.NewColumnLambda("AverageSize", "Byte", (row) => row.Total_Bytes / row.Total_Object_Count)
-```
+----
 
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
@@ -268,36 +376,36 @@ function main() {
 }
 ----
 
-== Metric stream method
+== Metric Stream Methods
 
 * IsEmpty()
 ** return true is the stream has no data series
 
 * Sort(limit, "AggregationType1", "AggregationType2"...)
 ** sort the stream by aggregation(s)
-```
+----
   // top 10 CPU utilizations
   cpu.Sort(10, "Average")
-```
+----
 
 * SummaryTable(column, unit, aggregationType)
 ** create a new table with a new column which holds the aggreation results for each data series
 ** aggregationType:  Sum|Average|Min|Max|Count|Last
-```
+----
 // create a new table "invocationSummary" with a column "Total_Invocations"
 let invocationSummary = lambdaInvocations.SummaryTable("Total_Invocations", "Count", "Sum")
-```
+----
 
 * TimeTable(timeFormat, unit)
 ** create a new table. each column is a time slot rendered with the format.
 ** the time format Golang Time Format
-```
+----
 let timeTable = balance.TimeTable("Jan 02 15:04:05", "Percent")
-```
+----
 
 * DimensionTable(dimension, unit, aggregationType)
 ** for metric stream with two dimensions. choose one dimension as the key dimension. the value of the other dimension will become a new column in the created new table
-```
+----
 function getS3BucketSize(assetTable) {
  let options = {from:"-48h@d", to:"@d", dimensions=["BucketName","StorageType"], namespace:"AWS/S3", period:"24h", stat:"Average"}
  let filters = {BucketName:assetTable}
@@ -315,15 +423,14 @@ function main() {
     return {bucketTable, countTable}
   })
 }
+----
 
-
-```
 * SetTags(assetTable) 
 ** convert asset table columns into tags for the metric stream key
 * SetUnit(unit)
 ** set unit for metric stream
 
-=== FplAlert methods
+=== FplAlert Methods
 
 * Limit(n)
 ** keep the topN anomalies
@@ -332,14 +439,16 @@ function main() {
 ** severity: error | warn | info
 ** OffDelay: alert will be cleared after OffDelay seconds. -1 means never expires
 
-== Bulit-in resource loading support
+== Bulit-in Resource Loading Support
 
 * AWS_Cli_List(<cmd_line>, (obj) => { }) 
 ** list AWS assets via AWS cli
+
 * AWS_Cli_Get(<cmd_line>, idList, (id, obj) => {})
 ** get asset attributes from a list of ID
+
 * NOTE the AWS_Cli_List and AWS_Cli_Get are not open for production deployment. For security concerns.  If the role IAM policy is not properly configured, it may cause security issues.
-```
+----
 let natGateways = AWS_Cli_List("ec2 describe-nat-gateways", (obj) => {
       let ID = obj.NatGatewayId
       let State = obj.State
@@ -375,7 +484,8 @@ function main() {
       return {queues}
    })
 }
-```
+----
+
 * AWS_LoadAsset(<resource>, (obj) => { })  // load AWS resources and convert them into a table
 ** lambda:function
 ** ec2:vpc
@@ -391,7 +501,7 @@ function main() {
 ** apigateway:apis
 ** if the lambda function return null, the entry will be skipped (filterMap function)
 ** jsonGetTag(obj, <tagArrayPath>,  <keyField>, <keyValue>, <valueField>)
-```
+----
    "Tags": [
        {
         "Key": "Name",
@@ -400,17 +510,16 @@ function main() {
    ],
    // let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
    // OR let Name = jsonGetAWSTag(obj, "Name") 
-``` 
+----
 ** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
 
-
-== Built-in metric loading support
+== Built-in Metric Loading Support
 
 * AWS_GetMetric(metricName, options, filters)  // load AWS metrics
 ** options: {from, to, dimensions, namespace, period, stat, unit, timezone}
 ** options.dimensions could be one string or a list of strings
 ** filters: {dimensionName: assetTable}
-```
+----
 function getLambdaCost(assetTable) {
   let options = {from: "-60m@m", to: "@m", dimensions: "FunctionName", namespace: "AWS/Lambda", period: "5m", stat: "Sum"}
   let filters = {FunctionName:assetTable}
@@ -420,15 +529,16 @@ function getLambdaCost(assetTable) {
   let invocation = AWS_GetMetric("Invocations", options, filters)
   return {duration, invocation}
 }
-```
+----
 
-== built-in AWS pricing API
+== Built-in AWS Pricing API
 
 * AWS_GetPrice(service, resource, options)
 ** service: "Lambda", resource: "GB-Second" , "Request"
 ** service: "S3",  resource: "StorageType"
 ** service: "NatGateway", resource "GB" , "Hour"
 ** service: "ApplicationLoadBalancer", resource "Hour", "LCU-Hour"
+
 * AWS_GetCostUsage(options)
 ** from: report start time
 ** to:  report end time
@@ -436,7 +546,7 @@ function getLambdaCost(assetTable) {
 ** granularity:  DAILY |  HOURLY
 ** dimensions:  AZ, INSTANCE_TYPE, LEGAL_ENTITY_NAME, INVOICING_ENTITY, LINKED_ACCOUNT, OPERATION, PLATFORM, PURCHASE_TYPE, SERVICE, TENANCY, RECORD_TYPE, and USAGE_TYPE
 ** tags:  customer defined cost allocation tags
-```
+----
 function main() {
  return AWS_AccountLambda("Production", () => {
     let dailyUsage=AWS_GetCostUsage({from:"-60d@d", to:"-1d@d", metric:"UsageQuantity", granularity:"DAILY"})
@@ -448,4 +558,4 @@ function main() {
     return {dailyUsage, dailyBlended, dailyUnBlended, dailyAmortized, dailyCostByService}
  })
 } 
-```
+----
