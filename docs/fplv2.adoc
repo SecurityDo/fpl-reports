@@ -52,6 +52,7 @@ if <condition> {
 }
 ----
 * return <value>
+
 * single-line comments //
 
 == Function 
@@ -277,26 +278,42 @@ function queueAlerts(queues) {
 === Table Methods
 
 * IsEmpty() 
-** return true if table is empty
+** return true if table is empty, false otherwise
+----
+testTable.IsEmpty()
+----
 
 * RemoveColumn(columnName)
-** remove one column from the table
+** remove columnName from the table
+----
+testTable.RemoveColumn(col1) // removes col1 from testTable
+testTable.RemoveColumn(col2) // removes col2 from testTable
+----
 
 * GetColumnValues(columnName)
-** return a list of values from one column
+** return a list of values on columnName from the table
+----
+testTable.GetColumnValues(col1) // returns [val1, val2, ...]
+----
 
 * GetKeys()
 ** return list of values from the key column: "ID" before the merge, "_globalID" after the merge.
+----
+testTable.GetKeys() // return [k1val1, k1val2, k2val1, k2val2, ...]
+----
 
 * SetColumnUnit(column, unit)
-** set unit for one column
+** set the unit of column
+----
+testTable.SetColumnUnit("Cost", "USD" // sets the Cost column to USD)
+----
 
 * Sort(limit, "+col1", "-col2"...)
-** sort the table by column values. 
-** limit set to 0 will return all results.
-** default is descending order
+** sort the table by column values and limit to the first N. 
+** limit = 0 will return all results.
+** "+" for ascending and "-" for descending, if not specified then defaults to descending order
 ----
-// return top N rows, sort by "Cost" column in descending order
+// return top 10 rows, sort by "Cost" column in descending order
 natGateways.Sort(10, "Cost")
 ----
 
@@ -390,12 +407,15 @@ function main() {
 
 * IsEmpty()
 ** return true is the stream has no data series
+----
+cpu.IsEmpty()
+----
 
 * Sort(limit, "AggregationType1", "AggregationType2"...)
 ** sort the stream by aggregation(s)
 ----
-  // top 10 CPU utilizations
-  cpu.Sort(10, "Average")
+// top 10 CPU utilizations
+cpu.Sort(10, "Average")
 ----
 
 * SummaryTable(column, unit, aggregationType)
