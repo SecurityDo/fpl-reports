@@ -120,12 +120,13 @@ let invocationCost = transform(invocation, (ts, key, value) => value * assetTabl
 ** order: desc | asc  // default is desc
 ** limit: number of metrics // default is 10
 ** filters: search filters 
-```
+[source,javascript]
+----
 function main() {
   let cost = RxFPL_GetMetric("PureCloudOps.AWS.Billing.InstanceCost", {from:"-2h@h", to:"@h", filters:[{name:"lvdb-app", values:"archiveSearchV3", exclude: true}]})
   return {cost}
 }
-```
+----
 * alert(<stream>, window(condition,n,m))
 ** sliding window detection
 ```
@@ -171,7 +172,6 @@ function queueAlerts(queues) {
 // return top N rows, sort by "Cost" column in descending order
 natGateways.Sort(10, "Cost")
 ```
-
 * Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
 ** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
 ** {ID:"ID"} => Both left column and right column is named "ID"
@@ -217,7 +217,8 @@ bucketTable.NewColumnLambda("AverageSize", "Byte", (row) => row.Total_Bytes / ro
 
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
-```
+[source,javascript]
+----
 function getNatBandwidth(assetTable) {
   let options = {from: "-24h@h", to: "@h", dimensions: "NatGatewayId", namespace: "AWS/NATGateway", period: "1h", unit:"Byte", stat: "Sum"}
   let filters = {NatGatewayId: assetTable}
@@ -245,8 +246,7 @@ function main() {
     return {natGateways}
   })
 }
-
-```
+----
 
 == Metric stream method
 
