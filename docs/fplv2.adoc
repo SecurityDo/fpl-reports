@@ -16,10 +16,13 @@
 
 * Lambda
 ** simple expression:  (x, y) => x+y
-** block statements:    (x, y) => {
+** block statements:  
+---- 
+  (x, y) => {
       let a = x + 1
       return a + y 
    }  // explicit return is required
+----   
 * FplTable
 ** Columns
 ** Rows
@@ -72,6 +75,23 @@
 let Email = f("Email")
 let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", Email)
 ```
+* len(variable) 
+** if variable is primitive string, returns the length of the input string
+** if variable is primitive list, returns the length of the list
+** if variable is primitive map, returns the number of key-value pairs in the map
+** if variable is json array, returns the number of elements in the array
+** if variable is json object, returns the number of key-value pairs in the object
+** if variable is Tuple, returns the number of elements in the tuple
+** if variable is Map, returns the number of key-value pairs in the map
+** if variable is Table, returns row count of the table
+** if variable is Metric, returns the number of data series in the metric
+** if variable is Alert, returns the number of entries in the alert
+** else return 0
+* typeof(variable)
+** if variable is primitive value, returns the type of the primitive value: 
+**       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
+** else return the type of the object: 
+**       "Tuple", "Map", "Lambda", "Table", "Metric", "Alert"
 * sprintf(format, arguments...)
 ** golang's printf format
 * printf(format, arguments...)
