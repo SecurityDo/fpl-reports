@@ -201,6 +201,16 @@ typeof([1, 2, 3]) // return the string "list"
 
 * printf(format, arguments...)
 ** golang printf format
+----
+%v : formats the value in a default format
+%d : formats decimal integers
+%f : formats the floating-point numbers
+%g : formats the floating-point numbers
+%b : formats base 2 numbers
+%o : formats base 8 numbers
+%t : formats true or false values
+%s : formats string values
+----
 ** if format is not given, will default to string
 ----
 printf("%d", 2) // prints 2 as a string to traces
