@@ -605,7 +605,7 @@ function main() {
 
 * Language design
 ** SQL/SPL  are all "script". No if/else. Difficult to learn for programers.
-** FPLv2: avascript es6 grammar. Real programming language with if/else statement, exception support.
+** FPLv2: javascript es6 grammar. Real programming language with if/else statement, exception support.
 * Data Source
 ** SQL: relational database
 ** SPL: data lake
