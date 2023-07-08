@@ -169,7 +169,7 @@ let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", "foo") // return {}
 ** if variable is Tuple, returns the number of elements in the tuple
 ** if variable is Map, returns the number of key-value pairs in the map
 ** if variable is Table, returns row count of the table
-** if variable is Metric, returns the number of data series in the metric
+** if variable is MetricStream, returns the number of data series in the metric
 ** if variable is Alert, returns the number of entries in the alert
 ** else return 0
 ----
@@ -196,7 +196,7 @@ typeof([1, 2, 3]) // return the string "list"
 ** golang printf format
 ** if format is not given, will default to string
 ----
-printf("int64", 2) // prints 2 as a string to traces
+printf("%d", 2) // prints 2 as a string to traces
 printf(2) // ERROR: expected string but int64 given
 printf("2") // prints the string 2 to traces
 ----
