@@ -166,6 +166,10 @@ coalesce("", 15, "str3", ...) // return the string "str3"
 coalesce("", "", "") // return undefined
 ----
 
+* match(pattern, s)
+** check if the input string s contains any match of the regular expression pattern.
+** use the ^ and $ modifiers to denote if the regex pattern match the full input string.
+
 * regexp(pattern, s)
 ** this function extracts the captured "named group" matching the regular expression pattern from s.
 ** for Email="foo@gmail.com", the function returns a map with Name = "foo" and Domain = "gmail.com"
