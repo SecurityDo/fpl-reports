@@ -185,6 +185,21 @@ len([1, 2, 3] // return an int64 value of 3
 len({Name: "foo", Domain: "@gmail.com"}) // return an int64 value of 2
 ----
 
+* append(list, element)
+** if list is primitive string and element is primitive string, return a new string.
+** if list is primitive list type and element is primitive value, append element to the primitive value list
+** if list is primitive json type and element is primitive value, append element to the json array
+** if list is tuple type, append element to the tuple
+** else return error
+----
+  let src = [1, 2, 3, 4]
+  let dst = append(src, 5)
+----
+
+* delete(map, key)
+** key must be primitive string
+** map must be primitive map, jsonObject or object map. 
+
 * typeof(variable)
 ** if variable is primitive value, returns the type of the primitive value: 
 **       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
