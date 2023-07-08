@@ -150,6 +150,14 @@ split("1,2,3", "2") // return a list ["1,", ",3"]
 split("1,2,3", "1") // return a list ["", ",2,3"]
 ----
 
+* parseInt(s,[base=0])
+** parse a string in the given base into a 64bit integer
+** If the base argument is 0, the true base is implied by the string's prefix following the sign (if present): 2 for "0b", 8 for "0" or "0o", 16 for "0x", and 10 otherwise
+* parseFloat(s)
+** parse a string into a 64bit floating-point number
+* parseBool(s)
+** returns the boolean value represented by the string. It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False. Any other value returns undefined
+
 * coalesce(var1, var2, var3, ...)
 ** return the first argument that is a non-empty string value, undefined otherwise
 ----
