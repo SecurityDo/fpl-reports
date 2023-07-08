@@ -16,13 +16,21 @@
 
 * Lambda
 ** simple expression: (x, y) => x+y
-** block statements:  
+** block statements: 
+** the parament support object/array destructuring: (obj) => obj.field1 + obj.field2   OR ({field1, field2}) 
 ---- 
   (x, y) => {
       let a = x + 1
       return a + y 
    }  // explicit return is required
-----   
+----  
+** the lambda parameter support object/array destructuring:
+----
+  // obj is a map/object type variable
+  (obj) => obj.field1 + obj.field2   
+  // OR
+  ({field1, field2}) => field1 + field2
+---- 
 * FplTable
 ** Columns
 ** Rows
@@ -52,9 +60,8 @@ if <condition> {
 }
 ----
 * return <value>
-
 * single-line comments //
-
+* multi-line comments  /*  */
 == Function 
 
 * function <name> (parameters) { }
