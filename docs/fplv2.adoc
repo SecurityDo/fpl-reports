@@ -600,3 +600,64 @@ function main() {
  })
 } 
 ----
+
+== Comparison with SQL and Splunk Processing Language
+
+* Language design
+** SQL/SPL  are all "script". No if/else. Difficult to learn for programers.
+** FPLv2: avascript es6 grammar. Real programming language with if/else statement, exception support.
+* Data Source
+** SQL: relational database
+** SPL: data lake
+** FPLv2:  data lake, any document based database, key-value store, time series database (TSDB). Support both json document store and metric data stream.
+** FPLv2:  support data source based on cloud API, such as cloudwatch get_metric api, AWS management "describe*" and "list*" APIs.
+* Throughput and Efficiency
+** FPLv2: Native execution in Golang. Built-in support for pallel multi-account, multi-region data queries.
+* Report/Alert 
+** FPLv2: Fully automated anomaly detection. Support table/chart/alert rendering.
+* Data streaming support
+** SQL/SPL: n/a
+** FPLv2:  support streaming mode, parse/normalize streaming data
+
+== Code comparison:
+
+* SELECT
+----
+// SQL
+SELECT col1, col2 from table1 where col3="hello"
+
+// FPLv2
+Load("remoteAsset", ({col1, col2, col3}) => { 
+                       if col3=="hello" {
+                          return {col1, col2}
+                       }
+                       return null
+                    }) 
+   
+----
+* GROUPBY
+----
+// SQL
+SELECT col1, sum(col2) from table 
+WHERE col3="hello"
+GROUP BY col4
+
+// FPLv2
+Load("remoteAsset", ({col1, col2, col3, col4}) => { 
+                       if col3=="hello" {
+                          return [ "groupBy", {col4}, {sum:{col2}} ]
+                       }
+                       return null
+                    }) 
+
+----
+* JOIN
+----
+// SQL
+SELECT * from table1
+INNER JOIN tabl2
+ON table1.col1=table2.col2
+
+// FPLv2
+table1.Join(table2, {col2:"col1"})
+----
