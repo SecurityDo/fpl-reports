@@ -50,6 +50,7 @@
 == Control Blocks
 
 * if/elseif/else support
+** value to bool conversion: false, null, undefined, 0, "", are false, all other values are true
 ----
 if <condition> {
   // code block
@@ -59,9 +60,11 @@ if <condition> {
   // code block
 }
 ----
+
 * return <value>
 * single-line comments //
 * multi-line comments  /*  */
+
 == Function 
 
 * function <name> (parameters) { }
@@ -221,6 +224,10 @@ len({Name: "foo", Domain: "@gmail.com"}) // return an int64 value of 2
 typeof(2) // return the string "int64"
 typeof([1, 2, 3]) // return the string "list"
 ----
+* isNull(variable)
+* isUndef(variable)
+* isString(variable)
+* isNumber(variable)
 
 * sprintf(format, arguments...)
 ** golang's printf format
