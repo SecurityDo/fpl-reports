@@ -60,7 +60,13 @@ if <condition> {
   // code block
 }
 ----
-
+* for loop support
+** for <index> <entry> = range <list> { }
+** for <key> <value> = range <map> { }
+* break 
+** break out of the current for loop
+* continue
+** skip the current iteration of the for loop
 * return <value>
 * single-line comments //
 * multi-line comments  /*  */
@@ -656,7 +662,7 @@ function main() {
 
 * Language design
 ** SQL/SPL  are all "script". No if/else. Difficult to learn for programers.
-** FPLv2: javascript es6 grammar. Real programming language with if/else statement, exception support.
+** FPLv2: javascript es6 grammar. Real programming language with if/else statement,for loop and exception support.
 * Data Source
 ** SQL: relational database
 ** SPL: data lake
@@ -711,4 +717,13 @@ ON table1.col1=table2.col2
 
 // FPLv2
 table1.Join(table2, {col2:"col1"})
+----
+
+* Sort
+----
+// SQL
+SELECT * from table1
+ORDER BY col1 desc
+// FPLv2
+table1.Sort(0, "-col1")
 ----
