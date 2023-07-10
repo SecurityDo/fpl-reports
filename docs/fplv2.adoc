@@ -214,7 +214,7 @@ parseFloat("10.11") // return the float64 value of 10.11
 ----
 parseBool("1") // return the bool value true
 parseBool("f") // return the bool value false
-parseBoll("fa") // return undefined
+parseBool("fa") // return undefined
 ----
 
 * coalesce(var1, var2, var3, ...)
@@ -441,42 +441,165 @@ function queueAlerts(queues) {
 * IsEmpty() 
 ** return true if table is empty, false otherwise
 ----
-testTable.IsEmpty()
+if testTable.IsEmpty() {
+  printf("Table is empty")
+} else {
+  // code block
+}
 ----
 
 * RemoveColumn(columnName)
 ** remove columnName from the table
+
+.testTable before removeColumn function calls
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+|===
 ----
-testTable.RemoveColumn(col1) // removes col1 from testTable
-testTable.RemoveColumn(col2) // removes col2 from testTable
+testTable.RemoveColumn("State") // removes the State column from testTable
+testTable.RemoveColumn("Country") // removes col2 from testTable
 ----
+.testTable after removeColumn function calls
+|===
+|ID | City 
+
+|1
+|Rockville
+
+|2
+|Silver Spring
+
+|3
+|Baltimore
+|===
 
 * GetColumnValues(columnName)
 ** return a list of values on columnName from the table
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+|===
 ----
-testTable.GetColumnValues(col1) // returns [val1, val2, ...]
+testTable.GetColumnValues("City") // returns ["Rockville", "Silver Spring", "Baltimore"]
 ----
 
 * GetKeys()
 ** return list of values from the key column: "ID" before the merge, "_globalID" after the merge.
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+|===
 ----
-testTable.GetKeys() // return [k1val1, k1val2, k2val1, k2val2, ...]
+testTable.GetKeys() // return [1,2,3]
 ----
 
 * SetColumnUnit(column, unit)
 ** set the unit of column
+|===
+|ID | Item | Cost
+
+|1
+|Pen
+|2.99
+
+|2
+|Eraser
+|5.99
+
+|3
+|Ruler
+|1.99
+|===
 ----
-testTable.SetColumnUnit("Cost", "USD" // sets the Cost column to USD)
+testTable.SetColumnUnit("Cost", "USD") // sets the Cost column to USD
 ----
 
 * Sort(limit, "+col1", "-col2"...)
 ** sort the table by column values and limit to the first N. 
 ** limit = 0 will return all results.
 ** "+" for ascending and "-" for descending, if not specified then defaults to descending order
+
+.testTable before Sort
+|===
+|ID | Item | Cost
+
+|1
+|Pen
+|2.99
+
+|2
+|Eraser
+|5.99
+
+|3
+|Ruler
+|1.99
+|===
 ----
 // return top 10 rows, sort by "Cost" column in descending order
-natGateways.Sort(10, "Cost")
+natGateways.Sort(10, "-Cost")
+// sort testTable by the "Cost" column in descending order
+testTable.Sort(0, "Cost")
 ----
+.testTable after the Sort function
+|===
+|ID | Item | Cost
+
+|2
+|Eraser
+|5.99
+
+|1
+|Pen
+|2.99
+
+|3
+|Ruler
+|1.99
+|===
 
 * Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
 ** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
