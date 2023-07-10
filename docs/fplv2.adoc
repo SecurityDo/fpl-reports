@@ -375,6 +375,12 @@ case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
 ** regions: "us-east-1" or ["us-east-1", "us-east-2"]
 ** this function returns a map of objects
 ** results from different regions will be merged into one 
+----
+AWS_AccountRegionLambda("Production","us-east-1", (account, region) => {
+  // code block
+  return {table1, table2, ...}
+})
+----
 
 * AWS_AccountLambda(accounts, regions, (account) => { return {}  })
 ** lambda function on specific AWS accounts (One example is AWS Cost and Usage API, which does not limit to one specific region)
@@ -672,34 +678,40 @@ function main() {
 }
 ----
 
-* AWS_LoadAsset(<resource>, (obj) => { })  // load AWS resources and convert them into a table
-** lambda:function
-** ec2:vpc
-** ec2:instance
-** ec2:volume
-** s3:bucket
-** ec2:natgateway
-** eks:cluster
-** eks:nodegroup
-** sqs:queue
-** elasticloadbalancing:loadbalancer
-** elasticloadbalancing:targetgroup
-** apigateway:apis
+* AWS_LoadAsset(<resource>, (obj) => { })  
+** loads an AWS resource and convert them into a table
+** resource:
+*** lambda:function
+*** ec2:vpc
+*** ec2:instance
+*** ec2:volume
+*** s3:bucket
+*** ec2:natgateway
+*** eks:cluster
+*** eks:nodegroup
+*** sqs:queue
+*** elasticloadbalancing:loadbalancer
+*** elasticloadbalancing:targetgroup
+*** apigateway:apis
 ** if the lambda function return null, the entry will be skipped (filterMap function)
-** jsonGetTag(obj, <tagArrayPath>,  <keyField>, <keyValue>, <valueField>)
+** extracting values from tags
+*** jsonGetTag(obj, <tagArrayPath>,  <keyField>, <keyValue>, <valueField>)
+*** jsonGetAWSTag(obj, <tagName>) 
 ----
-   "Tags": [
-       {
-        "Key": "Name",
-        "Value": "my-instance"
-       }
-   ],
-   // let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
-   // OR let Name = jsonGetAWSTag(obj, "Name") 
+  "Tags": [
+    {
+      "Key": "Name",
+      "Value": "my-instance"
+    }
+  ],
+  /* 
+    let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
+    OR
+    let Name = jsonGetAWSTag(obj, "Name") 
+  */
 ----
-** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
 
-* LoadAsset with GroupBy
+* AWS_LoadAsset with GroupBy
 ** the return object. { groupBy: { keys:{groupByKey1,...}, columns:{ aggregates }}}
 ** the groupBy keys and columnss use the same format as table.GroupBy()
 ----
@@ -761,16 +773,16 @@ function main() {
 
 == Comparison with SQL and Splunk Processing Language
 
-* Language design
+* Language Design
 ** SQL/SPL  are all "script". No if/else. Difficult to learn for programers.
-** FPLv2: javascript es6 grammar. Real programming language with if/else statement,for loop and exception support.
+** FPLv2: javascript es6 grammar. Real programming language with if/else statement, for loop and exception support.
 * Data Source
 ** SQL: relational database
 ** SPL: data lake
 ** FPLv2:  data lake, any document based database, key-value store, time series database (TSDB). Support both json document store and metric data stream.
 ** FPLv2:  support data source based on cloud API, such as cloudwatch get_metric api, AWS management "describe*" and "list*" APIs.
 * Throughput and Efficiency
-** FPLv2: Native execution in Golang. Built-in support for pallel multi-account, multi-region data queries.
+** FPLv2: Native execution in Golang. Built-in support for parallel multi-account, multi-region data queries.
 * Report/Alert 
 ** FPLv2: Fully automated anomaly detection. Support table/chart/alert rendering.
 * Data streaming support
