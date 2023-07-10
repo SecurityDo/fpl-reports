@@ -7,6 +7,7 @@
 ** bool
 ** null
 ** list of primitive value // []*primitive_value
+*** 0-indexed
 ** map of primitive value  // map[string]*primitive_value
 ** list of interface       // Json Array []interface{}
 ** map of interface        // Json Object map[string]interface{}
@@ -52,20 +53,22 @@
 * if/elseif/else support
 ** value to bool conversion: false, null, undefined, 0, "", are false, all other values are true
 ----
-if <condition> {
-  // code block
-} elseif <condition> {
-  // code block
+let s = 100
+if !s {
+  printf("s has a false value")
+} elseif s > 100 {
+  printf("s is greater than 100")
 } else {
-  // code block
+  printf("s is less than or greater to 100")
 }
 ----
+
 * for loop support
 ** for <index> <entry> = range <list> { }
 ** for <key> <value> = range <map> { }
 ----
-let list = [0, 10, 20 ]
-for i, v = range list {
+let lst = [0, 10, 20]
+for i, v = range lst {
   printf("index: %d:  value: %d", i, v)
 }
 
@@ -74,18 +77,25 @@ for k, v = range map {
   printf("key: %s:  value: %d", k, v)
 }
 ----
+
 * break 
 ** break out of the current for loop
+
 * continue
 ** skip the current iteration of the for loop
+
 * return <value>
+
 * single-line comments //
+
 * multi-line comments  /*  */
 
 == Function 
 
 * function <name> (parameters) { }
-* function main() {}   // main function is the execution starting point
+
+* function main() {}
+** main function is the execution starting point
 
 == Utility Library (both input and output are primitive values)
 
@@ -107,6 +117,7 @@ toUpper("wORld") // return the string "WORLD"
 ** returns true if string starts with prefix, false otherwise
 ** is case and whitespace sensitive
 ----
+let s = "hello"
 startsWith("hello", "he") // return true
 startsWith("hello", "He") // return false
 ----
@@ -115,6 +126,7 @@ startsWith("hello", "He") // return false
 ** returns true if string ends with suffix, false otherwise
 ** is case and whitespace sensitive
 ----
+let s = "hello"
 endsWith("hello", "llo") // return true
 endsWith("hello", "LLO") // return false
 ----
@@ -123,6 +135,7 @@ endsWith("hello", "LLO") // return false
 ** returns true if subString exists in string false otherwise
 ** is case and whitespace sensitive
 ----
+let s = "hello"
 contains("hello", "ello") // return true
 contains("hello", "hi") // return false
 contains("hello", "He") // return false
@@ -132,51 +145,77 @@ contains("hello", "He") // return false
 ** returns true if string1 equals string2 false otherwise
 ** is case and whitespace sensitive
 ----
-content("hello", "hello") // return true
-content("hello", "Hello") // return false
-content("hello", "hello ") // return false
+let s = "hello"
+content(s, "hello") // return true
+content(s, "Hello") // return false
+content(s, "hello ") // return false
 ----
 
 * trim(s, cutset) => string
-** returns a string s with all leading and trailing Unicode code points contained in cutset removed.
-** removes all leading and trailing whitespaces
-** is case sensitive
+** returns a sliced of the string s with all leading and trailing Unicode code points contained in cutset removed.
+** cutset will be seen as a collection of characters
 ----
-trim("Hello and Hello", "Hello") // return the string "and"
-trim(" Hello and Hello", "hi") // return the string "Hello and Hello"
+let s = "Hello and Hello"
+trim(s, "Hello") // return the string "and"
+trim(s, "o leH") // return the string "and"
+trim(s, "Hel") // return the string "lo and Hello"
 ----
 
 * trimPrefix(s, prefix) => string
 ** returns s without the provided leading prefix string. If s doesn't start with prefix, s is returned unchanged.
 ** is case and whitespace sensitive
 ----
-trimPrefix("Hello World", "Hello ") // return the string "World"
-trimPrefix("Hello World", "hello") // return the string "Hello World"
+let s = "Hello World"
+trimPrefix(s, "Hello ") // return the string "World"
+trimPrefix(s, "hello") // return the string "Hello World"
 ----
 
 * trimSuffix(s, suffix) => string
 ** returns s without the provided trailing suffix string. If s doesn't end with suffix, s is returned unchanged.
 ** is case and whitespace sensitive
 ----
-trimSuffix("Hello World", "World") // return the string "Hello "
-trimSuffix("Hello World", "Hello") // return the string "Hello World"
+let s = "Hello World"
+trimSuffix(s, "World") // return the string "Hello "
+trimSuffix(s, "Hello") // return the string "Hello World"
 ----
 
 * split(variable, delim)
 ** split the input string on delim and returns a list of string
 ----
-split("1,2,3", ",") // return a list ["1", "2", "3"]
-split("1,2,3", "2") // return a list ["1,", ",3"]
-split("1,2,3", "1") // return a list ["", ",2,3"]
+let s = "1,2,3"
+split(s, ",") // return a list ["1", "2", "3"]
+split(s, "2") // return a list ["1,", ",3"]
+split(s, "1") // return a list ["", ",2,3"]
 ----
 
-* parseInt(s,[base=0])
+* parseInt(s, base)
 ** parse a string in the given base into a 64bit integer
-** If the base argument is 0, the true base is implied by the string's prefix following the sign (if present): 2 for "0b", 8 for "0" or "0o", 16 for "0x", and 10 otherwise
+** if base is not given, it will default to 0
+** if the base argument is 0, the true base is implied by the string's prefix (if present): 2 for "0b", 8 for "0" or "0o", 16 for "0x", and 10 otherwise
+----
+let s = 10
+parseInt(s) // return the int64 value of 10
+parseInt(s, 2) // return the int64 value of 2
+
+let s = "0b10"
+parseInt(s) // return the int64 value of 2
+----
+
 * parseFloat(s)
 ** parse a string into a 64bit floating-point number
+----
+parseFloat("10") // return the float64 value of 10.0
+parseFloat("10.11") // return the float64 value of 10.11
+----
+
 * parseBool(s)
-** returns the boolean value represented by the string. It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False. Any other value returns undefined
+** returns the boolean value represented by the string. 
+** it accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False. Any other values returns undefined
+----
+parseBool("1") // return the bool value true
+parseBool("f") // return the bool value false
+parseBoll("fa") // return undefined
+----
 
 * coalesce(var1, var2, var3, ...)
 ** return the first argument that is a non-empty string value, undefined otherwise
@@ -187,16 +226,27 @@ coalesce("", "", "") // return undefined
 ----
 
 * replace(s, old, new, count) 
-** returns a copy of the given string, with the first 'count' non-overlapping instances of the old string replaced with the new one
+** returns a copy of the given string, starting with the first 'count' non-overlapping instances of the old string replaced with the new one
 ** s: the input string
 ** old: the string to be replaced
 ** new: the string that replaces the old one
-** count: the number of times the old string is replaced.
+** count: up to the number of times the old string will be replaced.
 ** if count is less than zero, no limit on the number of replacement
+----
+let s = "a a a"
+replace(s, "a", "Hello", 1) // return the string "Hello a a"
+replace(s, "a", "Hello", 0) // return the string "a a a"
+replace(s, "a", "Hello", -1) // return the string "Hello Hello Hello"
+----
 
 * match(pattern, s)
-** check if the input string s contains any match of the regular expression pattern.
+** return true if the input string s contains any match of the regular expression pattern.
 ** use the ^ and $ modifiers to denote if the regex pattern match the full input string.
+----
+let s = "Hello"
+match("^H", s) // return true since s starts with "H"
+match("^h", s) // return false since s does not start with "h"
+----
 
 * regexp(pattern, s)
 ** this function extracts the captured "named group" matching the regular expression pattern from s.
@@ -221,38 +271,68 @@ let {}=regexp("(?P<Name>.*)@(?P<Domain>.*)", "foo") // return {}
 ** else return 0
 ----
 len("Hello") // return an int64 value of 5
-len([1, 2, 3] // return an int64 value of 3
+len([1, 2, 3]) // return an int64 value of 3
 len({Name: "foo", Domain: "@gmail.com"}) // return an int64 value of 2
 ----
 
 * append(list, element)
 ** if list is primitive string and element is primitive string, return a new string.
-** if list is primitive list type and element is primitive value, append element to the primitive value list
-** if list is primitive json type and element is primitive value, append element to the json array
+** if list is primitive list type and element is primitive value, appends element to the primitive value list
+** if list is primitive json type and element is primitive value, appends element to the json array
 ** if list is tuple type, append element to the tuple
 ** else return error
 ----
-  let src = [1, 2, 3, 4]
-  let dst = append(src, 5)
+let s = "ab"
+s = append(s, "cd") // s is now the string "abcd"
+
+let src = [1, 2, 3, 4]
+append(src, 5) // src is now [1, 2, 3, 4, 5]
 ----
 
 * delete(map, key)
-** key must be primitive string
 ** map must be primitive map, jsonObject or object map. 
+** key must be primitive string
+----
+let m = {first: 10, second: 20}
+delete(m, "first") // m is now the map {second: 20}
+----
 
 * typeof(variable)
 ** if variable is primitive value, returns the type of the primitive value: 
-**       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
+***       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
 ** else return the type of the object: 
-**       "Tuple", "Map", "Lambda", "Table", "MetricStream", "Alert"
+***       "Tuple", "Map", "Lambda", "Table", "MetricStream", "Alert"
 ----
 typeof(2) // return the string "int64"
 typeof([1, 2, 3]) // return the string "list"
 ----
-* isNull(variable)
-* isUndef(variable)
-* isString(variable)
-* isNumber(variable)
+
+* isNull(var)
+** return true if var is a null type, false otherwise
+----
+isNull("Hello") // return false
+isNull(null) // return true
+----
+
+* isUndef(var)
+** return true if var is undefined type, false otherwise
+----
+isUndef(null) // return false
+----
+
+* isString(var)
+** return true if var is of string type, false otherwise
+----
+isString("abc") // return true
+isString(64) // return false
+----
+
+* isNumber(var)
+** return false if var is of int64 or float64 type, false otherwise
+----
+isNumber("abc") // return false
+isNumber(64) // return true
+----
 
 * sprintf(format, arguments...)
 ** golang's printf format
@@ -260,17 +340,16 @@ typeof([1, 2, 3]) // return the string "list"
 
 * printf(format, arguments...)
 ** golang printf format
-----
-%v : formats the value in a default format
-%d : formats decimal integers
-%f : formats the floating-point numbers
-%g : formats the floating-point numbers
-%b : formats base 2 numbers
-%o : formats base 8 numbers
-%t : formats true or false values
-%s : formats string values
-----
 ** if format is not given, will default to string
+** format specifiers:
+*** %v : formats the value in a default format
+*** %d : formats decimal integers
+*** %f : formats the floating-point numbers
+*** %g : formats the floating-point numbers and removes trailing zeros
+*** %b : formats base 2 numbers
+*** %o : formats base 8 numbers
+*** %t : formats true or false values
+*** %s : formats string values
 ----
 printf("%d", 2) // prints 2 as a string to traces
 printf(2) // ERROR: expected string but int64 given
