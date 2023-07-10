@@ -63,6 +63,17 @@ if <condition> {
 * for loop support
 ** for <index> <entry> = range <list> { }
 ** for <key> <value> = range <map> { }
+----
+let list = [0, 10, 20 ]
+for i, v = range list {
+  printf("index: %d:  value: %d", i, v)
+}
+
+let map = {x:0, y:10, z:20}
+for k, v = range map {
+  printf("key: %s:  value: %d", k, v)
+}
+----
 * break 
 ** break out of the current for loop
 * continue
