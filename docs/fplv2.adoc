@@ -175,6 +175,14 @@ coalesce("", 15, "str3", ...) // return the string "str3"
 coalesce("", "", "") // return undefined
 ----
 
+* replace(s, old, new, count) 
+** returns a copy of the given string, with the first 'count' non-overlapping instances of the old string replaced with the new one
+** s: the input string
+** old: the string to be replaced
+** new: the string that replaces the old one
+** count: the number of times the old string is replaced.
+** if count is less than zero, no limit on the number of replacement
+
 * match(pattern, s)
 ** check if the input string s contains any match of the regular expression pattern.
 ** use the ^ and $ modifiers to denote if the regex pattern match the full input string.
