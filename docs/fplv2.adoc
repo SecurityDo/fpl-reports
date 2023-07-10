@@ -254,7 +254,7 @@ match("^h", s) // return false since s does not start with "h"
 let Email = "foo@gmail.com"
 let obj = regexp("(?P<Name>.*)@(?P<Domain>.*)", Email) // sets obj to {Name: "foo", "Domain: "@gmail.com}
 let {Name, Domain} = regexp("(?P<Name>.*)@(?P<Domain>.*)", Email) // sets the var Name = "foo" and Domain = "@gmail.com"
-let obj =regexp("(?P<Name>.*)@(?P<Domain>.*)", "foo") // return {}
+let obj =regexp("(?P<Name>.*)@(?P<Domain>.*)", "foo") // return undefined
 ----
 
 * len(variable) 
