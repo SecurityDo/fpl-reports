@@ -482,11 +482,12 @@ bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:
 bucketTable.Join(byteSummary)
 ----
 
-* GroupBy(({col1, col2 ... }) => [ {col1}, {sum:{Total: col2}} ])
+* GroupBy(({col1, col2 ... }) => { groupBy: { keys:{groupByKey1,...}, columns:{ aggregates }}} 
 ** the input is a lambda function. 
 ** the input object destructuring pick up the columns in the table 
-** the return is one array. the first object specify the groupBy fields
-** the second object specify the aggregatioin columns.
+** the return is a object. The first object specify the groupBy options
+** the "keys" object specify the aggregation columns.
+** the "columns" object specify the aggreated columns
 ** sum is the aggregation function 
 ** Total is the column name.
 ** sum:{Total: col2} define a new column "Total" which is the sum of the column "col2".  this is equivalent to "sum(col2) as Total" in SQL
@@ -496,7 +497,7 @@ bucketTable.Join(byteSummary)
 ** available aggregate functions: count, sum, avg, min, max, values, coalesce, first
 ----
    let customerTable = bucketTable.GroupBy(({Customer, S3_Cost}) =>  {
-      return [{Customer}, { sum:{S3_Cost} }]
+      return { groupBy:{keys:{Customer}, columns:{ sum:{S3_Cost} }}}
    })
 ----
 
@@ -699,11 +700,13 @@ function main() {
 ** jsonGetAWSTag(obj, <tagName>) // same as jsonGetTag(obj, "Tags", "Key", <tagName>, "Value")
 
 * LoadAsset with GroupBy
-** the return is one array. [ "groupBy", {groupByKey1,...}, { aggregates }
-** the groupBy fields and aggregates use the same format as table.GroupBy()
+** the return object. { groupBy: { keys:{groupByKey1,...}, columns:{ aggregates }}}
+** the groupBy keys and columnss use the same format as table.GroupBy()
 ----
 return AWS_AccountRegionLambda("*","*", () => {
-      let volumes = AWS_LoadAsset("ec2:volume",({VolumeType, State, Iops, Size}) => ["groupBy", {VolumeType}, {Sum:{Size}}])             
+      let volumes = AWS_LoadAsset("ec2:volume",({VolumeType, State, Iops, Size}) => {
+          return {groupBy:{ keys:{VolumeType}, columns: {Sum:{Size}}}}
+      })             
       volumes.SetColumnUnit("Size", "GB")
       return {volumes}
 })
@@ -800,7 +803,7 @@ GROUP BY col4
 // FPLv2
 Load("remoteAsset", ({col1, col2, col3, col4}) => { 
                        if col3=="hello" {
-                          return [ "groupBy", {col4}, {sum:{col2}} ]
+                          return { groupBy: {keys:{col4}, columns:{sum:{col2}}}}
                        }
                        return null
                     }) 
