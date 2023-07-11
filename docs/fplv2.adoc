@@ -48,6 +48,37 @@
 
 * Map:   map of Data Types or Object Types
 
+== Operators
+
+* Binary operators comprise
+** arithmetic operators:
+'+' : addition
+'-': subtraction
+'*': multiplication
+'/': float division
+'%': modulo
+
+** bitwise operators:
+'&': bitwise AND
+'|': bitwise OR
+'^': bitwise exclusive OR
+'>>': right shift
+'<<': left shift
+
+** relational operators:
+'==': equality
+'!=': inequality
+'<': less than
+'>': greater than
+'<=': less or equal
+'>=': greater or equal
+
+** logical operators:
+'&&': and
+'||':  or
+'!':  not
+
+
 == Control Blocks
 
 * if/elseif/else support
@@ -80,7 +111,7 @@ for k, v = range map {
 * for loop with three components:  for init?; condition?; post? { }
 ----
 let list = [0, 10, 20]
-for let i = 0; i < len(list); i = i + 1 {
+for let i = 0; i < len(list); i += 1 {
   printf("index: %d:  value: %d", i, list[i])
 }
 ----
