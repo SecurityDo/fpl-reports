@@ -1,3 +1,6 @@
+= FPL V2
+:toc: auto
+
 == Data Types
 
 * Primitive Value
@@ -86,9 +89,9 @@ for k, v = range map {
 
 * return <value>
 
-* single-line comments //
-
-* multi-line comments  /*  */
+* comments
+** single-line comments //
+** multi-line comments  /*  */
 
 == Function 
 
@@ -318,6 +321,9 @@ isNull(null) // return true
 ** return true if var is undefined type, false otherwise
 ----
 isUndef(null) // return false
+
+let s = coalesce("", "", "") // return undefined
+isUndef(s) // return true
 ----
 
 * isString(var)
@@ -691,7 +697,7 @@ function main() {
 == Metric Stream Methods
 
 * IsEmpty()
-** return true is the stream has no data series
+** return true if the stream has no data series
 ----
 cpu.IsEmpty()
 ----
@@ -712,8 +718,8 @@ let invocationSummary = lambdaInvocations.SummaryTable("Total_Invocations", "Cou
 ----
 
 * TimeTable(timeFormat, unit)
-** create a new table. each column is a time slot rendered with the format.
-** the time format Golang Time Format
+** creates a new table where each column is a time slot rendered with timeFormat.
+** timeFormat follows the Golang Time Format
 ----
 let timeTable = balance.TimeTable("Jan 02 15:04:05", "Percent")
 ----
@@ -912,7 +918,7 @@ function main() {
 ** SQL/SPL: n/a
 ** FPLv2:  support streaming mode, parse/normalize streaming data
 
-== Code comparison:
+=== Code comparison:
 
 * SELECT
 ----
