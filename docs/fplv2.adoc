@@ -111,7 +111,7 @@ for k, v = range map {
 * for loop with three components:  for init?; condition?; post? { }
 ----
 let list = [0, 10, 20]
-for let i = 0; i < len(list); i += 1 {
+for let i = 0; i < len(list); i++ {
   printf("index: %d:  value: %d", i, list[i])
 }
 ----
