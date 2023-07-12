@@ -51,6 +51,36 @@
 
 * Map:   map of Data Types or Object Types
 
+== Operators
+
+* Binary operators comprise
+** arithmetic operators:
+*** '+' : addition
+*** '-': subtraction
+*** '*': multiplication
+*** '/': float division
+*** '%': modulo
+
+** bitwise operators:
+*** '&': bitwise AND
+*** '|': bitwise OR
+*** '^': bitwise exclusive OR
+*** '>>': right shift
+*** '<<': left shift
+
+** relational operators:
+*** '==': equality
+*** '!=': inequality
+*** '<': less than
+*** '>': greater than
+*** '<=': less or equal
+*** '>=': greater or equal
+
+** logical operators:
+*** '&&': and
+*** '||':  or
+*** '!':  not
+
 == Control Blocks
 
 * if/elseif/else support
@@ -78,6 +108,13 @@ for i, v = range lst {
 let map = {x:0, y:10, z:20}
 for k, v = range map {
   printf("key: %s:  value: %d", k, v)
+}
+----
+* for loop with three components:  for init?; condition?; post? { }
+----
+let list = [0, 10, 20]
+for let i = 0; i < len(list); i++ {
+  printf("index: %d:  value: %d", i, list[i])
 }
 ----
 
@@ -375,20 +412,31 @@ case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
 
 * AWS_AccountRegionLambda(accounts, regions, (account, region) => { return {}  })
 ** Run lambda function on specific AWS accounts and regions
-** accounts: "*" enable all configured AWS accounts. account could also be one account name or one array of names
+** accounts: "*" enables all configured AWS accounts. Account could also be one account name or an array of names
 ** accounts: "Production" or ["Production", "UnitTest"]
-** regions: "*" enable all configured regions
+** regions: "*" enables all configured regions. Regions could also be one region name or an array of names
 ** regions: "us-east-1" or ["us-east-1", "us-east-2"]
 ** this function returns a map of objects
 ** results from different regions will be merged into one 
 ----
+// enabling only the Production account from the region us-east-1
 AWS_AccountRegionLambda("Production","us-east-1", (account, region) => {
-  // code block
+  /*
+    code block
+  */
+  return {table1, table2, ...}
+})
+
+// enabling all configured accounts from all configured region
+AWS_AccountRegionLambda("*","*", (account, region) => {
+  /*
+    code block
+  */
   return {table1, table2, ...}
 })
 ----
 
-* AWS_AccountLambda(accounts, regions, (account) => { return {}  })
+* AWS_AccountLambda(accounts, (account) => { return {}  })
 ** lambda function on specific AWS accounts (One example is AWS Cost and Usage API, which does not limit to one specific region)
 
 * transform(stream, lambda) 
@@ -807,7 +855,8 @@ function main() {
 }
 ----
 
-* AWS_LoadAsset(<resource>, (obj) => { })  
+* AWS_LoadAsset(<resource>, (obj) => { })
+
 ** loads an AWS resource and convert them into a table
 ** resource:
 *** lambda:function
@@ -822,23 +871,46 @@ function main() {
 *** elasticloadbalancing:loadbalancer
 *** elasticloadbalancing:targetgroup
 *** apigateway:apis
+** Must have an ID variable 
 ** if the lambda function return null, the entry will be skipped (filterMap function)
 ** extracting values from tags
 *** jsonGetTag(obj, <tagArrayPath>,  <keyField>, <keyValue>, <valueField>)
 *** jsonGetAWSTag(obj, <tagName>) 
 ----
+// AWS_LoadAsset example
+function main() {
+    return AWS_AccountRegionLambda("FluencySIEM", "us-east-1", () => {
+        let clusters = AWS_LoadAsset("eks:cluster", (obj) => {
+            let {Name:ID, Status, CreatedAt} = obj        
+            return {ID, Status, CreatedAt}
+        })
+        return {clusters}
+    })
+}
+
+/*
   "Tags": [
     {
       "Key": "Name",
       "Value": "my-instance"
     }
   ],
-  /* 
-    let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
-    OR
-    let Name = jsonGetAWSTag(obj, "Name") 
-  */
+*/
+// Suppose the JSON tag, Value can be extracted through
+let Name = jsonGetTag(obj, "Tags", "Key", "Name", "Value")
+let Name = jsonGetAWSTag(obj, "Name") 
+
 ----
+.clusters Table 
+|===
+|ID |Status | CreatedAt |_account |_region
+
+|my-cluster
+|ACTIVE
+|2023-07-04T18:16:35.35Z
+|FluencySIEM
+|us-east-1
+|===
 
 * AWS_LoadAsset with GroupBy
 ** the return object. { groupBy: { keys:{groupByKey1,...}, columns:{ aggregates }}}
@@ -966,6 +1038,14 @@ table1.Join(table2, {col2:"col1"})
 // SQL
 SELECT * from table1
 ORDER BY col1 desc
+Limit 10
 // FPLv2
-table1.Sort(0, "-col1")
+table1.Sort(10, "-col1")
+// OR method chaining
+Load("remoteAsset", ( { col1, col2, col3, col4}) => { 
+                       if col3=="hello" {
+                          return { groupBy: {keys:{col4}, columns:{sum:{Total:col2}}}}
+                       }
+                       return null
+                    }).Sort(10, "-Total")
 ----
