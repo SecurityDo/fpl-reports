@@ -18,6 +18,9 @@
 
 == Object Types
 
+* Error
+** new Error(message, <name>)
+** name: "Error", "RangeError", "InternalError", "ReferenceError", "SyntaxError", "TypeError"
 * Lambda
 ** simple expression: (x, y) => x+y
 ** block statements: 
@@ -123,6 +126,22 @@ for let i = 0; i < len(list); i++ {
 
 * continue
 ** skip the current iteration of the for loop
+
+* throw <error>
+** throw new Error("invalid data type")
+
+* try { } catch () {} finally {} 
+----
+try {
+  nonExistentFunction();
+} catch (e) {
+  printf("%s: %s", e.name, e.message);
+  // print out: ReferenceError: nonExistentFunction is not defined
+} finally {
+  // execute after the try block and catch block(s) execute, 
+  // but before the statements following the try...catch...finally block
+}
+----
 
 * return <value>
 
