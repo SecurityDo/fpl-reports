@@ -713,6 +713,21 @@ bucketTable.Join(byteSummary)
       return { keys:{Customer}, columns:{sum:{S3_Cost}} }
    })
 ----
+** argmax and argmin
+----
+let arr = [
+  {ID: "a", Col1: "1900", Col2: "abc"},
+  {ID: "a", Col1: "1921", Col2: "mno"}
+]
+
+let t = jsonTable(arr)
+let tg = t.GroupBy( ({ID, Col1, Col2}) => {
+    return { keys:{ID}, columns:{ argmax:{Col1, Col2} }}
+})
+
+return {tg}
+----
+
 
 * Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
 ** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
