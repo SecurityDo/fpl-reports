@@ -440,6 +440,18 @@ let t = jsonTable(arr)
 
 == System Functions
 
+* pluginLambda(pluginType, customers, (customer) => {}
+** call registered plugin to run FPL lambda
+----
+let threats = pluginLambda("Cylance", "*", (customer) => {      
+       let threats = Cylance_LoadThreat((obj) => {
+          let {sha256:ID, md5, name, classification, sub_classification} = obj
+          return {ID, name, classification, sub_classification, customer}
+       })
+       return {threats}
+})      
+----
+
 * AWS_AccountRegionLambda(accounts, regions, (account, region) => { return {}  })
 ** Run lambda function on specific AWS accounts and regions
 ** accounts: "*" enables all configured AWS accounts. Account could also be one account name or an array of names
@@ -753,6 +765,23 @@ bucketTable.NewColumnLambda("AverageSize", "Byte", (row) => row.Total_Bytes / ro
 // OR 
 bucketTable.NewColumnLambda("AverageSize", "Byte", ({Total_Bytes, Total_Object_Count}) => Total_Bytes / Total_Object_Count)
 ----
+
+* NewColumns( (row) => {})
+** Generate new columns on the calling table. 
+** the lambda function will return a object holding the new columns
+----
+threats.NewColumns( ( {sha256} ) => {
+   let devices = Cylance_GetThreatDevices(sha256)
+   let filePaths = []
+   let deviceNames = []
+   for (let i = 0; i < len(devices); i++) {
+       let device = devices[i]
+       filePaths = append(filePaths, device.file_path) 
+       deviceNames = append(filePaths, device.name)
+   } 
+   return {filePaths, deviceNames}
+})
+---- 
 
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
