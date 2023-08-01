@@ -427,6 +427,7 @@ case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "positive"
 let i = -10
 case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
 ----
+
 * jsonTable(array)
 ** generate a table from a literal array expression. 
 ----
@@ -434,9 +435,22 @@ let arr = [
   {ID: "a", Col1: "x"},
   {ID: "b", Col2: "y"}
 ]
-
 let t = jsonTable(arr)
 ----
+
+.Table t generated from the function call
+|===
+|ID | Col1 | Col2 
+
+|a
+|x
+|
+
+|b
+|
+|y
+
+|===
 
 == System Functions
 
@@ -720,12 +734,32 @@ bucketTable.Join(byteSummary)
 ** for "count" aggregate, a bool expression is expected.
 ** count: {Count:true}
 ** available aggregate functions: count, sum, avg, min, max, values, coalesce, first, argmin, argmax
+
 ----
    let customerTable = bucketTable.GroupBy(({Customer, S3_Cost}) =>  {
       return { keys:{Customer}, columns:{sum:{S3_Cost}} }
    })
 ----
+
 ** argmax and argmin
+*** argmax(colToCompare, colToReturn)
+*** argmax will return the row with the max value of the colToCompare
+*** argmin will return the row with the min value of the colToCompare
+*** colToReturn can be more than one column separated by commas (e.g argmax(col1, col2, col3)
+
+.Table t generated from the jsonTable function call
+|===
+|ID | Col1 | Col2 
+
+|a
+|"1900"
+|"abc"
+
+|b
+|"1921"
+|"mno"
+
+|===
 ----
 let arr = [
   {ID: "a", Col1: "1900", Col2: "abc"},
@@ -736,10 +770,18 @@ let t = jsonTable(arr)
 let tg = t.GroupBy( ({ID, Col1, Col2}) => {
     return { keys:{ID}, columns:{ argmax:{Col1, Col2} }}
 })
-
+// table tg only has one row with ID = "a" and Col1 = "1921" and Col2 = "mno" as "1921" is greater than "1900"
 return {tg}
 ----
+.Table tg generated from the GroupBy function call aggregated with argmax
+|===
+|ID | Col1 | Col2 
 
+|a
+|"1921"
+|"mno"
+
+|===
 
 * Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
 ** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
