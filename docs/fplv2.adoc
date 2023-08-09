@@ -437,6 +437,8 @@ let arr = [
 
 let t = jsonTable(arr)
 ----
+* mergeTable(table1, table2..)
+** generate a new table by merging input tables
 
 == System Functions
 
@@ -719,7 +721,7 @@ bucketTable.Join(byteSummary)
 ** sum:{col2} is equivalent to sum:{col2:col2}
 ** for "count" aggregate, a bool expression is expected.
 ** count: {Count:true}
-** available aggregate functions: count, sum, avg, min, max, values, coalesce, first, argmin, argmax
+** available aggregate functions: count, sum, avg, min, max, values, dcount, coalesce, first, argmin, argmax
 ----
    let customerTable = bucketTable.GroupBy(({Customer, S3_Cost}) =>  {
       return { keys:{Customer}, columns:{sum:{S3_Cost}} }
