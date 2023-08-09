@@ -784,7 +784,8 @@ threats.NewColumns( ( {sha256} ) => {
    return {filePaths, deviceNames}
 })
 ---- 
-
+* Clone()
+** Generate a new table which is a copy of the calling table
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
 [source,javascript]
