@@ -709,11 +709,11 @@ bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:
 bucketTable.Join(byteSummary)
 ----
 
-* GroupBy(({col1, col2 ... }) => { keys:{groupByKey1,...}, columns:{ aggregates }} 
+* Aggregate(({col1, col2 ... }) => { groupBy:{groupByKey1,...}, columns:{ aggregates }} 
 ** the input is a lambda function. 
 ** the input object destructuring pick up the columns in the table 
 ** the return is a object.
-** the "keys" object specify the aggregation columns.
+** the "groupBy" object is optional, specify the groupBy column(s).
 ** the "columns" object specify the aggreated columns
 ** sum is the aggregation function 
 ** Total is the column name.
@@ -723,8 +723,8 @@ bucketTable.Join(byteSummary)
 ** count: {Count:true}
 ** available aggregate functions: count, sum, avg, min, max, values, dcount, coalesce, first, argmin, argmax
 ----
-   let customerTable = bucketTable.GroupBy(({Customer, S3_Cost}) =>  {
-      return { keys:{Customer}, columns:{sum:{S3_Cost}} }
+   let customerTable = bucketTable.Aggregate(({Customer, S3_Cost}) =>  {
+      return { groupBy:{Customer}, columns:{sum:{S3_Cost}} }
    })
 ----
 ** argmax and argmin
@@ -735,26 +735,26 @@ let arr = [
 ]
 
 let t = jsonTable(arr)
-let tg = t.GroupBy( ({ID, Col1, Col2}) => {
-    return { keys:{ID}, columns:{ argmax:{Col1, Col2} }}
+let tg = t.Aggregate( ({ID, Col1, Col2}) => {
+    return { groupBy:{ID}, columns:{ argmax:{Col1, Col2} }}
 })
 
 return {tg}
 ----
 
 
-* Aggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
+* ColumnAggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
 ** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
 ----
 // simple sum of all columns from the table named "bucketTable"
 // new table "byteSummary" has the same ID column plus one "Total_Bytes" column
-let byteSummary = bucketTable.Aggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
+let byteSummary = bucketTable.ColumnAggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
       return sum + value
 },0)
 
 // more complicate example, the lambda calls AWSPrice API to get the monthly cost of different S3 storage types.
 // the table "bucketTable" is derived from the "DimensionTable" method of a metric stream, each storage type has one column
-let costSummary = bucketTable.Aggregate("Total_Monthly_Cost", "Dollar", (ID, col, value, sum) => {
+let costSummary = bucketTable.ColumnAggregate("Total_Monthly_Cost", "Dollar", (ID, col, value, sum) => {
       return sum + AWSPrice("S3", "StorageType", {Size:value, Type:col})
 }, 0)
 ----
@@ -989,13 +989,13 @@ let Name = jsonGetAWSTag(obj, "Name")
 |us-east-1
 |===
 
-* AWS_LoadAsset with GroupBy
-** the return object. { groupBy: { keys:{groupByKey1,...}, columns:{ aggregates }}}
-** the groupBy keys and columnss use the same format as table.GroupBy()
+* AWS_LoadAsset with aggregate/groupBy
+** the return object. { aggregate: { groupBy:{groupByKey1,...}, columns:{ aggregates }}}
+** the groupBy and columnss use the same format as table.Aggregate()
 ----
 return AWS_AccountRegionLambda("*","*", () => {
       let volumes = AWS_LoadAsset("ec2:volume",({VolumeType, State, Iops, Size}) => {
-          return {groupBy:{ keys:{VolumeType}, columns: {Sum:{Size}}}}
+          return {aggregate:{ groupBy:{VolumeType}, columns: {Sum:{Size}}}}
       })             
       volumes.SetColumnUnit("Size", "GB")
       return {volumes}
@@ -1083,7 +1083,7 @@ Load("remoteAsset", ({col1, col2, col3}) => {
                     }) 
    
 ----
-* GROUPBY
+* Aggregate/GROUPBY
 ----
 // SQL
 SELECT col1, sum(col2) from table 
@@ -1093,7 +1093,7 @@ GROUP BY col4
 // FPLv2
 Load("remoteAsset", ({col1, col2, col3, col4}) => { 
                        if col3=="hello" {
-                          return { groupBy: {keys:{col4}, columns:{sum:{col2}}}}
+                          return { aggregate: {groupBy:{col4}, columns:{sum:{col2}}}}
                        }
                        return null
                     }) 
@@ -1121,7 +1121,7 @@ table1.Sort(10, "-col1")
 // OR method chaining
 Load("remoteAsset", ( { col1, col2, col3, col4}) => { 
                        if col3=="hello" {
-                          return { groupBy: {keys:{col4}, columns:{sum:{Total:col2}}}}
+                          return { aggregate: {groupBy:{col4}, columns:{sum:{Total:col2}}}}
                        }
                        return null
                     }).Sort(10, "-Total")
