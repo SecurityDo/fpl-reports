@@ -700,6 +700,7 @@ testTable.Sort(0, "Cost")
 |===
 
 * Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
+** this method will generate a new table
 ** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
 ** {ID:"ID"} => Both left column and right column is named "ID"
 ** {ID:"VpcId"} => right column is "ID", left column is "VpcId"
@@ -710,6 +711,7 @@ bucketTable.Join(byteSummary)
 ----
 
 * Aggregate(({col1, col2 ... }) => { groupBy:{groupByKey1,...}, columns:{ aggregates }} 
+** this method will generate a new table
 ** the input is a lambda function. 
 ** the input object destructuring pick up the columns in the table 
 ** the return is a object.
