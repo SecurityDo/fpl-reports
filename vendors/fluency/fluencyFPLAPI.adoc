@@ -16,7 +16,7 @@ function main() {
     return {behaviorEvents, behaviorSummary}
 }
 ----
-* Fluency_ResourceLoad(vendor, resource, customer, ()=> {})
+* Fluency_ResourceLoad(vendor, resource, customer, (obj <,customer>)=> {})
 ** vendor: Office365
 ** resource: User, Group, Device, Application, InstalledApp
 ** vendor Sentinelone
