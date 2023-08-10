@@ -1,0 +1,36 @@
+* Fluency_BehaviorSearch(query, from, to, ()=>{})
+** Search Fluency Behavior Event database
+* Fluency_SummarySearch(query, from, to, ()=>{})
+** Search Fluency Behavior Summary database
+----
+function main() {
+    let behaviorEvents = Fluency_BehaviorSearch("riskScore: [100 TO *]", "-10d@m", "@m", (obj) => {
+       let {behaviorRule, behavior, riskScore, key } = obj
+       return {behaviorRule, behavior, riskScore, key} 
+    })
+    let behaviorSummary = Fluency_SummarySearch("riskScore: [3000 TO *] AND NOT (status:new)", "-10d@m", "@m", (obj) => {
+       let {id, behaviorRules, riskScore, key, dayIndex, status } = obj
+       return {id, obj, behaviorRules, riskScore, key, dayIndex, status} 
+    })
+    
+    return {behaviorEvents, behaviorSummary}
+}
+----
+* Fluency_ResourceLoad(vendor, resource, customer, ()=> {})
+** vendor: Office365
+** resource: User, Group, Device, Application, InstalledApp
+** vendor Sentinelone
+** resource: Agent, Threat, Application
+** vendor AD
+** resource: User, Asset  
+----
+function main() {
+
+  let users = Fluency_ResourceLoad("office365", "user", "*", (obj, customer) => {
+      let fields = obj["@office365User"]
+      let {userType, userPrincipalName, roles, accountEnabled, createdDateTime} = fields
+      return {customer, userType, userPrincipalName, roles, accountEnabled, createdDateTime}
+  })
+  return {users}
+}
+----
