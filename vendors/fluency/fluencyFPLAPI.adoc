@@ -1,7 +1,41 @@
+* geoip(ip_address)
+** return an object with all the fields.
+** return an empty object if the address is not internet IP address
+----
+let info = geoip("8.8.8.8")
+// OR
+let {city, country, isp} = geoip("8.8.8.8")
+
+{
+  "city": "Mountain View",
+  "country": "United States",
+  "countryCode": "US",
+  "isp": "Google LLC",
+  "latitude": 37.4223,
+  "longitude": -122.085,
+  "org": "Level 3" 
+}
+----
 * Fluency_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
+----
+let hit = Fluency_EntityinfoCheck("HOME_NET", "20.0.0.1")
+if hit {
+  printf("home net")
+} else {
+  printf("internet")
+}
+----
 * Fluency_EntityinfoLookup(entity, keyCol, key, valueCol)
 ** check value from one column based on key column value
+** return an object {exist, value}
+----
+ let categoryID = "%%12547"
+   let {exist, value} = fluencyEntityinfoLookup("AD_EventID_4719_CategoryId", "Id", categoryID, "Description")
+   if exist {
+      printf("value %s", value)
+   }
+----
 * Fluency_BehaviorSearch(query, from, to, ()=>{})
 ** Search Fluency Behavior Event database
 * Fluency_SummarySearch(query, from, to, ()=>{})
