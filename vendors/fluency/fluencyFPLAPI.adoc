@@ -1,3 +1,7 @@
+* Fluency_EntityinfoCheck(entity, key)
+** check if one key exists in one entity table
+* Fluency_EntityinfoLookup(entity, keyCol, key, valueCol)
+** check value from one column based on key column value
 * Fluency_BehaviorSearch(query, from, to, ()=>{})
 ** Search Fluency Behavior Event database
 * Fluency_SummarySearch(query, from, to, ()=>{})
