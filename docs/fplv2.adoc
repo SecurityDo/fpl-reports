@@ -436,8 +436,91 @@ let arr = [
   {ID: "a", Col1: "x"},
   {ID: "b", Col2: "y"}
 ]
+
 let t = jsonTable(arr)
 ----
+
+* mergeTable(table1, table2..)
+** generate a new table by merging input tables
+
+.Table t1
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+|===
+
+.Table t2
+|===
+|ID | City | State | Country
+
+|4
+|Seattle
+|Washington
+|US
+
+|5
+|Bellevue
+|Washington
+|US
+
+|6
+|Spokane
+|Maryland
+|US
+|===
+
+----
+let t3 = mergeTable(t1, t2) // t3 is a new table with data from t1 followed by t2
+----
+
+.Table t3 resulting from the mergeTable function call
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+
+|4
+|Seattle
+|Washington
+|US
+
+|5
+|Bellevue
+|Washington
+|US
+
+|6
+|Spokane
+|Maryland
+|US
+|===
 
 == System Functions
 
@@ -722,32 +805,13 @@ bucketTable.Join(byteSummary)
 ** sum:{col2} is equivalent to sum:{col2:col2}
 ** for "count" aggregate, a bool expression is expected.
 ** count: {Count:true}
-** available aggregate functions: count, sum, avg, min, max, values, coalesce, first, argmin, argmax
+** available aggregate functions: count, sum, avg, min, max, values, dcount, coalesce, first, argmin, argmax
 ----
    let customerTable = bucketTable.Aggregate(({Customer, S3_Cost}) =>  {
       return { groupBy:{Customer}, columns:{sum:{S3_Cost}} }
    })
 ----
-
 ** argmax and argmin
-*** argmax(colToCompare, colToReturn)
-*** argmax will return the row with the max value of the colToCompare
-*** argmin will return the row with the min value of the colToCompare
-*** colToReturn can be more than one column separated by commas (e.g argmax(col1, col2, col3)
-
-.Table t generated from the jsonTable function call
-|===
-|ID | Col1 | Col2 
-
-|a
-|"1900"
-|"abc"
-
-|b
-|"1921"
-|"mno"
-
-|===
 ----
 let arr = [
   {ID: "a", Col1: "1900", Col2: "abc"},
@@ -758,18 +822,10 @@ let t = jsonTable(arr)
 let tg = t.Aggregate( ({ID, Col1, Col2}) => {
     return { groupBy:{ID}, columns:{ argmax:{Col1, Col2} }}
 })
-// table tg only has one row with ID = "a" and Col1 = "1921" and Col2 = "mno" as "1921" is greater than "1900"
+
 return {tg}
 ----
-.Table tg generated from the GroupBy function call aggregated with argmax
-|===
-|ID | Col1 | Col2 
 
-|a
-|"1921"
-|"mno"
-
-|===
 
 * ColumnAggregate(columnName, unit, (ID, columnName, value, sum) => { }, 0)
 ** return a new table the same ID column, plus one new column which is the aggregated result from the calling table.
@@ -812,8 +868,15 @@ threats.NewColumns( ( {sha256} ) => {
    return {filePaths, deviceNames}
 })
 ---- 
+
 * Clone()
 ** Generate a new table which is a copy of the calling table
+
+----
+let t2 = t1.Clone() // t2 is a copy of t1 
+----
+
+
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
 [source,javascript]
