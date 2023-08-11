@@ -1,5 +1,5 @@
 function main() {
-  return pluginLambda("Cylance",   "pagoNetworksHq", (customer) => {      
+  return pluginLambda("Cylance",   "*", (customer) => {      
        let threats = Cylance_LoadThreat({start_time: "-7d"}, (obj) => {
           let {sha256, md5, name, global_quarantined,safelisted,  classification, sub_classification} = obj
           let ID = uuid()
