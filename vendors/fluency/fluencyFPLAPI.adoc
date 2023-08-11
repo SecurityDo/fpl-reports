@@ -25,7 +25,6 @@ function main() {
 ** resource: User, Asset  
 ----
 function main() {
-
   let users = Fluency_ResourceLoad("office365", "user", "*", (obj, customer) => {
       let fields = obj["@office365User"]
       let {userType, userPrincipalName, roles, accountEnabled, createdDateTime} = fields

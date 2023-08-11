@@ -346,7 +346,7 @@ let s = "ab"
 s = append(s, "cd") // s is now the string "abcd"
 
 let src = [1, 2, 3, 4]
-append(src, 5) // src is now [1, 2, 3, 4, 5]
+src = append(src, 5) // src is now [1, 2, 3, 4, 5]
 ----
 
 * delete(map, key)
