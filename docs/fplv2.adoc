@@ -724,17 +724,38 @@ testTable.Sort(0, "Cost")
 |1.99
 |===
 
-* Join(sourceTable, {keyColumn1, keyColumn2...}, {OtherColumns...})
-** this method will generate a new table
-** join sourceTable on keyColumn(s). if the third parameter is not provided, all columns from the sourceTable will be merged.
-** {ID:"ID"} => Both left column and right column is named "ID"
-** {ID:"VpcId"} => right column is "ID", left column is "VpcId"
-----
-bucketTable.Join(byteSummary, {ID:"ID"}, {Total_Bytes:"Total_Bytes", Total_Cost:"Total_Cost"})
-// if keycolumn(s) is not provided, the default key column will be "ID"
-bucketTable.Join(byteSummary)
-----
+* Join(rightTable, ({keyColumn1, keyColumn2...}, {OtherColumns...}) => joinType )
+** this method will update the calling table (left table)
+** the join configuration is specified as a lambda function
+** joinType is one of the following: "inner", "fullouter"
+** join rightTable on keyColumn(s). if "OtherColumns" are not provided, all columns from the rightTable will be joined.
+** {ID}:  Both left column and right column is named "ID"
+** {ID2:ID}:  Right table column "ID2" is renamed to "ID" in left table
 
+----
+bucketTable.Join(byteSummary, {ID}, {Total_Bytes, Total_Cost})
+
+//
+let arr1 = [
+  {ID: "a", Col1: 3},
+  {ID: "b", Col1: 2}
+]
+let t1 = jsonTable(arr1)
+
+let arr2 = [
+  {ID2: "a", Col2: "foo"},
+  {ID2: "c", Col2: "bar"}
+]
+let t2 = jsonTable(arr2)
+
+//t1.Join(t2, ({ID}) => "inner") 
+//t1.Join(t2, ({ID2:ID}, {Col2:Col21}) => "inner") 
+t1.Join(t2, ({ID2:ID}, {Col2:Col21}) => "fullouter") 
+
+return {t1}
+----
+* Append(table1, table2 ...)
+** merged the input tables into the calling table
 * Aggregate(({col1, col2 ... }) => { groupBy:{groupByKey1,...}, columns:{ aggregates }} 
 ** this method will generate a new table
 ** the input is a lambda function. 
@@ -811,8 +832,9 @@ threats.NewColumns( ( {sha256} ) => {
    return {filePaths, deviceNames}
 })
 ---- 
-* Clone()
-** Generate a new table which is a copy of the calling table
+* Clone("Col1", "Col2" ...)
+** Generate a new table which is a copy of the calling table, with only the specified columns
+** if no columns are specified, all columns will be copied
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
 [source,javascript]
@@ -1134,7 +1156,7 @@ INNER JOIN tabl2
 ON table1.col1=table2.col2
 
 // FPLv2
-table1.Join(table2, {col2:"col1"})
+table1.Join(table2, ({ID2:ID1}, {col21, col22 ...}) => "inner" )
 ----
 
 * Sort
