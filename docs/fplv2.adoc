@@ -756,6 +756,34 @@ return {t1}
 ----
 * Append(table1, table2 ...)
 ** merged the input tables into the calling table
+* Filter( (row) => predicate(row) )  
+** remove rows where predicate function return false
+* Each( (row) => { })
+** for each row, run the lambda function
+----
+let arr1 = [
+  {ID: "a", Col1: 3},
+  {ID: "b", Col1: 2}
+]
+
+let t1 = jsonTable(arr1)
+
+let arr2 = [
+  {ID2: "a", Col2: "foo"},
+  {ID2: "c", Col2: "bar"}
+]
+
+let t2 = jsonTable(arr2)
+
+let keyMap = {}
+t2.Each( ({ID2})=> {
+  keyMap[ID2]=true
+})
+
+t1.Filter( ({ID}) => !keyMap[ID])
+
+return {t1} 
+----
 * Aggregate(({col1, col2 ... }) => { groupBy:{groupByKey1,...}, columns:{ aggregates }} 
 ** this method will generate a new table
 ** the input is a lambda function. 
