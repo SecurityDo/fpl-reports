@@ -106,6 +106,7 @@ if !s {
 ** for <index> <entry> = range <list> { }
 ** for <key> <value> = range <map> { }
 ** for range loop also apply to utf8 encoded string
+*** in this case, the index of the loop is the starting position of the current rune, measured by bytes. see the example below
 ----
 let lst = [0, 10, 20]
 for i, v = range lst {
