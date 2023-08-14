@@ -247,6 +247,24 @@ split(s, ",") // return a list ["1", "2", "3"]
 split(s, "2") // return a list ["1,", ",3"]
 split(s, "1") // return a list ["", ",2,3"]
 ----
+* indexOf(s, substring) 
+** returns the index of the first instance of a substring in a given string.
+** return -1 if the substring is not available.
+----
+let s = "abcd"
+let i = indexOf(s, "b")
+let j = indexOf(s, "n")
+printf("i=%d  j=%d", i, j)
+// i: 1  j:-1
+----
+* subString(s, start, end)
+** extracts substring from start to end (exclusion)
+----
+let s = "abcd"
+let sub = subString(s, 1, 2)
+printf("subString=%s", sub)
+// subString=b
+----
 
 * parseInt(s, base)
 ** parse a string in the given base into a 64bit integer
