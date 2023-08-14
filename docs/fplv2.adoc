@@ -332,6 +332,14 @@ replace(s, "a", "Hello", 1) // return the string "Hello a a"
 replace(s, "a", "Hello", 0) // return the string "a a a"
 replace(s, "a", "Hello", -1) // return the string "Hello Hello Hello"
 ----
+* replaceAll(s, regexp, replacement)
+** ReplaceAll returns a copy of src, replacing matches of the Regexp with the replacement text repl. Inside repl, $ signs are interpreted as in Expand, so for instance $1 represents the text of the first submatch. 
+----
+let s = "'foo' 'bar'"
+let s2 = replaceAll(s, "'([^']*)'", "${1}")
+printf("s2=%s", s2)
+// s2=foo bar
+----
 
 * match(pattern, s)
 ** return true if the input string s contains any match of the regular expression pattern.
