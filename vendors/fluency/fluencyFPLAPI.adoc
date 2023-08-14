@@ -16,6 +16,34 @@ let {city, country, isp} = geoip("8.8.8.8")
   "org": "Level 3" 
 }
 ----
+* decoderCEF(cefText) 
+** decode CEF format
+** return a object of the following fields:
+** SignatureID
+** Name
+** Severity
+** Vendor
+** Product
+** Version
+** Fields 
+----
+let cef = `CEF:0|Imperva Inc|Attack Analytics|0|1|SQL Injection attack by several IPs using an unknown bot |MINOR|msg=On host "www.google.com" start=1646830802431 end=1646831309201 cs4=CloudWAF cs4Label=ImpervaAAPlatform`
+let m = decoder_cef(cef)
+///
+{
+  "Fields": {
+    "msg": "On host \"www.google.com\""
+    "ImpervaAAPlatform": "CloudWAF",
+    "start": "1646830802431"
+  },
+  "Name": "SQL Injection attack by several IPs using an unknown bot ",
+  "Product": "Attack Analytics",
+  "Severity": "MINOR",
+  "SignatureID": "1",
+  "Vendor": "Imperva Inc",
+  "Version": "0"
+}
+----
 * Fluency_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
 ----
