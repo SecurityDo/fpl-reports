@@ -84,6 +84,9 @@
 *** '||':  or
 *** '!':  not
 
+** conditional(ternary) operator
+*** condition? trueValue:falseValue
+
 == Control Blocks
 
 * if/elseif/else support
@@ -102,6 +105,7 @@ if !s {
 * for loop support
 ** for <index> <entry> = range <list> { }
 ** for <key> <value> = range <map> { }
+** for range loop also apply to utf8 encoded string
 ----
 let lst = [0, 10, 20]
 for i, v = range lst {
@@ -112,6 +116,15 @@ let map = {x:0, y:10, z:20}
 for k, v = range map {
   printf("key: %s:  value: %d", k, v)
 }
+
+// apply for utf8 encoded string
+let nihongo = "日本語"
+for i, s = range nihongo {
+  printf("i:%d  s:%s", i, s)
+}
+// i:0  s:日
+// i:3  s:本
+// i:6  s:語
 ----
 * for loop with three components:  for init?; condition?; post? { }
 ----
