@@ -348,7 +348,8 @@ let s = "ab"
 s = append(s, "cd") // s is now the string "abcd"
 
 let src = [1, 2, 3, 4]
-src = append(src, 5) // src is now [1, 2, 3, 4, 5]
+append(src, 5) // src is still [1, 2, 3, 4] as it's value is not set to after append
+src = append(src,5) // src is now [1, 2, 3, 4, 5]
 ----
 
 * delete(map, key)
@@ -429,6 +430,7 @@ case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "positive"
 let i = -10
 case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
 ----
+
 * jsonTable(array)
 ** generate a table from a literal array expression. 
 ----
@@ -439,8 +441,88 @@ let arr = [
 
 let t = jsonTable(arr)
 ----
+
 * mergeTable(table1, table2..)
 ** generate a new table by merging input tables
+
+.Table t1
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+|===
+
+.Table t2
+|===
+|ID | City | State | Country
+
+|4
+|Seattle
+|Washington
+|US
+
+|5
+|Bellevue
+|Washington
+|US
+
+|6
+|Spokane
+|Maryland
+|US
+|===
+
+----
+let t3 = mergeTable(t1, t2) // t3 is a new table with data from t1 followed by t2
+----
+
+.Table t3 resulting from the mergeTable function call
+|===
+|ID | City | State | Country
+
+|1
+|Rockville
+|Maryland
+|US
+
+|2
+|Silver Spring
+|Maryland
+|US
+
+|3
+|Baltimore
+|Maryland
+|US
+
+|4
+|Seattle
+|Washington
+|US
+
+|5
+|Bellevue
+|Washington
+|US
+
+|6
+|Spokane
+|Maryland
+|US
+|===
 
 == System Functions
 
@@ -865,6 +947,15 @@ threats.NewColumns( ( {sha256} ) => {
 * Clone("Col1", "Col2" ...)
 ** Generate a new table which is a copy of the calling table, with only the specified columns
 ** if no columns are specified, all columns will be copied
+
+* Clone()
+** Generate a new table which is a copy of the calling table
+
+----
+let t2 = t1.Clone() // t2 is a copy of t1 
+----
+
+
 * JoinStream(stream, aggregationType, columnName, unit)
 ** Generate one new column on the calling table. The column value is the aggregated result of each data series.
 [source,javascript]
