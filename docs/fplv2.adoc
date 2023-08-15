@@ -881,6 +881,8 @@ return {t1}
 ----
 * Append(table1, table2 ...)
 ** merged the input tables into the calling table
+* Map( (row) => x )
+** return a new list populated with the results of calling a provided function on every row in the calling table 
 * Filter( (row) => predicate(row) )  
 ** remove rows where predicate function return false
 * Each( (row) => { })
