@@ -43,6 +43,8 @@ let m = decoder_cef(cef)
   "Vendor": "Imperva Inc",
   "Version": "0"
 }
+// CEF:2 format
+let cef2 = `CEF:2|SentinelOne|Mgmt|ip=127.0.0.1|eventID=5126|eventDesc=SentinelOne: Device Control connected USB|eventSeverity=1|...`
 ----
 * Fluency_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
