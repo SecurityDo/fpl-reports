@@ -332,8 +332,9 @@ replace(s, "a", "Hello", 1) // return the string "Hello a a"
 replace(s, "a", "Hello", 0) // return the string "a a a"
 replace(s, "a", "Hello", -1) // return the string "Hello Hello Hello"
 ----
-* replaceAll(s, regexp, replacement)
+* replaceAll(s, regexp, replacement, count)
 ** ReplaceAll returns a copy of src, replacing matches of the Regexp with the replacement text repl. Inside repl, $ signs are interpreted as in Expand, so for instance $1 represents the text of the first submatch. 
+** if count is less than zero, no limit on the number of replacement
 ----
 let s = "'foo' 'bar'"
 let s2 = replaceAll(s, "'([^']*)'", "${1}")
