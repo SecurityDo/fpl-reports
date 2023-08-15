@@ -337,7 +337,7 @@ replace(s, "a", "Hello", -1) // return the string "Hello Hello Hello"
 ** if count is less than zero, no limit on the number of replacement
 ----
 let s = "'foo' 'bar'"
-let s2 = replaceAll(s, "'([^']*)'", "${1}")
+let s2 = replaceAll(s, "'([^']*)'", "${1}", -1)
 printf("s2=%s", s2)
 // s2=foo bar
 ----
