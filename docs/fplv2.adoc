@@ -683,6 +683,19 @@ let f = arr.Find((_,e) => e.Col1 == "x")
 printf("Find: %v", f.ID)
 
 ----
+* Table()
+** create a table object. 
+----
+let s = `
+[ 
+  {"ID": "a",  "Col1":"foo"  },
+  {"ID": "b",  "Col2":"bar"  }
+]`
+let j = parseJson(s)
+let t1 = j.Table( (_, obj) => {
+   return {ID:obj.ID, Col1:obj.Col1, COl2:obj.Col2}
+})
+----
 
 === Table Methods
 
