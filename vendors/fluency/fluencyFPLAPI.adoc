@@ -48,6 +48,8 @@ let cef2 = `CEF:2|SentinelOne|Mgmt|ip=127.0.0.1|eventID=5126|eventDesc=SentinelO
 ----
 * decoder_QuotedKeyValue(text) 
 ** decode quoted key value format k1="v1" k2="v2" ... 
+* decoder_MixedKeyValue(text)
+** decode key value pair where some value are quoted  k1=v1 k2="v2 v3"
 * Fluency_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
 ----
