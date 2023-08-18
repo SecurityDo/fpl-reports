@@ -715,14 +715,16 @@ function queueAlerts(queues) {
 ** return true if one of the element return true
 * Find()
 ** return the value element that return true by the provided lambda
+** return undefined otherwise
 ----
 let arr = [
   {ID: "a", Col1: "x"},
   {ID: "b", Col1: "y"}
 ]
 let f = arr.Find((_,e) => e.Col1 == "x")
-printf("Find: %v", f.ID)
-
+if (f) {
+  printf("Find: %v", f.ID)
+}
 ----
 * Table()
 ** create a table object. 
