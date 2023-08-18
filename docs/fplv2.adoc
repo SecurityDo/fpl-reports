@@ -500,6 +500,19 @@ let i = -10
 case(i>10, "bigger than ten", i>=0, "positive", "negative") // return "negative"
 ----
 
+* template(text, variableMap)
+** generate text output based on input variables
+** the template format is the same as Golang's template
+** the variableMap is a map type holding variables. or a json object
+----
+let t = `Value of a: {{.fields.a}} 
+         List: {{.list}}`
+let opt = {"fields":{"a":"foo"}, "list": [1234, 5678]}
+let s = template(t, opt)
+//   Value of a: foo 
+//   List: [1234 5678]
+----
+
 * jsonTable(array)
 ** generate a table from a literal array expression. 
 ----
