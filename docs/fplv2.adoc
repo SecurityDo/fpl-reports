@@ -732,6 +732,9 @@ let t1 = j.Table( (_, obj) => {
 * Before(time)
 * After(time)
 ** return true or false
+* Round(duration)
+** Round returns the result of rounding to the nearest multiple of dration. The rounding behavior for halfway values is to round up
+** Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 * Unix() 
 ** return epoch time in second
 * UnixMilli()
@@ -748,6 +751,7 @@ printf("%d", t2.UnixMilli()) // 1692326497260
 printf("%v", t2.Before(t))    // true
 printf("%s", t2.Format("2006-01-02T15:04:05Z07:00"))
 //  2023-08-17T22:41:37-04:00
+printf("%s", t2.Round("1h")) // 2023-08-17T23:00:00-04:00
 ----
 
 === Table Methods
