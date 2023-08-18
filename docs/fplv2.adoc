@@ -1,4 +1,4 @@
-= FPL V2
+= FPL: Fluency Programming Language
 :toc: auto
 
 == Data Types
