@@ -21,6 +21,34 @@
 * Error
 ** new Error(message, <name>)
 ** name: "Error", "RangeError", "InternalError", "ReferenceError", "SyntaxError", "TypeError"
+* Time
+** new Time()  // create a time object. The value is set to current timestamp
+** new Time(epoch)  // create a time object. The epoch could be second or millisecond
+** new Time(layout, value, <location>)
+** layout
+----
+        ANSIC       = "Mon Jan _2 15:04:05 2006"
+	UnixDate    = "Mon Jan _2 15:04:05 MST 2006"
+	RubyDate    = "Mon Jan 02 15:04:05 -0700 2006"
+	RFC822      = "02 Jan 06 15:04 MST"
+	RFC822Z     = "02 Jan 06 15:04 -0700" // RFC822 with numeric zone
+	RFC850      = "Monday, 02-Jan-06 15:04:05 MST"
+	RFC1123     = "Mon, 02 Jan 2006 15:04:05 MST"
+	RFC1123Z    = "Mon, 02 Jan 2006 15:04:05 -0700" // RFC1123 with numeric zone
+	RFC3339     = "2006-01-02T15:04:05Z07:00"
+	RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
+	Kitchen     = "3:04PM"
+	// Handy time stamps.
+	Stamp      = "Jan _2 15:04:05"
+	StampMilli = "Jan _2 15:04:05.000"
+	StampMicro = "Jan _2 15:04:05.000000"
+	StampNano  = "Jan _2 15:04:05.000000000"
+	DateTime   = "2006-01-02 15:04:05"
+	DateOnly   = "2006-01-02"
+	TimeOnly   = "15:04:05"
+----
+** location is optional
+** If the name is "" or "UTC", the timezone is set to "UTC". Otherwise, the name is taken to be a location name corresponding to a file in the IANA Time Zone database, such as "America/New_York"
 * Lambda
 ** simple expression: (x, y) => x+y
 ** block statements: 
@@ -695,6 +723,31 @@ let j = parseJson(s)
 let t1 = j.Table( (_, obj) => {
    return {ID:obj.ID, Col1:obj.Col1, COl2:obj.Col2}
 })
+----
+
+=== Time Methods
+
+* Format(layout)
+* Add(relativeTime)
+* Before(time)
+* After(time)
+** return true or false
+* Unix() 
+** return epoch time in second
+* UnixMilli()
+** return epoch time in millisecnod
+----
+let t = new Time()
+printf("%s", t)           // 2023-08-17T23:41:37-04:00
+let t2 = t.Add("-1h")
+printf("%s", t2)         // 2023-08-17T22:41:37-04:00
+
+printf("%d", t.Unix())   // 1692330097
+printf("%d", t2.UnixMilli()) // 1692326497260
+
+printf("%v", t2.Before(t))    // true
+printf("%s", t2.Format("2006-01-02T15:04:05Z07:00"))
+//  2023-08-17T22:41:37-04:00
 ----
 
 === Table Methods
