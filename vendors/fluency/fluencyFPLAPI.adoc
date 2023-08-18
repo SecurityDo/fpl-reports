@@ -70,6 +70,23 @@ if hit {
       printf("value %s", value)
    }
 ----
+* Fluency_LavadbFpl(searchText)
+** Search LavaDB in FPL1.0
+----
+let office_aad_by_ops_fpl = `
+    search {from="{{.from}}", to="{{.to}}"} sContent("@sender","office365") and sContent("@source","Audit.AzureActiveDirectory")
+    let { {{ .groupBy }}  } = f("@fields")
+    aggregate events = count() by {{ .groupBy }}
+    sort 15 events
+`
+
+let office_aad_by_ops = fluencyLavadbFpl(
+     template(office_aad_by_ops_fpl, 
+              {from:"-24h", to:"@h", groupBy: "Operation"}))
+
+return {office_aad_by_ops}
+----
+
 * Fluency_BehaviorSearch(query, from, to, ()=>{})
 ** Search Fluency Behavior Event database
 * Fluency_SummarySearch(query, from, to, ()=>{})
@@ -89,12 +106,11 @@ function main() {
 }
 ----
 * Fluency_ResourceLoad(vendor, resource, customer, (obj <,customer>)=> {})
-** vendor: Office365
-** resource: User, Group, Device, Application, InstalledApp
-** vendor Sentinelone
-** resource: Agent, Threat, Application
-** vendor AD
-** resource: User, Asset  
+** vendor: Office365: resource: User, Group, Device, Application, InstalledApp
+** vendor Sentinelone: resource: Agent, Threat, Application
+** vendor AD: resource: User, Asset
+** vendor fehx (FireEyeHx):  resource: device
+** vendor Qualys:  resource: host  
 ----
 function main() {
   let users = Fluency_ResourceLoad("office365", "user", "*", (obj, customer) => {
