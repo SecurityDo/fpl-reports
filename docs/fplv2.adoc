@@ -115,6 +115,9 @@
 ** conditional(ternary) operator
 *** condition? trueValue:falseValue
 
+** optional chaining (?.)
+*** The optional chaining (?.) operator accesses an object's property or calls a function. If the object's property or function is undefined or null, the expression evaluates to undefined instead of throwing an error.
+
 == Control Blocks
 
 * if/elseif/else support
