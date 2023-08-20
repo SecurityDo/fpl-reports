@@ -423,6 +423,13 @@ let src = [1, 2, 3, 4]
 append(src, 5) // src is still [1, 2, 3, 4] as it's value is not set to after append
 src = append(src,5) // src is now [1, 2, 3, 4, 5]
 ----
+* concat(list1, list2)
+** merge two list type input into one new list
+----
+let a = [1, 2]
+let b = [3, 4]
+let c = concat(a, b) // c is now [1, 2, 3, 4]
+----
 
 * delete(map, key)
 ** map must be primitive map, jsonObject or object map. 
