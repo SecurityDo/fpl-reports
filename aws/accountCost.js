@@ -31,7 +31,7 @@ function main() {
     let {size, objCount} = getS3BucketSize(buckets)
 
     let countTable = objCount.DimensionTable("StorageType","Count","Last")
-    let countSummary = countTable.Aggregate("Total_Object_Count", "Count", (ID, col, value, sum) => {
+    let countSummary = countTable.ColumnAggregate("Total_Object_Count", "Count", (ID, col, value, sum) => {
       return sum + value
     }, 0)
 
@@ -42,13 +42,13 @@ function main() {
     //  return sum + AWS_GetPrice("S3", "StorageType", {Size: value, Type: col})
     //}, 0)
     // calculate a daily cost sum for each bucket
-    let costSummary = bucketTable.Aggregate("S3_Cost", "Dollar", (ID, col, value, sum) => {
+    let costSummary = bucketTable.ColumnAggregate("S3_Cost", "Dollar", (ID, col, value, sum) => {
       let monthly = AWS_GetPrice("S3", "StorageType", {Size: value, Type: col})
       return sum + (monthly / 30) 
     }, 0)
 
     // get a total sum of the size from all storage types	 
-    let byteSummary = bucketTable.Aggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
+    let byteSummary = bucketTable.ColumnAggregate("Total_Bytes", "Byte", (ID, col, value, sum) => {
       return sum + value
      },0)
 
