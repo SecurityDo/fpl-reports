@@ -8,17 +8,17 @@ Note: the following primarily applies to the process of converting legacy FPLv1 
 ## Ex v1:
 ```
 function main() {
-    let fplTemplate = `
-      %s
-      let {id, isx5, isprime, odd, even, divisors} = f("@fields")
-      aggregate v=values(id) by divisors
-      let num_of_ints = listcount(v)
-    `
-    
-    let search = `search {from="-16h"} sContent("@tags","fpl-example-data")`
-    
-    let demo_table = fluencyLavadbFpl(sprintf(fplTemplate, search))
-    return {demo_table}
+   let office_aad_template = `
+   search {from="{{.from}}", to="{{.to}}"} sContent("@sender","office365") and sContent("@source","Audit.AzureActiveDirectory")
+   let { {{.groupBy}} } = f("@fields")
+   aggregate events = count() by {{.groupBy}}
+   sort 15 events
+`
+   
+   let office_aad_by_ops = fluencyLavadbFpl(
+        template(office_aad_template, 
+                   {from:"-24h", to:"@h", groupBy:"Operation"}))
+   return {office_aad_by_ops}
 }
 ```
 
