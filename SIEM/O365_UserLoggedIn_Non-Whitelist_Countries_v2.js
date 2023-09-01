@@ -12,14 +12,7 @@ function UserLoggedInAggregateUserId(from_date, to_date){
         let {isp,country,city} = f("@fields._ip")
         aggregate ActorIpAddress=values(ActorIpAddress), Events=count(), BrowserType=values(BrowserType), OS=values(OS), RequestType=values(RequestType), isp=values(isp), country=values(country), countries=distinct(country), ApplicationName=values(ApplicationName) by UserId
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
-    if (len(table) == 0){
-        let rows = [{UserId: "No data", ActorIpAddress: [""], Events: 0, BrowserType: [""], OS: [""], RequestType: [""], isp: [""], country: [""], countries: 0,  ApplicationName: [""]}]
-        return jsonTable(rows)
-    } else {
-        return table
-    }
-    return table
+    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
 }
 
 function UserLoggedInAggregateActorIpAddress(from_date, to_date){
@@ -32,14 +25,7 @@ function UserLoggedInAggregateActorIpAddress(from_date, to_date){
         sort 50 Users
         let {}=geoip(ActorIpAddress)
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
-    if (len(table) == 0){
-        let rows = [{ActorIpAddress: "No data", Users: 0, country: "No data", city: "No data", countryCode: "No data", isp: "No data", org: "No data", latitude: "No data", longitude: "No data"}]
-        return jsonTable(rows)
-    } else {
-        return table
-    }
-    return table
+    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
 }
 
 function UserLoggedInAggregateActorCountry(from_date, to_date){
@@ -52,15 +38,7 @@ function UserLoggedInAggregateActorCountry(from_date, to_date){
         aggregate Users=distinct(UserId) by country
         sort 20 Users
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
-    if (len(table) == 0){
-        let rows = [{country: "No data", Users: 0}]
-        return jsonTable(rows)
-    } else {
-        return table
-    }
-    return table
-}
+    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))}
 
 function UserLoggedInAggregateUserIdSimple(from_date, to_date){
     let fplTemplate = `
@@ -72,14 +50,7 @@ function UserLoggedInAggregateUserIdSimple(from_date, to_date){
         aggregate ActorIpAddress=values(ActorIpAddress), Events=count(), BrowserType=values(BrowserType), OS=values(OS), isp=values(isp), country=values(country), countries=distinct(country) by UserId
         where listcount(country)>1 // users with greater than 2 Countries
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
-    if (len(table) == 0){
-        let rows = [{UserId: "No data", ActorIpAddress: [""], Events: 0, BrowserType: [""], OS: [""], RequestType: [""], isp: [""], country: [""], countries: 0}]
-        return jsonTable(rows)
-    } else {
-        return table
-    }
-    return table
+    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
 }
 
 function main() {
@@ -95,9 +66,3 @@ function main() {
 
     return {logins, ips, countries, usersGt2, loginsLastweek, ipsLastweek, countriesLastweek, usersGt2LastWeek}
 }
-
-
-
-
-
-
