@@ -1,6 +1,12 @@
 = FPL: Fluency Programming Language
 :toc: auto
 
+== Why FPL?
+
+* FPL is a programming language designed for data analysis and data visualization. The primary goal of FPL is to solve the problem of API integration. 
+* The current industry standard language is SQL, which was designed for relational database. On top of SQL, there are numerous "Query Languages" designed for specific data sources. For example, Splunk has SPL, AWS has CloudWatch Query Language, Azure has Kusto Query Language, etc. However, none of these languages are real "Programming Language". For example, they don't support if-else statement, for loop, real function call etc.  
+* FPL supports all the features of a modern programming language. It also supports a rich set of utility functions and methods to simplify data analysis and data visualization.  
+
 == Data Types
 
 * Primitive Value
