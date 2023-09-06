@@ -445,6 +445,15 @@ let m = {first: 10, second: 20}
 delete(m, "first") // m is now the map {second: 20}
 ----
 
+* setEnv(name, value)
+** set the environment variable $name to value
+* getEnv(name)
+** get the environment variable $name
+----
+setEnv("from", "-24h")
+setEnv("to", "@h")
+----
+
 * typeof(variable)
 ** if variable is primitive value, returns the type of the primitive value: 
 ***       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
