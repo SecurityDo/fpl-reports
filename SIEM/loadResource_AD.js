@@ -13,7 +13,8 @@ function main() {
            columns: {
              argmax:{updatedOn, sAMAccountName, description, dNSHostName, propertyFlags, customer} 
          }
-       }       
+       }   
+      }    
   })
   return {assets}
 }
