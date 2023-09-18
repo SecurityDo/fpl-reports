@@ -30,6 +30,7 @@
 * Time
 ** new Time()  // create a time object. The value is set to current timestamp
 ** new Time(epoch)  // create a time object. The epoch could be second or millisecond
+** new Time(relativeTime) // create a time object from a relative time 
 ** new Time(layout, value, <location>)
 ** layout
 ----
@@ -73,6 +74,7 @@
   ({field1, field2}) => field1 + field2
 ---- 
 * FplTable
+** new Table(col1,col2,...)
 ** Columns
 ** Rows
 
