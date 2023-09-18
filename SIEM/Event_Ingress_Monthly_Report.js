@@ -32,35 +32,28 @@ function eventSizeByEventType(from, to) {
   return table
 }
 
-function main() {
-  let statsBySource1 = eventSizeBySource("-30d<d", "-25d>d")
-  let statsBySource2 = eventSizeBySource("-25d<d", "-20d>d")
-  let statsBySource3 = eventSizeBySource("-20d<d", "-15d>d")
-  let statsBySource4 = eventSizeBySource("-15d<d", "-10d>d")
-  let statsBySource5 = eventSizeBySource("-10d<d", "-5d>d")
-  let statsBySource6 = eventSizeBySource("-5d<d", "-1d>d")
-  let statsBySource = mergeTable(statsBySource1, statsBySource2, statsBySource3, statsBySource4, statsBySource5, statsBySource6).Aggregate(({source, totalSize, eventCount})=>{
-      return {groupBy: {source}, columns: {sum: {totalSize: totalSize}, sum: {totalEventCount: eventCount}}}
+function main({from = "-30d<d", to = "-1d>d", interval= "5d"}) {
+  let rangeFrom = new Time(from)
+  let rangeTo = new Time(to)
+  let statsBySource = new Table()
+  let statsBySender = new Table()
+  let statsByEventType = new Table()
+  for let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval) {
+    statsBySource.Append(eventSizeBySource(t, t.Add(interval)))
+    statsBySender.Append(eventSizeBySender(t, t.Add(interval)))
+    statsByEventType.Append(eventSizeByEventType(t, t.Add(interval)))
+  }
+
+  statsBySource = statsBySource.Aggregate(({source, totalSize, eventCount})=>{
+      return {groupBy: {source}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
   })
 
-  let statsBySender1 = eventSizeBySender("-30d<d", "-25d>d")
-  let statsBySender2 = eventSizeBySender("-25d<d", "-20d>d")
-  let statsBySender3 = eventSizeBySender("-20d<d", "-15d>d")
-  let statsBySender4 = eventSizeBySender("-15d<d", "-10d>d")
-  let statsBySender5 = eventSizeBySender("-10d<d", "-5d>d")
-  let statsBySender6 = eventSizeBySender("-5d<d", "-1d>d")
-  let statsBySender = mergeTable(statsBySender1, statsBySender2, statsBySender3, statsBySender4, statsBySender5, statsBySender6).Aggregate(({sender, totalSize, eventCount})=>{
-      return {groupBy: {sender}, columns: {sum: {totalSize: totalSize}, sum: {totalEventCount: eventCount}}}
+  statsBySender = statsBySender.Aggregate(({sender, totalSize, eventCount})=>{
+      return {groupBy: {sender}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
   })
 
-  let statsByEventType1 = eventSizeByEventType("-30d<d", "-25d>d")
-  let statsByEventType2 = eventSizeByEventType("-25d<d", "-20d>d")
-  let statsByEventType3 = eventSizeByEventType("-20d<d", "-15d>d")
-  let statsByEventType4 = eventSizeByEventType("-15d<d", "-10d>d")
-  let statsByEventType5 = eventSizeByEventType("-10d<d", "-5d>d")
-  let statsByEventType6 = eventSizeByEventType("-5d<d", "-1d>d")
-  let statsByEventType = mergeTable(statsByEventType1, statsByEventType2, statsByEventType3, statsByEventType4, statsByEventType5, statsByEventType6).Aggregate(({eventtype, totalSize, eventCount})=>{
-      return {groupBy: {eventtype}, columns: {sum: {totalSize: totalSize}, sum: {totalEventCount: eventCount}}}
+  statsByEventType = statsByEventType.Aggregate(({eventtype, totalSize, eventCount})=>{
+      return {groupBy: {eventtype}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
   })
 
   let totalStats = statsByEventType.Aggregate(({totalSize})=>{
