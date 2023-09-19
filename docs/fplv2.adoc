@@ -766,6 +766,12 @@ let t1 = j.Table( (_, obj) => {
    return {ID:obj.ID, Col1:obj.Col1, COl2:obj.Col2}
 })
 ----
+* Join(delim)
+** only apply to list type collections
+----
+let arr = [1, 2, 3]
+let s = arr.Join(",") // s is now the string "1,2,3"
+----
 
 === Time Methods
 
