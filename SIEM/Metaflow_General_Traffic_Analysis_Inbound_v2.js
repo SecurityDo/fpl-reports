@@ -132,7 +132,7 @@ function main() {
     let count_Country_top20 = GetDataByDCountry(env)
     let bandwidth_sip_top10 = GetDataAgregateSip(env)
     let bandwidth_dip_top20 = GetDataAgregateDip(env)
-    let bandwidth_country_top10 = GetDataAgregateDCountry(env).Sort(10, "-totalbytes")
+    let bandwidth_country_top10 = GetDataAgregateDCountry(env)
     let map = bandwidth_dip_top20.GetColumnValues("dip").Table((_, obj) => {
         let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(obj)
         return {ip: obj, country, city, countryCode, isp, org , latitude, longitude}
