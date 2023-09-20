@@ -15,13 +15,29 @@ function main({username, from="-48h@h", to="@h"}) {
   let env = {from, to, username}
   let azureSignIn = fetchAzureSignIn(env)
   let clientIPStats = azureSignIn.Aggregate(({ipAddress, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod}) => {
+    let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(ipAddress)
+    if (isp == "Microsoft Corporation") {
+      return null
+    }
     return {
       groupBy: {ipAddress}, 
-      columns: {max: {latest: createdDateTime}, values: {cas: clientAppUsed}, values: {oss: operatingSystem}, values: {bts: browser}, values: {dns: userDisplayName}, values: {ams: authMethod}, count: {records: true}}}
-  }).NewColumns(({ipAddress}) => {
-    let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(ipAddress)
-    return {country, city, countryCode, isp, org , latitude, longitude}
-  }).Filter(({isp}) => isp != "Microsoft Corporation")
+      columns: {
+        max: {latest: createdDateTime}, 
+        values: {cas: clientAppUsed}, 
+        values: {oss: operatingSystem}, 
+        values: {bts: browser}, 
+        values: {dns: userDisplayName}, 
+        values: {ams: authMethod}, 
+        count: {records: true},
+        first: {country},
+        first: {city},
+        first: {countryCode},
+        first: {isp},
+        first: {org},
+        first: {latitude},
+        first: {longitude}
+      }}
+  })
   
   let uniqueClientIPs = clientIPStats.Aggregate(({}) => {
     return {columns: {count: {totalCount: true}}}
