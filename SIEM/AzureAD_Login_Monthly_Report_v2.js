@@ -85,7 +85,7 @@ function main({from = "-30d<d", to = "@d", interval= "5d"}) {
     let signInCountry = new Table()
     let signInCity = new Table()
     let userEmailFreq = new Table()
-    for let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval) {
+    for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
         usedSignApp.Append(fetchAzureSignInByAppDisplayName(t, t.Add(interval)))
         userFreq.Append(fetchAzureSignInByUserDisplayName(t, t.Add(interval)))
         usedOS.Append(fetchAzureSignInByOperatingSystem(t, t.Add(interval)))

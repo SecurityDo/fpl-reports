@@ -2,7 +2,7 @@ function main() {
   let agentsTable = Fluency_ResourceLoad("SentinelOne", "agent", "*", (obj, customer) => {
     let fields = obj["@sentinelOneAgent"]
     let {uuid, computerName, groupName, siteName, isActive, machineType, mitigationMode, mitigationModeSuspicious, modelName, osName, osType, activeThreats, agentVersion, externalIp, infected, isDecommissioned} = fields
-    if isDecommissioned {
+    if (isDecommissioned) {
         return null
     }
     return {uuid, computerName, groupName, siteName, isActive, machineType, mitigationMode, mitigationModeSuspicious, modelName, osName, osType, activeThreats, agentVersion, externalIp, infected, isDecommissioned}

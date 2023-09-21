@@ -4,7 +4,7 @@ function main() {
       let fields = obj["@office365Device"]
       let {displayName: name, registrationDateTime:updatedOn, enrollmentProfileName, approximateLastSignInDateTime, accountEnabled, operatingSystem, enrollmentType} = fields
       
-      if !accountEnabled {
+      if (!accountEnabled) {
         return null
       }
             

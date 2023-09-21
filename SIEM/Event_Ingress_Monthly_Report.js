@@ -38,7 +38,7 @@ function main({from = "-30d<d", to = "-1d>d", interval= "5d"}) {
   let statsBySource = new Table()
   let statsBySender = new Table()
   let statsByEventType = new Table()
-  for let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval) {
+  for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
     statsBySource.Append(eventSizeBySource(t, t.Add(interval)))
     statsBySender.Append(eventSizeBySender(t, t.Add(interval)))
     statsByEventType.Append(eventSizeByEventType(t, t.Add(interval)))

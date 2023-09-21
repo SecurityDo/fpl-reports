@@ -2,7 +2,7 @@ function main () {
   let agentsTable = Fluency_ResourceLoad("Falcon", "agent", "*", (obj, customer) => {
     let fields = obj["@falconAgent"]
     let {hostname, mac_address, serial_number, modified_timestamp, provision_status, os_version, platform_name, agent_version, product_type_desc, system_manufacturer, system_product_name} = fields
-    if provision_status != "Provisioned" {
+    if (provision_status != "Provisioned") {
         return null
     }
     return {hostname, mac_address, serial_number, modified_timestamp, provision_status, os_version, platform_name, agent_version, product_type_desc, system_manufacturer, system_product_name}
