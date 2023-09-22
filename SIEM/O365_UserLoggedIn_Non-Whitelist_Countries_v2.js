@@ -54,15 +54,15 @@ function UserLoggedInAggregateUserIdSimple(from_date, to_date){
 }
 
 function main() {
-    let logins = UserLoggedInAggregateUserId("<w","w>") // this week
-    let ips = UserLoggedInAggregateActorIpAddress("<w","w>") // this week
-    let countries = UserLoggedInAggregateActorCountry("<w","w>") // this week
-    let usersGt2 = UserLoggedInAggregateUserIdSimple("<w","w>")
+    let logins = UserLoggedInAggregateUserId("@w","@d") // this week
+    let ips = UserLoggedInAggregateActorIpAddress("@w","@d") // this week
+    let countries = UserLoggedInAggregateActorCountry("@w","@d") // this week
+    let usersGt2 = UserLoggedInAggregateUserIdSimple("@w","@d")
 
-    let loginsLastweek = UserLoggedInAggregateUserId("-1w@w","@w") // last week from="-1w@w",to="@w"
-    let ipsLastweek = UserLoggedInAggregateActorIpAddress("-1w@w","@w") // last week
-    let countriesLastweek = UserLoggedInAggregateActorCountry("-1w@w","@w") // last week
-    let usersGt2LastWeek = UserLoggedInAggregateUserIdSimple("-1w@w","@w") // last week
+    let loginsLastweek = UserLoggedInAggregateUserId("-w@w","@w") // last week from="-1w@w",to="@w"
+    let ipsLastweek = UserLoggedInAggregateActorIpAddress("-w@w","@w") // last week
+    let countriesLastweek = UserLoggedInAggregateActorCountry("-w@w","@w") // last week
+    let usersGt2LastWeek = UserLoggedInAggregateUserIdSimple("-w@w","@w") // last week
 
     return {logins, ips, countries, usersGt2, loginsLastweek, ipsLastweek, countriesLastweek, usersGt2LastWeek}
 }
