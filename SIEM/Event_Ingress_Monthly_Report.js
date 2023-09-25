@@ -32,13 +32,18 @@ function eventSizeByEventType(from, to) {
   return table
 }
 
-function main({from = "-30d<d", to = "-1d>d", interval= "5d"}) {
-  let rangeFrom = new Time(from)
-  let rangeTo = new Time(to)
+function main() {
+  let interval = "5d"
+  let rangeFrom = new Time("-30d<d")
+  let rangeTo = new Time("@d")
   let statsBySource = new Table()
   let statsBySender = new Table()
   let statsByEventType = new Table()
+  if (rangeFrom.After(rangeTo)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
   for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+    t = t.After(rangeTo) ? rangeTo : t
     statsBySource.Append(eventSizeBySource(t, t.Add(interval)))
     statsBySender.Append(eventSizeBySender(t, t.Add(interval)))
     statsByEventType.Append(eventSizeByEventType(t, t.Add(interval)))

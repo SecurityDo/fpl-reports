@@ -75,9 +75,10 @@ function fetchAzureSignInByCity(from, to) {
     return table
 }
 
-function main({from = "-30d<d", to = "@d", interval= "5d"}) {
-    let rangeFrom = new Time(from)
-    let rangeTo = new Time(to)
+function main() {
+    let interval = "5d"
+    let rangeFrom = new Time("-30d<d")
+    let rangeTo = new Time("@d")
     let usedSignApp = new Table()
     let userFreq = new Table()
     let usedOS = new Table()
@@ -85,7 +86,11 @@ function main({from = "-30d<d", to = "@d", interval= "5d"}) {
     let signInCountry = new Table()
     let signInCity = new Table()
     let userEmailFreq = new Table()
+    if (rangeFrom.After(rangeTo)) {
+        throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+    }
     for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+        t = t.After(rangeTo) ? rangeTo : t
         usedSignApp.Append(fetchAzureSignInByAppDisplayName(t, t.Add(interval)))
         userFreq.Append(fetchAzureSignInByUserDisplayName(t, t.Add(interval)))
         usedOS.Append(fetchAzureSignInByOperatingSystem(t, t.Add(interval)))
