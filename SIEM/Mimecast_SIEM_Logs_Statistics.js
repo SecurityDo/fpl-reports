@@ -1,5 +1,4 @@
-function mimecastSIEMDeliveryLogsByDir(from, to) {
-  let env = {from, to}
+function mimecastSIEMDeliveryLogsByDir(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External")
     let {Dir}= f("@fields")
@@ -10,32 +9,19 @@ function mimecastSIEMDeliveryLogsByDir(from, to) {
   return table
 }
 
-function mimecastSIEMDeliveryLogsBySender(from, to) {
-  let env = {from, to}
+function mimecastSIEMDeliveryLogsByField(from, to, field) {
+  let env = {from, to, field}
   let fplTemplate = `
-    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Inbound")
-    let {Sender}= f("@fields")
-    aggregate eventCount=count() by Sender
+    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External")
+    let {{.field}}= f("@fields.{{.field}}")
+    aggregate eventCount=count() by {{.field}}
     sort 20 eventCount
   `
   let table = fluencyLavadbFpl(template(fplTemplate, env))
   return table
 }
 
-function mimecastSIEMDeliveryLogsByRcpt(from, to) {
-  let env = {from, to}
-  let fplTemplate = `
-    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Outbound")
-    let {Rcpt}= f("@fields")
-    aggregate eventCount=count() by Rcpt
-    sort 20 eventCount
-  `
-  let table = fluencyLavadbFpl(template(fplTemplate, env))
-  return table
-}
-
-function mimecastSIEMDeliveryLogsByRoute(from, to) {
-  let env = {from, to}
+function mimecastSIEMDeliveryLogsByRoute(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External")
     let {Route}= f("@fields")
@@ -47,8 +33,7 @@ function mimecastSIEMDeliveryLogsByRoute(from, to) {
   return table
 }
 
-function mimecastSIEMDeliveryLogsByTls(from, to) {
-  let env = {from, to}
+function mimecastSIEMDeliveryLogsByTls(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External")
     let {TlsVer}= f("@fields")
@@ -60,8 +45,7 @@ function mimecastSIEMDeliveryLogsByTls(from, to) {
   return table
 }
 
-function mimecastSIEMDeliveryLogsByRejType(from, to) {
-  let env = {from, to}
+function mimecastSIEMDeliveryLogsByRejType(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "delivery") and not sContent("@fields.Dir", "External")
     let {RejType}= f("@fields"), timestamp=f("@timestamp")
@@ -71,32 +55,19 @@ function mimecastSIEMDeliveryLogsByRejType(from, to) {
   return table
 }
 
-function mimecastSIEMReceiptLogsBySender(from, to) {
-  let env = {from, to}
+function mimecastSIEMReceiptLogsByField(from, to, field) {
+  let env = {from, to, field}
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "receipt") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Inbound")
-    let {Sender}= f("@fields")
-    aggregate eventCount=count() by Sender
+    let {{.field}} = f("@fields.{{.field}}")
+    aggregate eventCount=count() by {{.field}}
     sort 20 eventCount
   `
   let table = fluencyLavadbFpl(template(fplTemplate, env))
   return table
 }
 
-function mimecastSIEMReceiptLogsByRcpt(from, to) {
-  let env = {from, to}
-  let fplTemplate = `
-    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "receipt") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Outbound")
-    let {Rcpt}= f("@fields")
-    aggregate eventCount=count() by Rcpt
-    sort 20 eventCount
-  `
-  let table = fluencyLavadbFpl(template(fplTemplate, env))
-  return table
-}
-
-function mimecastSIEMReceiptLogsByAct(from, to) {
-  let env = {from, to}
+function mimecastSIEMReceiptLogsByAct(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "receipt") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Outbound")
     let {Act}= f("@fields")
@@ -107,8 +78,7 @@ function mimecastSIEMReceiptLogsByAct(from, to) {
   return table
 }
 
-function mimecastSIEMReceiptLogsByRejType(from, to) {
-  let env = {from, to}
+function mimecastSIEMReceiptLogsByRejType(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "receipt") and not sContent("@fields.Dir", "External") and not sContent("@fields.Dir", "Outbound")
     let {RejType}= f("@fields"), timestamp=f("@timestamp")
@@ -118,8 +88,7 @@ function mimecastSIEMReceiptLogsByRejType(from, to) {
   return table
 }
 
-function mimecastSIEMProcessLogsBySender(from, to) {
-  let env = {from, to}
+function mimecastSIEMProcessLogsBySender(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "process")
     let {Sender}= f("@fields")
@@ -130,8 +99,7 @@ function mimecastSIEMProcessLogsBySender(from, to) {
   return table
 }
 
-function mimecastSIEMProcessLogsByAct(from, to) {
-  let env = {from, to}
+function mimecastSIEMProcessLogsByAct(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "process")
     let {Act}= f("@fields")
@@ -142,8 +110,7 @@ function mimecastSIEMProcessLogsByAct(from, to) {
   return table
 }
 
-function mimecastSIEMProcessLogsByActHistogram(from, to) {
-  let env = {from, to}
+function mimecastSIEMProcessLogsByActHistogram(env) {
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@source", "mimecast") and sContent("@fields.api", "/api/audit/get-siem-logs") and sContent("@fields.msg_stage", "process")
     let {Act}= f("@fields"), timestamp=f("@timestamp")
@@ -154,19 +121,22 @@ function mimecastSIEMProcessLogsByActHistogram(from, to) {
 }
 
 function main() {
-  let deliveryLogsByDir = mimecastSIEMDeliveryLogsByDir("-7d@d", "@d")
-  let deliveryLogsBySenderTop20 = mimecastSIEMDeliveryLogsBySender("-7d@d", "@d")
-  let deliveryLogsByRcptTop20 = mimecastSIEMDeliveryLogsByRcpt("-7d@d", "@d")
-  let deliveryLogsByRoute = mimecastSIEMDeliveryLogsByRoute("-7d@d", "@d")
-  let deliveryLogsByTls = mimecastSIEMDeliveryLogsByTls("-7d@d", "@d")
-  let deliveryLogsByRejType = mimecastSIEMDeliveryLogsByRejType("-7d@d", "@d")
-  let receiptLogsBySenderTop20 = mimecastSIEMReceiptLogsBySender("-7d@d", "@d")
-  let receiptLogsByRcptTop20 = mimecastSIEMReceiptLogsByRcpt("-7d@d", "@d")
-  let receiptLogsByAct = mimecastSIEMReceiptLogsByAct("-7d@d", "@d")
-  let receiptLogsByRejType = mimecastSIEMReceiptLogsByRejType("-7d@d", "@d")
-  let processLogsBySenderTop20 = mimecastSIEMProcessLogsBySender("-7d@d", "@d")
-  let processLogsByAct = mimecastSIEMProcessLogsByAct("-7d@d", "@d")
-  let processLogsByActHistogram = mimecastSIEMProcessLogsByActHistogram("-7d@d", "@d")
+  let env = {from: "-7d@d", to: "@d"}
+  setEnv("from", env.from)
+  setEnv("to", env.to)
+  let deliveryLogsByDir = mimecastSIEMDeliveryLogsByDir(env)
+  let deliveryLogsBySenderTop20 = mimecastSIEMDeliveryLogsByField(env.from, env.to, "Sender")
+  let deliveryLogsByRcptTop20 = mimecastSIEMDeliveryLogsByField(env.from, env.to, "Rcpt")
+  let deliveryLogsByRoute = mimecastSIEMDeliveryLogsByRoute(env)
+  let deliveryLogsByTls = mimecastSIEMDeliveryLogsByTls(env)
+  let deliveryLogsByRejType = mimecastSIEMDeliveryLogsByRejType(env)
+  let receiptLogsBySenderTop20 = mimecastSIEMReceiptLogsByField(env.from, env.to, "Sender")
+  let receiptLogsByRcptTop20 = mimecastSIEMReceiptLogsByField(env.from, env.to, "Rcpt")
+  let receiptLogsByAct = mimecastSIEMReceiptLogsByAct(env)
+  let receiptLogsByRejType = mimecastSIEMReceiptLogsByRejType(env)
+  let processLogsBySenderTop20 = mimecastSIEMProcessLogsBySender(env)
+  let processLogsByAct = mimecastSIEMProcessLogsByAct(env)
+  let processLogsByActHistogram = mimecastSIEMProcessLogsByActHistogram(env)
 
   return {
     deliveryLogsByDir,

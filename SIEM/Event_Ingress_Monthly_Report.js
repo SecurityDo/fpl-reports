@@ -1,5 +1,5 @@
 function eventSizeBySource(from, to) {
-  let env = {from: from, to: to}
+  let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
       assign source=f("@source"), size=f("__size__")
@@ -10,7 +10,7 @@ function eventSizeBySource(from, to) {
 }
 
 function eventSizeBySender(from, to) {
-  let env = {from: from, to: to}
+  let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
       assign sender=f("@sender"), size=f("__size__")
@@ -21,7 +21,7 @@ function eventSizeBySender(from, to) {
 }
 
 function eventSizeByEventType(from, to) {
-  let env = {from: from, to: to}
+  let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
       assign eventType=f("@eventType"), event_type=f("@event_type"), size=f("__size__")
@@ -44,41 +44,80 @@ function main() {
   let rangeFrom = new Time("-30d<d")
   let rangeTo = new Time("@d")
   validateTimeRange(rangeFrom, rangeTo)
+  setEnv("from", "-30d<d")
+  setEnv("to", "@d")
   let statsBySource = new Table()
   let statsBySender = new Table()
   let statsByEventType = new Table()
   for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
-    t = t.After(rangeTo) ? rangeTo : t
-    statsBySource.Append(eventSizeBySource(t, t.Add(interval)))
-    statsBySender.Append(eventSizeBySender(t, t.Add(interval)))
-    statsByEventType.Append(eventSizeByEventType(t, t.Add(interval)))
+    let from = rangeFrom
+    let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+    statsBySource.Append(eventSizeBySource(from, to))
+    statsBySender.Append(eventSizeBySender(from, to))
+    statsByEventType.Append(eventSizeByEventType(from, to))
   }
 
   statsBySource = statsBySource.Aggregate(({source, totalSize, eventCount})=>{
-      return {groupBy: {source}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
+      return {
+        groupBy: {source},
+        columns: {
+          sum: {totalSize},
+          sum: {eventCount}
+        }
+      }
   })
 
   statsBySender = statsBySender.Aggregate(({sender, totalSize, eventCount})=>{
-      return {groupBy: {sender}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
+      return {
+        groupBy: {sender},
+        columns: {
+          sum: {totalSize}, 
+          sum: {eventCount
+          }
+        }
+      }
   })
 
   statsByEventType = statsByEventType.Aggregate(({eventtype, totalSize, eventCount})=>{
-      return {groupBy: {eventtype}, columns: {sum: {totalSize: totalSize}, sum: {eventCount}}}
+      return {
+        groupBy: {eventtype},
+        columns: {
+          sum: {totalSize},
+          sum: {eventCount}
+        }
+      }
   })
 
   let totalStats = statsByEventType.Aggregate(({totalSize})=>{
-      return {columns:{ sum: {totalIngressSize: totalSize}, count: {totalEventTypes: true}}}
+      return {
+        columns: { 
+          sum: {totalIngressSize: totalSize},
+          count: {totalEventTypes: true}
+        }
+      }
   })
 
   let totalStatsBySender = statsBySender.GroupBy(({totalSize, eventCount})=>{
-      return {columns:{ sum: {totalIngressSize: totalSize}, sum: {totalEventCount: eventCount}}}
+      return {
+        columns: {
+          sum: {totalIngressSize: totalSize},
+          sum: {totalEventCount: eventCount}
+        }
+      }
   })
-  totalStatsBySender.NewColumnLambda("totalEPS", "", (row)=>row.totalEventCount / 2592000)
-  totalStatsBySender.NewColumnLambda("totalEPH", "", (row)=>row.totalEventCount / 720)
+  totalStatsBySender.NewColumnLambda("totalEPS", "", (row) => row.totalEventCount / 2592000)
+  totalStatsBySender.NewColumnLambda("totalEPH", "", (row) => row.totalEventCount / 720)
 
   let topSizeBySource = statsBySource.Clone().Sort(10, "totalSize")
   let topSizeBySender = statsBySender.Clone().Sort(10, "totalSize")
   let topSizeByEventType = statsByEventType.Clone().Sort(10, "totalSize")
 
-  return {statsBySource, statsBySender, statsByEventType, totalStats, totalStatsBySender, topSizeBySource, topSizeBySender, topSizeByEventType}
+  return {
+    statsByEventType,
+    totalStats,
+    totalStatsBySender,
+    topSizeBySource,
+    topSizeBySender,
+    topSizeByEventType
+  }
 }

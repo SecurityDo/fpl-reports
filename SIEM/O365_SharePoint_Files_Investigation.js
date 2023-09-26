@@ -9,7 +9,19 @@ function sharepointFileTable(env) {
   return table
 }
 
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
 function main({username, from="-48h@h", to="@h"}) {
+  let rangeFrom = new Time("-30d<d")
+  let rangeTo = new Time("@d")
+  validateTimeRange(rangeFrom, rangeTo)
+  setEnv("from", from)
+  setEnv("to", to)
   let env = {username, from, to}
   let spft= sharepointFileTable(env)
   let fileObjectStats = spft.Aggregate(({ObjectId, ts, Operation, ClientIP, Workload}) => {
@@ -79,5 +91,13 @@ function main({username, from="-48h@h", to="@h"}) {
     }
   })
 
-  return {spft, fileObjectStats, uniqueFiles, clientIPStats, uniqueClientIPs, operationStats, userAgentStats}
+  return {
+    spft,
+    fileObjectStats,
+    uniqueFiles,
+    clientIPStats,
+    uniqueClientIPs,
+    operationStats,
+    userAgentStats
+  }
 }

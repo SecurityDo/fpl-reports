@@ -11,7 +11,17 @@ function AzureActiveDirectory(env) {
   return table
 }
 
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
 function main({username, from="-24h@h", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
   let env = {username, from, to}
   let aad = AzureActiveDirectory(env)
   let clientIPStats = aad.Aggregate(({ClientIP, timestamp, OS, BrowserType, DisplayName}) => {
@@ -100,5 +110,15 @@ function main({username, from="-24h@h", to="@h"}) {
       }
     }
   }).Sort(-1, "count_DisplayName")
-  return {aad, clientIPStats, uniqueClientIPs, userAgentStats, browserTypeStats, osStats, count_RequestType, count_ResultStatusDetail, count_DisplayName}
+  return {
+    aad,
+    clientIPStats,
+    uniqueClientIPs,
+    userAgentStats,
+    browserTypeStats,
+    osStats,
+    count_RequestType,
+    count_ResultStatusDetail,
+    count_DisplayName
+  }
 }

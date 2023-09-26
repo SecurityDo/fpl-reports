@@ -23,9 +23,12 @@ function sophos_field(from, to, field) {
 }
 
 function main() {
-  let topSizeBySource = sophos_source("-7d@d", "@d")
-  let topSizeByAction = sophos_field("-7d@d", "@d", "action")
-  let topSizeBySub = sophos_field("-7d@d", "@d", "sub")
+  let env = {from: "-7d@d", to: "@d"}
+  setEnv("from", env.from)
+  setEnv("to", env.to)
+  let topSizeBySource = sophos_source(env.from, env.to)
+  let topSizeByAction = sophos_field(env.from, env.to, "action")
+  let topSizeBySub = sophos_field(env.from, env.to, "sub")
   let top10SizeBySource = topSizeBySource.Clone().Sort(10, "-totalSize")
   let top10SizeByAction = topSizeByAction.Clone().Sort(10, "-totalSize")
   let top10SizeBySub = topSizeBySub.Clone().Sort(10, "-totalSize")
@@ -37,5 +40,13 @@ function main() {
     }
   })
 
-  return {topSizeBySource, topSizeByAction, topSizeBySub, top10SizeBySource, top10SizeByAction, top10SizeBySub, totalSize}
+  return {
+    topSizeBySource,
+    topSizeByAction,
+    topSizeBySub,
+    top10SizeBySource,
+    top10SizeByAction,
+    top10SizeBySub,
+    totalSize
+  }
 }

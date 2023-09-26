@@ -11,8 +11,18 @@ function fetchAzureSignIn(env) {
   return table
 }
 
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}  
+
 function main({username, from="-48h@h", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
   let env = {from, to, username}
+  setEnv("from", from)
+  setEnv("to", to)
   let azureSignIn = fetchAzureSignIn(env)
   let clientIPStats = azureSignIn.Aggregate(({ipAddress, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod}) => {
     let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(ipAddress)
@@ -40,28 +50,77 @@ function main({username, from="-48h@h", to="@h"}) {
   })
   
   let uniqueClientIPs = clientIPStats.Aggregate(({}) => {
-    return {columns: {count: {totalCount: true}}}
+    return {
+      columns: {
+        count: {totalCount: true}
+      }
+    }
   })
   let userAgentStats = azureSignIn.Aggregate(({userAgent, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod}) => {
     return {
       groupBy: {userAgent}, 
-      columns: {max: {latest: createdDateTime}, values: {cas: clientAppUsed}, values: {oss: operatingSystem}, values: {bts: browser}, values: {dns: userDisplayName}, values: {ams: authMethod}, count: {records: true}}}
+      columns: {
+        max: {latest: createdDateTime},
+        values: {cas: clientAppUsed},
+        values: {oss: operatingSystem},
+        values: {bts: browser},
+        values: {dns: userDisplayName},
+        values: {ams: authMethod},
+        count: {records: true}
+      }
+    }
   })
   let browserStats = azureSignIn.Aggregate(({ipAddress, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod}) => {
     return {
       groupBy: {browser}, 
-      columns: {max: {latest: createdDateTime}, values: {cas: clientAppUsed}, values: {oss: operatingSystem}, values: {ips: ipAddress}, values: {dns: userDisplayName}, values: {ams: authMethod}, count: {records: true}}}
+      columns: {
+        max: {latest: createdDateTime},
+        values: {cas: clientAppUsed},
+        values: {oss: operatingSystem},
+        values: {ips: ipAddress},
+        values: {dns: userDisplayName},
+        values: {ams: authMethod},
+        count: {records: true}
+      }
+    }
   })
   let operatingSystemStats = azureSignIn.Aggregate(({ipAddress, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod}) => {
     return {
       groupBy: {operatingSystem}, 
-      columns: {max: {latest: createdDateTime}, values: {cas: clientAppUsed}, values: {bts: browser}, values: {ips: ipAddress}, values: {dns: userDisplayName}, values: {ams: authMethod}, count: {records: true}}}
+      columns: {
+        max: {latest: createdDateTime},
+        values: {cas: clientAppUsed},
+        values: {bts: browser},
+        values: {ips: ipAddress},
+        values: {dns: userDisplayName},
+        values: {ams: authMethod},
+        count: {records: true}
+      }
+    }
   })
   let authMethodStats = azureSignIn.Aggregate(({ipAddress, createdDateTime, clientAppUsed, operatingSystem, browser, userDisplayName, authMethod, authDetail}) => {
     return {
       groupBy: {authMethod},
-      columns: {max: {latest: createdDateTime}, values: {cas: clientAppUsed}, values: {bts: browser}, values: {ips: ipAddress}, values: {dns: userDisplayName}, values: {oss: operatingSystem},values: {ams: authDetail}, count: {records: true}}}
+      columns: {
+        max: {latest: createdDateTime},
+        values: {cas: clientAppUsed},
+        values: {bts: browser},
+        values: {ips: ipAddress},
+        values: {dns: userDisplayName},
+        values: {oss: operatingSystem},
+        values: {ams: authDetail},
+        count: {records: true}
+      }
+    }
   })
 
-  return {azureSignIn, clientIPStats, uniqueClientIPs, userAgentStats, browserStats, operatingSystemStats, authMethodStats}
+  return {
+    azureSignIn,
+    clientIPStats,
+    uniqueClientIPs,
+    userAgentStats,
+    browserStats,
+    operatingSystemStats,
+    authMethodStats
+  }
 }

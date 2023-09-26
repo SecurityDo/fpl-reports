@@ -1,3 +1,15 @@
+function organizeByField(agentsTable, field) {
+  return agentsTable.Aggregate((obj) => {
+    let fieldValue = obj[field]
+    return {
+      groupBy: {[field]: fieldValue},
+      columns: {
+        count: {totalCount: true}
+      }
+    }
+  }).Sort(10, "-totalCount")
+}
+
 function main() {
   let agentsTable = Fluency_ResourceLoad("SentinelOne", "agent", "*", (obj, customer) => {
     let fields = obj["@sentinelOneAgent"]
@@ -10,27 +22,24 @@ function main() {
   let totalSIAgents = agentsTable.Aggregate(({}) => {
     return {columns: {count: {totalDeviceCount: true}}}
   })
-  let organizeByOS = agentsTable.Aggregate(({osName}) => {
-    return {groupBy: {osName}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeByType = agentsTable.Aggregate(({osType}) => {
-    return {groupBy: {osType}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeByGroup = agentsTable.Aggregate(({groupName}) => {
-    return {groupBy: {groupName}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeBySite = agentsTable.Aggregate(({siteName}) => {
-    return {groupBy: {siteName}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeByInfected = agentsTable.Aggregate(({infected}) => {
-    return {groupBy: {infected}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeByModel = agentsTable.Aggregate(({modelName}) => {
-    return {groupBy: {modelName}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
-  let organizeByAgent = agentsTable.Aggregate(({agentVersion}) => {
-    return {groupBy: {agentVersion}, columns: {count: {totalCount: true}}}
-  }).Sort(10, "-totalCount")
 
-  return {agentsTable, totalSIAgents, organizeByOS, organizeByType, organizeByGroup, organizeBySite, organizeByInfected, organizeByModel, organizeByAgent}
+  let organizeByOS = organizeByField(agentsTable, "osName")
+  let organizeByType = organizeByField(agentsTable, "machineType")
+  let organizeByGroup = organizeByField(agentsTable, "groupName")
+  let organizeBySite = organizeByField(agentsTable, "siteName")
+  let organizeByInfected = organizeByField(agentsTable, "infected")
+  let organizeByModel = organizeByField(agentsTable, "modelName")
+  let organizeByAgent = organizeByField(agentsTable, "agentVersion")
+
+  return {
+    agentsTable,
+    totalSIAgents,
+    organizeByOS,
+    organizeByType,
+    organizeByGroup,
+    organizeBySite,
+    organizeByInfected,
+    organizeByModel,
+    organizeByAgent
+  }
 }

@@ -11,6 +11,8 @@ function openProxyBy(from, to, field) {
 }
 
 function main() {
+  setEnv("from", "-24h@h")
+  setEnv("to", "@h")
   let topSizeByVerdict = openProxyBy("-24h@h", "@h", "verdict")
   let topSizeByRequestMethod = openProxyBy("-24h@h", "@h", "requestMethod")
   let topSizeByPIT = openProxyBy("-24h@h", "@h", "policyIdentityType")
@@ -25,5 +27,13 @@ function main() {
     }
   })
 
-  return {topSizeByVerdict, topSizeByRequestMethod, topSizeByPIT, top10SizeByVerdict, top10SizeByRequestMethod, top10SizeByPIT, totalSize}
+  return {
+    topSizeByVerdict,
+    topSizeByRequestMethod,
+    topSizeByPIT,
+    top10SizeByVerdict,
+    top10SizeByRequestMethod,
+    top10SizeByPIT,
+    totalSize
+  }
 }

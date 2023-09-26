@@ -19,9 +19,22 @@ function loginByLocation(env) {
   return table
 }
 
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}  
+
 function main({username, from="-48h@h", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
   let env = {from, to, username}
+  setEnv("from", from)
+  setEnv("to", to)
   let clientApp = loginByApp(env)
   let locations = loginByLocation(env)
-  return {clientApp, locations}
+  return {
+    clientApp,
+    locations
+  }
 }

@@ -24,11 +24,20 @@ function getOfficeAADStats(from, to, group) {
 }
 
 function main() {
-    let office_aad_by_ops = getOfficeAADStats("-24h@h", "@h", "Operation")
-    let office_aad_by_userid = getOfficeAADStats("-24h@h", "@h", "UserId")
-    let office_aad_by_application = getOfficeAADStats("-24h@h", "@h", "ApplicationName")
-    let office_aad_by_ip = getOfficeAADStats("-24h@h", "@h", "ClientIP")
-    let office_aad_by_country = getOfficeAADStats("-24h@h", "@h", "country")
+    let env = {from: "-24h@h", to: "@h"}
+    setEnv("from", env.from)
+    setEnv("to", env.to)
+    let office_aad_by_ops = getOfficeAADStats(env.from, env.to, "Operation")
+    let office_aad_by_userid = getOfficeAADStats(env.from, env.to, "UserId")
+    let office_aad_by_application = getOfficeAADStats(env.from, env.to, "ApplicationName")
+    let office_aad_by_ip = getOfficeAADStats(env.from, env.to, "ClientIP")
+    let office_aad_by_country = getOfficeAADStats(env.from, env.to, "country")
     
-    return {office_aad_by_ops, office_aad_by_userid, office_aad_by_application, office_aad_by_ip, office_aad_by_country}
+    return {
+        office_aad_by_ops,
+        office_aad_by_userid,
+        office_aad_by_application,
+        office_aad_by_ip,
+        office_aad_by_country
+    }
 }

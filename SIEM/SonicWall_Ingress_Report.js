@@ -25,9 +25,12 @@ function sonicwall_c(from, to) {
 }
 
 function main() {
-  let topSizeBysn = sonicwall_by("-24h<h", "@h", "sn")
-  let topSizeByfw_action = sonicwall_by("-24h<h", "@h", "fw_action")
-  let topSizeByc = sonicwall_c("-24h<h", "@h")
+  let env = {from: "-24h<h", to: "@h"}
+  setEnv("from", env.from)
+  setEnv("to", env.to)
+  let topSizeBysn = sonicwall_by(env.from, env.to, "sn")
+  let topSizeByfw_action = sonicwall_by(env.from, env.to, "fw_action")
+  let topSizeByc = sonicwall_c(env.from, env.to)
   let top10SizeBysn = topSizeBysn.Clone().Sort(10, "-totalSize")
   let top10SizeByfw_action = topSizeByfw_action.Clone().Sort(10, "-totalSize")
   let top10SizeByc = topSizeByc.Clone().Sort(10, "-totalSize")
@@ -38,5 +41,13 @@ function main() {
       }
     }
   })
-  return {topSizeBysn, topSizeByfw_action, topSizeByc, top10SizeBysn, top10SizeByfw_action, top10SizeByc, totalSize}
+  return {
+    topSizeBysn,
+    topSizeByfw_action,
+    topSizeByc,
+    top10SizeBysn,
+    top10SizeByfw_action,
+    top10SizeByc,
+    totalSize
+  }
 }

@@ -20,6 +20,19 @@ function office_aad_by_field(field, from, to) {
   return table
 }
 
+function events_by_field_selected(selected_users, events_table, fieldName) {
+  return events_table.Clone().Join(selected_users, {UserId: "UserId"}).Aggregate((obj) => {
+    let fieldValue = obj[fieldName]
+    let events = obj["events"]
+    return {
+      groupBy: {[fieldName]: fieldValue},
+      columns: {
+        sum: {events}
+      }
+    }
+  }).Sort(15, "-events")
+}
+
 function main({group, from="-48h@h", to="@h"}) {
   let selected_users = Fluency_ResourceLoad("Office365", "user", "*", (obj, customer) => {
     let fields = obj["@office365User"]
@@ -34,47 +47,19 @@ function main({group, from="-48h@h", to="@h"}) {
   let events_by_application = office_aad_by_field("ApplicationName", from, to)
   let events_by_ip = office_aad_by_field("ClientIP", from, to)
   let events_by_country = office_aad_by_field("country", from, to)
-  let temp = events_by_ops.Clone().Join(selected_users, {UserId: "UserId"})
-  let events_by_ops_selected = temp.Aggregate(({Operation, events}) => {
-    return {
-      groupBy: {Operation},
-      columns: {
-        sum: {events}
-      }
-    }
-  }).Sort(15, "-events")
-  let events_by_user = temp.Aggregate(({UserId, events}) => {
-    return {
-      groupBy: {UserId},
-      columns: {
-        sum: {events}
-      }
-    }
-  }).Sort(15, "-events")
-  let events_by_application_selected = events_by_application.Clone().Join(selected_users, {UserId: "UserId"}).Aggregate(({ApplicationName, events}) => {
-    return {
-      groupBy: {ApplicationName},
-      columns: {
-        sum: {events}
-      }
-    }
-  }).Sort(15, "-events")
-  let events_by_ip_selected = events_by_ip.Clone().Join(selected_users, {UserId: "UserId"}).Aggregate(({ClientIP, events}) => {
-    return {
-      groupBy: {ClientIP},
-      columns: {
-        sum: {events}
-      }
-    }
-  }).Sort(15, "-events")
-  let events_by_country_selected = events_by_country.Clone().Join(selected_users, {UserId: "UserId"}).Aggregate(({country, events}) => {
-    return {
-      groupBy: {country},
-      columns: {
-        sum: {events}
-      }
-    }
-  }).Sort(15, "-events")
 
-  return {selected_users, events_by_ops_selected, events_by_user, events_by_application_selected, events_by_ip_selected, events_by_country_selected}
+  let events_by_user = events_by_field_selected(selected_users, events_by_ops, "UserId")
+  let events_by_ops_selected = events_by_field_selected(selected_users, events_by_ops, "Operation")
+  let events_by_application_selected = events_by_field_selected(selected_users, events_by_application, "ApplicationName")
+  let events_by_ip_selected = events_by_field_selected(selected_users, events_by_ip, "ClientIP")
+  let events_by_country_selected = events_by_field_selected(selected_users, events_by_country, "country")
+
+  return {
+    selected_users,
+    events_by_ops_selected,
+    events_by_user,
+    events_by_application_selected,
+    events_by_ip_selected,
+    events_by_country_selected
+  }
 }

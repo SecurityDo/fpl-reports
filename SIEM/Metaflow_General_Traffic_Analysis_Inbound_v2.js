@@ -126,6 +126,8 @@ function GetDataBySip(env) {
   }
   
   function main() {    
+    setEnv("from", "-24h@h")
+    setEnv("to", "@h")
     let env = {type: "metaflow", from: "-24h@h", to: "@h"}
     let count_SourceIP = GetDataBySip(env)
     let count_DestIP = GetDataByDip(env)
@@ -135,7 +137,16 @@ function GetDataBySip(env) {
     let bandwidth_country = GetDataAgregateSCountry(env)
     let map = bandwidth_sip.GetColumnValues("sip").Table((_, obj) => {
         let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(obj)
-        return {ip: obj, country, city, countryCode, isp, org , latitude, longitude}
+        return {
+            ip: obj,
+            country,
+            city,
+            countryCode,
+            isp,
+            org,
+            latitude,
+            longitude
+        }
     })
     let unique_dip = UniqueDip(env)
     let unique_sip = UniqueSip(env)

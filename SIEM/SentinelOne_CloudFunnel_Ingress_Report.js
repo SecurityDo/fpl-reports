@@ -21,9 +21,12 @@ function cloudfunnelBy(from, to, field) {
 }
 
 function main() {
-  let totalSizeByType = cloudfunnelBy("-24h@h", "@h", "type")
-  let totalSizeBySiteName = cloudfunnelBy("-24h@h", "@h", "siteName")
-  let totalSizeByGroupName = cloudfunnelBy("-24h@h", "@h", "groupName")
+  let env = {from: "-24h<h", to: "@h"}
+  setEnv("from", env.from)
+  setEnv("to", env.to)
+  let totalSizeByType = cloudfunnelBy(env.from, env.to, "type")
+  let totalSizeBySiteName = cloudfunnelBy(env.from, env.to, "siteName")
+  let totalSizeByGroupName = cloudfunnelBy(env.from, env.to, "groupName")
   let top10SizeByType = totalSizeByType.Clone().Sort(10, "-totalSize")
   let top10SizeBySiteName = totalSizeBySiteName.Clone().Sort(10, "-totalSize")
   let top10SizeByGroupName = totalSizeByGroupName.Clone().Sort(10, "-totalSize")
@@ -35,5 +38,13 @@ function main() {
     }
   })
 
-  return {totalSizeByType, totalSizeBySiteName, totalSizeByGroupName, top10SizeByType, top10SizeBySiteName, top10SizeByGroupName, totalSize}
+  return {
+    totalSizeByType,
+    totalSizeBySiteName,
+    totalSizeByGroupName,
+    top10SizeByType,
+    top10SizeBySiteName,
+    top10SizeByGroupName,
+    totalSize
+  }
 }

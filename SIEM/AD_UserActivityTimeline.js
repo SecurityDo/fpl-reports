@@ -9,6 +9,7 @@ function main({username}) {
     sort 1000 timestamp
     table iso2822, EventID, Description, SubjectUserName, TargetUserName, LogonID, IP_Address, Hostname, DomainName
   `
+  setEnv("from", "-7d<d")
   let activityTable = fluencyLavadbFpl(template(fplTemplate, env))
   return {activityTable}
 }

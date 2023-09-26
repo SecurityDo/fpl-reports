@@ -57,7 +57,38 @@ function HTTPBandwidthBy(sip, from, to, field) {
   return table
 }
 
+function bandwidthGeo(dipTable) {
+  return dipTable.Aggregate(({dip, totalbytes}) => {
+    let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(dip)
+    return {
+      groupBy: {country},
+      columns: {
+        first: {dip},
+        sum: {totalbytes},
+        first: {city},
+        first: {countryCode},
+        first: {isp},
+        first: {org},
+        first: {latitude},
+        first: {longitude}
+      }
+    }
+  }).Sort(20, "-totalbytes")
+}
+
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
 function main({sip, from="-7d@d", to="@h"}) {
+  let rangeFrom = new Time(from)
+  let rangeTo = new Time(to)
+  validateTimeRange(rangeFrom, rangeTo)
+  setEnv("from", from)
+  setEnv("to", to)
   let dipEvents = EventsBy(sip, from, to, "dip")
   let dipBandwidth = BandwidthBy(sip, from, to, "dip")
   let serviceEvents = EventsBy(sip, from, to, "proto")
@@ -66,37 +97,18 @@ function main({sip, from="-7d@d", to="@h"}) {
   let dipHTTPBandwidth = HTTPBandwidthBy(sip, from, to, "dip")
   let dstNameHTTPBandwidth = HTTPBandwidthBy(sip, from, to, "dstname")
   let categoryHTTPBandwidth = HTTPBandwidthBy(sip, from, to, "Category")
-  let dCountryBandwidth = dipBandwidth.Aggregate(({dip, totalbytes}) => {
-    let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(dip)
-    return {
-      groupBy: {country},
-      columns: {
-        first: {dip},
-        sum: {totalbytes},
-        first: {city},
-        first: {countryCode},
-        first: {isp},
-        first: {org},
-        first: {latitude},
-        first: {longitude}
-      }
-    }
-  }).Sort(20, "-totalbytes")
-  let httpDCountryBandwidth = dipHTTPBandwidth.Aggregate(({dip, totalbytes}) => {
-    let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(dip)
-    return {
-      groupBy: {country},
-      columns: {
-        first: {dip},
-        sum: {totalbytes},
-        first: {city},
-        first: {countryCode},
-        first: {isp},
-        first: {org},
-        first: {latitude},
-        first: {longitude}
-      }
-    }
-  }).Sort(20, "-totalbytes")
-  return {dipEvents, dipBandwidth, serviceEvents, serviceBandwidth, dipHTTPEvents, dipHTTPBandwidth, dstNameHTTPBandwidth, categoryHTTPBandwidth, dCountryBandwidth, httpDCountryBandwidth}
+  let dCountryBandwidth = bandwidthGeo(dipBandwidth)
+  let httpDCountryBandwidth = bandwidthGeo(dipHTTPBandwidth)
+  return {
+    dipEvents,
+    dipBandwidth,
+    serviceEvents,
+    serviceBandwidth,
+    dipHTTPEvents,
+    dipHTTPBandwidth,
+    dstNameHTTPBandwidth,
+    categoryHTTPBandwidth,
+    dCountryBandwidth,
+    httpDCountryBandwidth
+  }
 }

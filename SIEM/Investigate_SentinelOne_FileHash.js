@@ -25,10 +25,17 @@ function getFileHashField(fileHash, from, to, field) {
   return table
 }
 
-function main({fileHash="79d4d5e18523d532a6833be864d67428ef6aa583"}) {
-  let infectedDevices = getFileHashField(fileHash, "-15d@d", "@h", "sourceFqdn")
-  let userNames = getFileHashField(fileHash, "-15d@d", "@h", "sourceUserName")
-  let fileNames = getFileHashField(fileHash, "-15d@d", "@h", "fileName")
-  let hashTimeline = getFileHastTimeline(fileHash, "-15d@d", "@h")
-  return {infectedDevices, userNames, fileNames, hashTimeline}
+function main({fileHash}) {
+  setEnv("from", "-15d<d")
+  setEnv("to", "@h")
+  let infectedDevices = getFileHashField(fileHash, "-15d<d", "@h", "sourceFqdn")
+  let userNames = getFileHashField(fileHash, "-15d<d", "@h", "sourceUserName")
+  let fileNames = getFileHashField(fileHash, "-15d<d", "@h", "fileName")
+  let hashTimeline = getFileHastTimeline(fileHash, "-15d<d", "@h")
+  return {
+    infectedDevices,
+    userNames,
+    fileNames,
+    hashTimeline
+  }
 }

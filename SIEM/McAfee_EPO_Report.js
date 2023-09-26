@@ -1,5 +1,5 @@
-function mcafee_by(from, to, field) {
-  let env = {from, to, field}
+function mcafee_by(field) {
+  let env = {from: "-8d<d", to: "@d", field}
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@tags","XML") and sWildcard("@fields.xml.{{.field}}.MachineInfo.MachineName")
     let {UserName, MachineName, OSName,IPAddress} =f("@fields.xml.{{.field}}.MachineInfo")
@@ -9,8 +9,8 @@ function mcafee_by(from, to, field) {
   return table
 }
 
-function mcafee_threats(from, to) {
-  let env = {from, to}
+function mcafee_threats() {
+  let env = {from: "-8d<d", to: "@d"}
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@tags","XML") and sWildcard("@fields.xml.EPOevent.MachineInfo.MachineName") and sWildcard("@fields.xml.EPOevent.SoftwareInfo._ProductName") and not sContent("@fields.xml.EPOevent.SoftwareInfo._ProductFamily","TVD")
     let {UserName,MachineName,OSName,IPAddress} =f("@fields.xml.EPOevent.MachineInfo")
@@ -21,8 +21,8 @@ function mcafee_threats(from, to) {
   return table
 }
 
-function mcafee_tvd(from, to) {
-  let env = {from, to}
+function mcafee_tvd() {
+  let env = {from: "-8d<d", to: "@d"}
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@tags","XML") and sContent("@fields.xml.EPOevent.SoftwareInfo._ProductFamily","TVD")
     let {UserName,MachineName,OSName,IPAddress} =f("@fields.xml.EPOevent.MachineInfo")
@@ -33,11 +33,13 @@ function mcafee_tvd(from, to) {
   return table
 }
 
-function main({from="-8d@d", to="@d"}) {
-  let mcafee_EPOEvent = mcafee_by(from, to, "EPOEvent")
-  let mcafee_EPOevent = mcafee_by(from, to, "EPOevent")
-  let mcafee_MSMERoot = mcafee_by(from, to, "MSMERoot")
-  let mcafee_UpdateEvents = mcafee_by(from, to, "UpdateEvents")
+function main() {
+  setEnv("from", "-8d<d")
+  setEnv("to", "@d")
+  let mcafee_EPOEvent = mcafee_by("EPOEvent")
+  let mcafee_EPOevent = mcafee_by("EPOevent")
+  let mcafee_MSMERoot = mcafee_by("MSMERoot")
+  let mcafee_UpdateEvents = mcafee_by("UpdateEvents")
   let tableTotal = mergeTable(mcafee_EPOEvent, mcafee_EPOevent, mcafee_MSMERoot, mcafee_UpdateEvents).Aggregate(({MachineName, OSName, eventCount}) => {
     return {
       groupBy: {MachineName},
@@ -70,7 +72,14 @@ function main({from="-8d@d", to="@d"}) {
       }
     }
   })
-  let threatsTable = mcafee_threats(from, to)
-  let tvdTable = mcafee_tvd(from, to)
-  return {tableTotal, count_EventCount, totalCount, count_OSName, threatsTable, tvdTable}
+  let threatsTable = mcafee_threats()
+  let tvdTable = mcafee_tvd()
+  return {
+    tableTotal,
+    count_EventCount,
+    totalCount,
+    count_OSName,
+    threatsTable,
+    tvdTable
+  }
 }
