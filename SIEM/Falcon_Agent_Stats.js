@@ -2,7 +2,6 @@ function loadUniqueFalconByField(agentsTable, field) {
   return agentsTable.Aggregate((obj) => {
     let fieldValue = obj[field]
     return {
-      groupBy: {[field]: fieldValue},
       columns: {
         dcount: {totalCount: fieldValue}
       }
@@ -66,11 +65,11 @@ function main () {
 
   let agentsTableFinal = falconAgentsBySerial.Clone().Join(agentsTable, ({serial_number, modified_timestamp}) => "inner")
   let organizeByOS = organizeByField(agentsTableFinal, "os_version")
-  //let organizeByAgent = organizeByField(agentsTableFinal, "agent_version")
-  //let organizeByPlatform = organizeByField(agentsTableFinal, "platform_name")
-  //let organizeByManufacturer = organizeByField(agentsTableFinal, "system_manufacturer")
-  //let organizeByProdName = organizeByField(agentsTableFinal, "system_product_name")
-  //let organizeByProdType = organizeByField(agentsTableFinal, "product_type_desc")
+  let organizeByAgent = organizeByField(agentsTableFinal, "agent_version")
+  let organizeByPlatform = organizeByField(agentsTableFinal, "platform_name")
+  let organizeByManufacturer = organizeByField(agentsTableFinal, "system_manufacturer")
+  let organizeByProdName = organizeByField(agentsTableFinal, "system_product_name")
+  let organizeByProdType = organizeByField(agentsTableFinal, "product_type_desc")
 
   return {
     totalFalconAgents,

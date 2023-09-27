@@ -24,7 +24,7 @@ function main() {
   })
 
   let organizeByOS = organizeByField(agentsTable, "osName")
-  let organizeByType = organizeByField(agentsTable, "machineType")
+  let organizeByType = organizeByField(agentsTable, "osType")
   let organizeByGroup = organizeByField(agentsTable, "groupName")
   let organizeBySite = organizeByField(agentsTable, "siteName")
   let organizeByInfected = organizeByField(agentsTable, "infected")
