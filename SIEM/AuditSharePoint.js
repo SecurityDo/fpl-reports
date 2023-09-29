@@ -43,8 +43,18 @@ function topSourceFilename(env) {
   return table
 }
 
-function main() {
-  let env = {from: "-48h>h", to: ">h"}
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
+function main({from="-48h>h", to=">h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
+  let env = {from, to}
   let clientIPs = topClientIP(env)
   let operations = topOperation(env)
   let userIDs = topUserID(env)
