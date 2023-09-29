@@ -1,4 +1,3 @@
-
 function GetDataBySip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
@@ -11,9 +10,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function GetDataByDip(env) {
+function GetDataByDip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -25,9 +24,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function GetDataBySCountry(env) {
+function GetDataBySCountry(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -40,9 +39,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function GetDataAgregateSip(env) {
+function GetDataAgregateSip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -58,9 +57,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function GetDataAgregateDip(env) {
+function GetDataAgregateDip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -76,9 +75,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function GetDataAgregateSCountry(env) {
+function GetDataAgregateSCountry(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -95,9 +94,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function UniqueDip(env) {
+function UniqueDip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -109,9 +108,9 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
   
-  function UniqueSip(env) {
+function UniqueSip(env) {
     let fplTemplate = `
         search {type = "{{.type}}", from="{{.from}}", to="{{.to}}"} sEntityinfo("dip","HOME_NET")
             and not sEntityinfo("sip","HOME_NET")
@@ -123,12 +122,20 @@ function GetDataBySip(env) {
     `
     let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
-  }
+}
+
+function validateTimeRange(from, to) {
+    if (from.After(to)) {
+      throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+    }
+    return true
+}
   
-  function main() {    
-    setEnv("from", "-24h@h")
-    setEnv("to", "@h")
-    let env = {type: "metaflow", from: "-24h@h", to: "@h"}
+function main({from="-24h@h", to="@h"}) {    
+    validateTimeRange(new Time(from), new Time(to))
+    setEnv("from", from)
+    setEnv("to", to)
+    let env = {type: "metaflow", from, to}
     let count_SourceIP = GetDataBySip(env)
     let count_DestIP = GetDataByDip(env)
     let count_Country = GetDataBySCountry(env)
@@ -162,5 +169,5 @@ function GetDataBySip(env) {
         unique_dip,
         unique_sip
     }
-  }
+}
   

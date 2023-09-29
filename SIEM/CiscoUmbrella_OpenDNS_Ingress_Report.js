@@ -10,10 +10,18 @@ function opendnsByField(from, to, field) {
   return table
 }
 
-function main() {
-  setEnv("from", "-24h<h")
-  setEnv("to", "-1h>h")
-  let totalSizeByType = opendnsByField("-24h<h", "-1h>h", "queryType")
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+} 
+
+function main({from="-24h<h", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
+  let totalSizeByType = opendnsByField(from, to, "queryType")
   let totalSize = totalSizeByType.GroupBy(({totalSize}) => {
     return {
       columns: {
@@ -23,13 +31,13 @@ function main() {
   })
   let topSizeByType = totalSizeByType.Clone().Sort(10, "-totalSize")
 
-  let totalSizeByCode = opendnsByField("-24h<h", "-1h>h", "responseCode")
+  let totalSizeByCode = opendnsByField(from, to, "responseCode")
   let topSizeByCode = totalSizeByCode.Clone().Sort(10, "-totalSize")
 
-  let totalSizeByPIT = opendnsByField("-24h<h", "-1h>h", "policyIdentityType")
+  let totalSizeByPIT = opendnsByField(from, to, "policyIdentityType")
   let topSizeByPIT = totalSizeByPIT.Clone().Sort(10, "-totalSize")
 
-  let totalSizeByAction = opendnsByField("-24h<h", "-1h>h", "action")
+  let totalSizeByAction = opendnsByField(from, to, "action")
   let topSizeByAction = totalSizeByAction.Clone().Sort(10, "-totalSize")
 
   return {

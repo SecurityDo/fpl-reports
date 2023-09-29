@@ -25,13 +25,21 @@ function getFileHashField(fileHash, from, to, field) {
   return table
 }
 
-function main({fileHash}) {
-  setEnv("from", "-15d<d")
-  setEnv("to", "@h")
-  let infectedDevices = getFileHashField(fileHash, "-15d<d", "@h", "sourceFqdn")
-  let userNames = getFileHashField(fileHash, "-15d<d", "@h", "sourceUserName")
-  let fileNames = getFileHashField(fileHash, "-15d<d", "@h", "fileName")
-  let hashTimeline = getFileHastTimeline(fileHash, "-15d<d", "@h")
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
+function main({fileHash, from="-15d<d", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
+  let infectedDevices = getFileHashField(fileHash, from, to, "sourceFqdn")
+  let userNames = getFileHashField(fileHash, from, to, "sourceUserName")
+  let fileNames = getFileHashField(fileHash, from, to, "fileName")
+  let hashTimeline = getFileHastTimeline(fileHash, from, to,)
   return {
     infectedDevices,
     userNames,
