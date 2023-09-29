@@ -1,102 +1,158 @@
 function fetchAzureSignInByUserPrincipalName(from, to) {
+    let env = {from, to}
     let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {userDisplayName, userPrincipalName, createdDateTime} = f("@azureSignIn")
         aggregate userDisplayName=max(userDisplayName), total=count() by userPrincipalName
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
 }
 
-function fetchAzureSignInByAppDisplayName(from, to) {
+function fetchAzureSignInCountBy(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
-        let {appDisplayName} = f("@azureSignIn")
-        aggregate total=count() by appDisplayName
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        let {{.field}} = f("@azureSignIn.{{.field}}")
+        aggregate total=count() by {{.field}}
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
 }
 
-function fetchAzureSignInByUserDisplayName(from, to) {
+function fetchAzureSignInByBrowserOS(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
-        let {userDisplayName} = f("@azureSignIn")
-        aggregate total=count() by userDisplayName
-    `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
-    return table
-}
-
-function fetchAzureSignInByOperatingSystem(from, to) {
-    let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {operatingSystem, browser} = f("@azureSignIn.deviceDetail")
-        aggregate total=count() by operatingSystem
+        aggregate total=count() by {{.field}}
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
 }
 
-function fetchAzureSignInByBrowser(from, to) {
+function fetchAzureSignInByLocation(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
-        let {operatingSystem, browser} = f("@azureSignIn.deviceDetail")
-        aggregate total=count() by browser
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        let {{.field}} = f("@azureSignIn.location.{{.field}}")
+        aggregate total=count() by {{.field}}
     `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
     return table
 }
 
-function fetchAzureSignInByCountryOrRegion(from, to) {
-    let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
-        let {countryOrRegion} = f("@azureSignIn.location")
-        aggregate total=count() by countryOrRegion
-    `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
-    return table
-}
-
-function fetchAzureSignInByCity(from, to) {
-    let fplTemplate = `
-        search {from="%s", to="%s"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
-        let {city} = f("@azureSignIn.location")
-        aggregate total=count() by city
-    `
-    let table = fluencyLavadbFpl(sprintf(fplTemplate, from, to))
-    return table
-}
+function validateTimeRange(from, to) {
+    if (from.After(to)) {
+      throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+    }
+    return true
+  }  
 
 function main() {
-    let usedSignApp1=fetchAzureSignInByAppDisplayName("-30d<d","-25d>d")
-    let usedSignApp2=fetchAzureSignInByAppDisplayName("-25d<d","-20d>d")
-    let usedSignApp3=fetchAzureSignInByAppDisplayName("-20d<d","-15d>d")
-    let usedSignApp4=fetchAzureSignInByAppDisplayName("-15d<d","-10d>d")
-    let usedSignApp5=fetchAzureSignInByAppDisplayName("-10d<d","-5d>d")
-    let usedSignApp6=fetchAzureSignInByAppDisplayName("-5d<d","-1d>d")
-    
-    let usedSignApp = mergeTable(usedSignApp1, usedSignApp2, usedSignApp3, usedSignApp4, usedSignApp5, usedSignApp6)
-    usedSignApp.GroupBy(({appDisplayName, total})=>{
-        return {keys: {appDisplayName}, columns: {sum: {total}}}
-    })
-    usedSignApp.Sort(25, "total")
+    let interval = "5d"
+    let rangeFrom = new Time("-30d<d")
+    let rangeTo = new Time("@d")
+    validateTimeRange(rangeFrom, rangeTo)
+    setEnv("from", "-30d<d")
+    setEnv("to", "@d")
+    let usedSignApp = new Table()
+    let userFreq = new Table()
+    let usedOS = new Table()
+    let userBrowser = new Table()
+    let signInCountry = new Table()
+    let signInCity = new Table()
+    let userEmailFreq = new Table()
+    for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+        let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+        let from = rangeFrom
+        usedSignApp.Append(fetchAzureSignInCountBy(from, to, "appDisplayName"))
+        userFreq.Append(fetchAzureSignInCountBy(from, to, "userDisplayName"))
+        usedOS.Append(fetchAzureSignInByBrowserOS(from, to, "operatingSystem"))
+        userBrowser.Append(fetchAzureSignInByBrowserOS(from, to, "browser"))
+        signInCountry.Append(fetchAzureSignInByLocation(from, to, "countryOrRegion"))
+        signInCity.Append(fetchAzureSignInByLocation(from, to, "city"))
+        userEmailFreq.Append(fetchAzureSignInByUserPrincipalName(from, to))
+    }
+    usedSignApp = usedSignApp.Aggregate(({appDisplayName, total})=>{
+        return {
+            groupBy: {appDisplayName},
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(25, "total")
         
+    userFreq = userFreq.Aggregate(({userDisplayName, total})=>{
+        return {
+            groupBy: {userDisplayName},
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(10, "total")
+
+    usedOS = usedOS.Aggregate(({operatingSystem, total})=>{
+        return {
+            groupBy: {operatingSystem}, 
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(25, "total")
+
+    userBrowser = userBrowser.Aggregate(({browser, total})=>{
+        return {
+            groupBy: {browser},
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(25, "total")
+
+    signInCountry = signInCountry.Aggregate(({countryOrRegion, total})=>{
+        return {
+            groupBy: {countryOrRegion},
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(25, "total")
+
+    signInCity = signInCity.Aggregate(({city, total})=>{
+        return {
+            groupBy: {city},
+            columns: {
+                sum: {total}
+            }
+        }
+    }).Sort(15, "total")
+
+    userEmailFreq = userEmailFreq.Aggregate(({userPrincipalName, total})=>{
+        return {
+            groupBy: {userPrincipalName},
+            columns: {
+                sum: {total}
+            }
+        }
+    })
+
+    let uniqueUserEmail = userEmailFreq.Aggregate(({userPrincipalName}) => {
+        return {
+            columns: {
+                dcount: {userPrincipalName}
+            }
+        }
+    })
+
     return {
-        usedSignApp1,
-        usedSignApp2,
-        usedSignApp3,
-        usedSignApp4,
-        usedSignApp5,
-        usedSignApp6,
-        usedSignApp
+        usedSignApp,
+        userFreq,
+        usedOS,
+        userBrowser,
+        signInCountry,
+        signInCity,
+        userEmailFreq,
+        uniqueUserEmail
     }
 }
-
-
-
-
-
-
-
-

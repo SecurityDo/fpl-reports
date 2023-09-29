@@ -4,7 +4,7 @@ function main() {
       let fields = obj["@ADAsset"]
       let {customer, name, sAMAccountName, description, dNSHostName, updatedOn, propertyFlags} = fields    
       // return {name, sAMAccountName, description, dNSHostName, updatedOn, propertyFlags} 
-      if propertyFlags.Some((_, e) => e == "ACCOUNTDISABLE") {
+      if (propertyFlags.Some((_, e) => e == "ACCOUNTDISABLE")) {
         return null
       }   
       return {
@@ -13,7 +13,8 @@ function main() {
            columns: {
              argmax:{updatedOn, sAMAccountName, description, dNSHostName, propertyFlags, customer} 
          }
-       }       
+       }   
+      }    
   })
   return {assets}
 }

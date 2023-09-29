@@ -106,9 +106,9 @@ function main() {
 }
 ----
 * Fluency_ResourceLoad(vendor, resource, customer, (obj <,customer>)=> {})
-** vendor: Office365: resource: User, Group, Device, Application, InstalledApp
-** vendor Sentinelone: resource: Agent, Threat, Application
-** vendor AD: resource: User, Asset
+** vendor: Office365: resource: user, group, device, application, installedApp
+** vendor Sentinelone: resource: agent, threat, application
+** vendor AD: resource: user, asset
 ** vendor fehx (FireEyeHx):  resource: device
 ** vendor Qualys:  resource: host  
 ----

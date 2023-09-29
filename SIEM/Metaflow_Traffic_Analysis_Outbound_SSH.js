@@ -5,6 +5,8 @@ function GetDataBySip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {sip} = f()
         aggregate count_SourceIP=count() by sip
         sort 10 count_SourceIP
@@ -19,6 +21,8 @@ function GetDataByDip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {dip} = f()
         aggregate count_DestIP=count() by dip
         sort 20 count_DestIP
@@ -33,6 +37,8 @@ function GetDataByDCountry(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {dip} = f()
         let {}=geoip(dip)
         aggregate count_Country=count() by country
@@ -48,6 +54,8 @@ function GetDataAgregateSip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {sip} = f()
         let {txB,rxB} = f()
         let psent = parseInt(txB)
@@ -84,6 +92,8 @@ function GetDataAgregateDCountry(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {dip} = f()
         let {}=geoip(dip)
         let {txB,rxB} = f()
@@ -103,6 +113,8 @@ function UniqueDip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {dip,sip} = f()
         aggregate count_UniqueDip=unique(sip) by dip
         sort 20 count_UniqueDip
@@ -117,6 +129,8 @@ function UniqueSip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
+            and sContent("dp","22")
+            and sContent("prot","6")
         let {dip,sip} = f()
         aggregate count_UniqueSip=unique(dip) by sip
         sort 20 count_UniqueSip
@@ -127,7 +141,7 @@ function UniqueSip(env) {
 
 function main() {
     setEnv("from", "-24h@h")
-    setEnv("to", "@h")    
+    setEnv("to", "@h")   
     let env = {type: "metaflow", from: "-24h@h", to: "@h"}
     let count_SourceIP_top10 = GetDataBySip(env)
     let count_DestIP_top20 = GetDataByDip(env)

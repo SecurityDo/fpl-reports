@@ -1,9 +1,8 @@
 // Description:
 // UserLoggedIn from non-whitelisted countries in the previous two weeks
-
-function UserLoggedInAggregateUserId(from_date, to_date){
+function UserLoggedInAggregateUserId(env) {
     let fplTemplate = `
-        search {from="%s", to="%s"}
+        search {from="{{.from}}", to="{{.to}}"}
             sContent("@behaviors","O365_AzureAD_UserLoggedIn")
             and not sEntityinfo("@fields._ip.country","O365_UserLoggedIn_Country_Whitelist")
         let {UserId, ActorIpAddress, ApplicationName} = f("@fields") // CreationTime
@@ -12,12 +11,12 @@ function UserLoggedInAggregateUserId(from_date, to_date){
         let {isp,country,city} = f("@fields._ip")
         aggregate ActorIpAddress=values(ActorIpAddress), Events=count(), BrowserType=values(BrowserType), OS=values(OS), RequestType=values(RequestType), isp=values(isp), country=values(country), countries=distinct(country), ApplicationName=values(ApplicationName) by UserId
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
-function UserLoggedInAggregateActorIpAddress(from_date, to_date){
+function UserLoggedInAggregateActorIpAddress(env) {
     let fplTemplate = `
-        search {from="%s", to="%s"}
+        search {from="{{.from}}", to="{{.to}}"}
             sContent("@behaviors","O365_AzureAD_UserLoggedIn")
             and not sEntityinfo("@fields._ip.country","O365_UserLoggedIn_Country_Whitelist")
         let {UserId, ActorIpAddress} = f("@fields")
@@ -25,12 +24,12 @@ function UserLoggedInAggregateActorIpAddress(from_date, to_date){
         sort 50 Users
         let {}=geoip(ActorIpAddress)
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
-function UserLoggedInAggregateActorCountry(from_date, to_date){
+function UserLoggedInAggregateActorCountry(env) {
     let fplTemplate = `
-        search {from="%s", to="%s"}
+        search {from="{{.from}}", to="{{.to}}"}
             sContent("@behaviors","O365_AzureAD_UserLoggedIn")
             and not sEntityinfo("@fields._ip.country","O365_UserLoggedIn_Country_Whitelist")
         let {UserId} = f("@fields")
@@ -38,11 +37,12 @@ function UserLoggedInAggregateActorCountry(from_date, to_date){
         aggregate Users=distinct(UserId) by country
         sort 20 Users
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))}
+    return fluencyLavadbFpl(template(fplTemplate, env))
+}
 
-function UserLoggedInAggregateUserIdSimple(from_date, to_date){
+function UserLoggedInAggregateUserIdSimple(env) {
     let fplTemplate = `
-        search {from="%s", to="%s"}
+        search {from="{{.from}}", to="{{.to}}"}
             sContent("@behaviors","O365_AzureAD_UserLoggedIn")
         let {UserId, ActorIpAddress} = f("@fields") // CreationTime
         let {BrowserType, OS} = f("@fields.DevicePropertiesFields")
@@ -50,19 +50,33 @@ function UserLoggedInAggregateUserIdSimple(from_date, to_date){
         aggregate ActorIpAddress=values(ActorIpAddress), Events=count(), BrowserType=values(BrowserType), OS=values(OS), isp=values(isp), country=values(country), countries=distinct(country) by UserId
         where listcount(country)>1 // users with greater than 2 Countries
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, from_date, to_date))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
 function main() {
-    let logins = UserLoggedInAggregateUserId("<w","w>") // this week
-    let ips = UserLoggedInAggregateActorIpAddress("<w","w>") // this week
-    let countries = UserLoggedInAggregateActorCountry("<w","w>") // this week
-    let usersGt2 = UserLoggedInAggregateUserIdSimple("<w","w>")
+    // this week data
+    let env = {from: "@w", to: "@d"}
+    let logins = UserLoggedInAggregateUserId(env)
+    let ips = UserLoggedInAggregateActorIpAddress(env)
+    let countries = UserLoggedInAggregateActorCountry(env)
+    let usersGt2 = UserLoggedInAggregateUserIdSimple(env)
+    // last week data
+    env = {from: "-w@w", to: "@w"}
+    let loginsLastweek = UserLoggedInAggregateUserId(env)
+    let ipsLastweek = UserLoggedInAggregateActorIpAddress(env)
+    let countriesLastweek = UserLoggedInAggregateActorCountry(env)
+    let usersGt2LastWeek = UserLoggedInAggregateUserIdSimple(env)
+    setEnv("from", "-w@w")
+    setEnv("to", "@d")
 
-    let loginsLastweek = UserLoggedInAggregateUserId("-1w@w","@w") // last week from="-1w@w",to="@w"
-    let ipsLastweek = UserLoggedInAggregateActorIpAddress("-1w@w","@w") // last week
-    let countriesLastweek = UserLoggedInAggregateActorCountry("-1w@w","@w") // last week
-    let usersGt2LastWeek = UserLoggedInAggregateUserIdSimple("-1w@w","@w") // last week
-
-    return {logins, ips, countries, usersGt2, loginsLastweek, ipsLastweek, countriesLastweek, usersGt2LastWeek}
+    return {
+        logins,
+        ips,
+        countries,
+        usersGt2,
+        loginsLastweek,
+        ipsLastweek,
+        countriesLastweek,
+        usersGt2LastWeek
+    }
 }

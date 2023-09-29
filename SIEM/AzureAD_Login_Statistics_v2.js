@@ -1,109 +1,92 @@
-function fetchAzureSignIn(env) {
+function fetchAzureSignIn(from, to) {
+    let env = {from, to}
     let fplTemplate = `
-        search %s
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {userDisplayName, userPrincipalName, appDisplayName, ipAddress, clientAppUsed, authenticationRequirement, createdDateTime} = f("@azureSignIn")
         let {operatingSystem, browser} = f("@azureSignIn.deviceDetail")
         let {city, countryOrRegion} = f("@azureSignIn.location")
         let {latitude, longitude} = f("@azureSignIn.location.geoCoordinates")
         sort 2000 createdDateTime
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
-function fetchMostRecentByUser(env) {
+function fetchMostRecentByUser(from, to) {
+    let env = {from, to}
     let fplTemplate = `
-        search %s
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {userPrincipalName, createdDateTime} = f("@azureSignIn")
         aggregate createdDateTime=max(createdDateTime) by userPrincipalName
         sort 500 createdDateTime
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
-function fetchAzureSignInByAppDisplayName(env) {
+function fetchAzureSignInByUserPrincipalName(from, to) {
+    let env = {from, to}
     let fplTemplate = `
-        search %s
-        let {appDisplayName} = f("@azureSignIn")
-        aggregate total=count() by appDisplayName
-        sort 15 total
-    `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
-}
-
-function fetchAzureSignInByUserPrincipalName(env) {
-    let fplTemplate = `
-        search %s
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {userDisplayName, userPrincipalName, createdDateTime} = f("@azureSignIn")
         aggregate userDisplayName=max(userDisplayName), total=count() by userPrincipalName
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    return fluencyLavadbFpl(template(fplTemplate, env))
 }
 
-function fetchAzureSignInByUserDisplayName(env) {
+function fetchAzureSignInCountBy(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search %s
-        let {userDisplayName} = f("@azureSignIn")
-        aggregate total=count() by userDisplayName
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        let {{.field}} = f("@azureSignIn.{{.field}}")
+        aggregate total=count() by {{.field}}
         sort 15 total
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
+    return table
 }
 
-function fetchAzureSignInByOperatingSystem(env) {
+function fetchAzureSignInByBrowserOS(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search %s
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
         let {operatingSystem, browser} = f("@azureSignIn.deviceDetail")
-        aggregate total=count() by operatingSystem
+        aggregate total=count() by {{.field}}
         sort 15 total
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
+    return table
 }
 
-function fetchAzureSignInByBrowser(env) {
+function fetchAzureSignInByLocation(from, to, field) {
+    let env = {from, to, field}
     let fplTemplate = `
-        search %s
-        let {operatingSystem, browser} = f("@azureSignIn.deviceDetail")
-        aggregate total=count() by browser
+        search {from="{{.from}}", to="{{.to}}"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")
+        let {{.field}} = f("@azureSignIn.location.{{.field}}")
+        aggregate total=count() by {{.field}}
         sort 15 total
     `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
+    let table = fluencyLavadbFpl(template(fplTemplate, env))
+    return table
 }
 
-function fetchAzureSignInByCountryOrRegion(env) {
-    let fplTemplate = `
-        search %s
-        let {countryOrRegion} = f("@azureSignIn.location")
-        aggregate total=count() by countryOrRegion
-        sort 15 total
-    `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
-}
-
-function fetchAzureSignInByCity(env) {
-    let fplTemplate = `
-        search %s
-        let {city} = f("@azureSignIn.location")
-        aggregate total=count() by city
-        sort 15 total
-    `
-    return fluencyLavadbFpl(sprintf(fplTemplate, env))
-}
-
-function main() {
-    let env = `{from="-24h@h", to="@h"} sContent("@event_type", "@azureSignIn") and sContent("@azureSignIn.status.errorCode", "0")`
-    
-    let recentSignIns = fetchAzureSignIn(env)
-    let mostRecentByUser = fetchMostRecentByUser(env)
-    let usedSignApp = fetchAzureSignInByAppDisplayName(env)
-    let userFreq = fetchAzureSignInByUserDisplayName(env)
-    let userEmailFreq = fetchAzureSignInByUserPrincipalName(env)
-    let usedOS = fetchAzureSignInByOperatingSystem(env)
-    let userBrowser = fetchAzureSignInByBrowser(env)
-    let signInCountry = fetchAzureSignInByCountryOrRegion(env)
-    let signInCity = fetchAzureSignInByCity(env)
+function main() {    
+    setEnv("from", "-24h@h")
+    setEnv("to", "@h")
+    let recentSignIns = fetchAzureSignIn("-24h@h", "@h")
+    let mostRecentByUser = fetchMostRecentByUser("-24h@h", "@h")
+    let usedSignApp = fetchAzureSignInCountBy("-24h@h", "@h", "appDisplayName")
+    let userFreq = fetchAzureSignInCountBy("-24h@h", "@h", "userDisplayName")
+    let userEmailFreq = fetchAzureSignInByUserPrincipalName("-24h@h", "@h")
+    let usedOS = fetchAzureSignInByBrowserOS("-24h@h", "@h", "operatingSystem")
+    let userBrowser = fetchAzureSignInByBrowserOS("-24h@h", "@h", "browser")
+    let signInCountry = fetchAzureSignInByLocation("-24h@h", "@h", "countryOrRegion")
+    let signInCity = fetchAzureSignInByLocation("-24h@h", "@h", "city")
 
     let uniqueUserEmails = userEmailFreq.GroupBy(({userPrincipalName})=>{
-        return {columns:{ dcount: {users: userPrincipalName}}}
+        return {
+            columns:{
+                dcount: {users: userPrincipalName}
+            }
+        }
     })
     
     let latestSignIns = mostRecentByUser.Join(recentSignIns, {userPrincipalName: "userPrincipalName", createdDateTime: "createdDateTime"})
