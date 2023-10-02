@@ -16,6 +16,13 @@ let {city, country, isp} = geoip("8.8.8.8")
   "org": "Level 3" 
 }
 ----
+* decoder_CSV(csvText)
+** decode CSV format
+----
+let text = "2023-09-25 14:53:35","field1", "field2"
+let fields = decoder_CSV(text)
+// ["2023-09-25 14:53:35", "field1", "field2"]
+----
 * decoder_CEF(cefText) 
 ** decode CEF format
 ** return a object of the following fields:
@@ -119,5 +126,56 @@ function main() {
       return {customer, userType, userPrincipalName, roles, accountEnabled, createdDateTime}
   })
   return {users}
+}
+----
+
+== Platform API
+
+* Platform_Metric_QueryBuild(options)
+** build a promQL query
+** options: {metric, duration, stat, groupBy, aggregate, sort, limit}
+* Platform_Metric_Query(query, time)
+** return a fpl table
+* Platform_Metric_QueryRange(query, from, to, step)
+** return a fpl stream
+----
+function main() {
+  // let query = `sum by(component) (increase(platform_component_bytes[5m]))`
+  
+  let query = Platform_Metric_QueryBuild({
+    metric: "platform_component_bytes",
+    duration: "1h",
+    stat: "increase",
+    aggregate:"sum",
+    groupBy: "component",
+    sort: "topk",
+    limit: 3
+  })
+  let table = Platform_Metric_Query(query, "@h")
+  
+  // let keys = []
+  let keys = table.Map((row) => {
+     return row.component
+  })
+  
+  let metric = sprintf(`platform_component_bytes{component=~"%s"}`, keys.Join("|"))
+  
+  printf("%s",metric)
+
+  
+  let query2 = Platform_Metric_QueryBuild({
+    metric: metric,
+    duration: "1h",
+    stat: "increase",
+    aggregate:"sum",
+    groupBy: "component"
+  })
+  
+  let stream = Platform_Metric_QueryRange(query2, "-24h@h", "@h", "1h")
+  //return {table}
+  //let query = `sum by(eventType) (increase(fluency_import_bytes[1h]))`
+  //let table = Platform_Metric_Query(query, "@h")
+  //let stream = Platform_Metric_QueryRange(query, "-48h@h", "@h", "1h")
+  return {table, stream}
 }
 ----
