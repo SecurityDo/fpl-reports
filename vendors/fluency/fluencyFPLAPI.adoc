@@ -131,6 +131,19 @@ function main() {
 
 == Platform API
 
+* Platform_Metric_Counter(name, labels, increment)
+** Write Counter metric to Prometheus database
+----
+let customer = obj["@customer"]
+let dimensions = {
+   namespace:"fluency",
+   app:"import",
+   eventType:"Office365",
+   customer: customer
+}
+Platform_Metric_Counter("fluency_import_count", dimensions,1)
+Platform_Metric_Counter("fluency_import_bytes", dimensions,size)
+----
 * Platform_Metric_QueryBuild(options)
 ** build a promQL query
 ** options: {metric, duration, stat, groupBy, aggregate, sort, limit}
