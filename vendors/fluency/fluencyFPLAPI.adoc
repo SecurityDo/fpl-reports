@@ -129,6 +129,39 @@ function main() {
 }
 ----
 
+* Fluency_Device_Lookup(ipAddress)
+** Lookup device information from Fluency Device database
+* Fluency_Device_Add(device)
+** Add device information to Fluency Device database
+----
+function main({obj, size}) {
+   
+   let sender = obj["@sender"]  
+   let deviceEntry = Fluency_Device_Lookup(sender)
+   
+   if deviceEntry {
+     printf("%s", deviceEntry)
+   } else {
+     printf("device not found")
+     deviceEntry = {
+       name:"$name",
+       description:"Added by FPL processor",
+       ip: sender,
+       group:"$group",
+       device: {
+         name:"$subCategory",
+         category:"$category"
+       }
+     }
+     Fluency_Device_Add(deviceEntry)
+   }
+   // call platform metric api...
+
+   return "pass"
+}
+----
+
+
 == Platform API
 
 * Platform_Metric_Counter(name, labels, increment)
@@ -192,3 +225,4 @@ function main() {
   return {table, stream}
 }
 ----
+
