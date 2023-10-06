@@ -160,6 +160,26 @@ function main({obj, size}) {
    return "pass"
 }
 ----
+* Fluency_FusionEvent(partition, source)
+** Send Fusion Event to Fluency Fusion Service (legacy)
+----
+   let t = new Time()
+   let partition={
+      partition: "default",
+      dataType: "event",
+      time_ms: t.UnixMilli()
+   }
+   let source={
+     logon: { 
+      ip:"10.132.47.10",
+      domain:"TERPLAB.COM",
+      username:"foobar"
+     },
+     dtype:"windows-logon"
+   } 
+   Fluency_FusionEvent(partition, source)   
+
+----
 
 
 == Platform API
