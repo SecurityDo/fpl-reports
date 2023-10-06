@@ -22,10 +22,17 @@ function sizeByHostname(env) {
   return table
 }
   
-function main () {
-  let env = {from: "-24h<h", to: "-1h>h"}
-  setEnv("from", env.from)
-  setEnv("to", env.to)
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
+function main({from = "-24h<h", to = "@h"}) {
+  setEnv("from", from)
+  setEnv("to", to)
+  let env = {from, to}
   
   let eventIDStats = sizeByEventID(env)
   let hostnameStats = sizeByHostname(env)

@@ -39,16 +39,16 @@ function validateTimeRange(from, to) {
   return true
 }
 
-function main() {
-  let interval = "5d"
-  let rangeFrom = new Time("-30d<d")
-  let rangeTo = new Time("@d")
+function main({from="-30d<d", to="@d"}) {
+  let rangeFrom = new Time(from)
+  let rangeTo = new Time(to)
   validateTimeRange(rangeFrom, rangeTo)
-  setEnv("from", "-30d<d")
-  setEnv("to", "@d")
+  setEnv("from", from)
+  setEnv("to", to)
   let statsBySource = new Table()
   let statsBySender = new Table()
   let statsByEventType = new Table()
+  let interval = "5d"
   for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
     let from = rangeFrom
     let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)

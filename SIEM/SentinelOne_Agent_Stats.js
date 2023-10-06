@@ -17,7 +17,24 @@ function main() {
     if (isDecommissioned) {
         return null
     }
-    return {uuid, computerName, groupName, siteName, isActive, machineType, mitigationMode, mitigationModeSuspicious, modelName, osName, osType, activeThreats, agentVersion, externalIp, infected, isDecommissioned}
+    return {
+      uuid,
+      computerName,
+      groupName,
+      siteName,
+      isActive,
+      machineType,
+      mitigationMode,
+      mitigationModeSuspicious,
+      modelName,
+      osName,
+      osType,
+      activeThreats,
+      agentVersion,
+      externalIp,
+      infected,
+      isDecommissioned
+    }
   })
   let totalSIAgents = agentsTable.Aggregate(({}) => {
     return {columns: {count: {totalDeviceCount: true}}}

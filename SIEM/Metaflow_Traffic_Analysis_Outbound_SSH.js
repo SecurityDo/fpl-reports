@@ -139,10 +139,18 @@ function UniqueSip(env) {
     return table
 }
 
-function main() {
-    setEnv("from", "-24h@h")
-    setEnv("to", "@h")   
-    let env = {type: "metaflow", from: "-24h@h", to: "@h"}
+function validateTimeRange(from, to) {
+    if (from.After(to)) {
+      throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+    }
+    return true
+  }
+  
+function main({from="-24h@h", to="@h"}) {    
+    validateTimeRange(new Time(from), new Time(to))
+    setEnv("from", from)
+    setEnv("to", to)   
+    let env = {type: "metaflow", from, to}
     let count_SourceIP_top10 = GetDataBySip(env)
     let count_DestIP_top20 = GetDataByDip(env)
     let count_Country_top20 = GetDataByDCountry(env)

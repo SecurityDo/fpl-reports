@@ -68,18 +68,27 @@ function fetchAzureSignInByLocation(from, to, field) {
     return table
 }
 
-function main() {    
-    setEnv("from", "-24h@h")
-    setEnv("to", "@h")
-    let recentSignIns = fetchAzureSignIn("-24h@h", "@h")
-    let mostRecentByUser = fetchMostRecentByUser("-24h@h", "@h")
-    let usedSignApp = fetchAzureSignInCountBy("-24h@h", "@h", "appDisplayName")
-    let userFreq = fetchAzureSignInCountBy("-24h@h", "@h", "userDisplayName")
-    let userEmailFreq = fetchAzureSignInByUserPrincipalName("-24h@h", "@h")
-    let usedOS = fetchAzureSignInByBrowserOS("-24h@h", "@h", "operatingSystem")
-    let userBrowser = fetchAzureSignInByBrowserOS("-24h@h", "@h", "browser")
-    let signInCountry = fetchAzureSignInByLocation("-24h@h", "@h", "countryOrRegion")
-    let signInCity = fetchAzureSignInByLocation("-24h@h", "@h", "city")
+function validateTimeRange(from, to) {
+    if (from.After(to)) {
+      throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+    }
+    return true
+} 
+
+function main({from="-24h@h", to="@h"}) {
+    validateTimeRange(new Time(from), new Time(to))
+    setEnv("from", from)
+    setEnv("to", to)
+    let env = {from, to}
+    let recentSignIns = fetchAzureSignIn(env.from, env.to)
+    let mostRecentByUser = fetchMostRecentByUser(env.from, env.to)
+    let usedSignApp = fetchAzureSignInCountBy(env.from, env.to, "appDisplayName")
+    let userFreq = fetchAzureSignInCountBy(env.from, env.to, "userDisplayName")
+    let userEmailFreq = fetchAzureSignInByUserPrincipalName(env.from, env.to)
+    let usedOS = fetchAzureSignInByBrowserOS(env.from, env.to, "operatingSystem")
+    let userBrowser = fetchAzureSignInByBrowserOS(env.from, env.to, "browser")
+    let signInCountry = fetchAzureSignInByLocation(env.from, env.to, "countryOrRegion")
+    let signInCity = fetchAzureSignInByLocation(env.from, env.to, "city")
 
     let uniqueUserEmails = userEmailFreq.GroupBy(({userPrincipalName})=>{
         return {

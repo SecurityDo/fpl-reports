@@ -33,7 +33,17 @@ function events_by_field_selected(selected_users, events_table, fieldName) {
   }).Sort(15, "-events")
 }
 
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
 function main({group, from="-48h@h", to="@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
   let selected_users = Fluency_ResourceLoad("Office365", "user", "*", (obj, customer) => {
     let fields = obj["@office365User"]
     let UserId = fields.userPrincipalName

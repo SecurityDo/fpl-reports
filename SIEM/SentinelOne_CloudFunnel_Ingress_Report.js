@@ -20,10 +20,18 @@ function cloudfunnelBy(from, to, field) {
   return table
 }
 
-function main() {
-  let env = {from: "-24h<h", to: "@h"}
-  setEnv("from", env.from)
-  setEnv("to", env.to)
+function validateTimeRange(from, to) {
+  if (from.After(to)) {
+    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  return true
+}
+
+function main({from = "-24h<h", to = "@h"}) {
+  validateTimeRange(new Time(from), new Time(to))
+  setEnv("from", from)
+  setEnv("to", to)
+  let env = {from, to}
   let totalSizeByType = cloudfunnelBy(env.from, env.to, "type")
   let totalSizeBySiteName = cloudfunnelBy(env.from, env.to, "siteName")
   let totalSizeByGroupName = cloudfunnelBy(env.from, env.to, "groupName")
