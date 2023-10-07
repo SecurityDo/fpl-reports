@@ -357,7 +357,14 @@ coalesce("str1", "str2", "str3", ...) // return the string "str1"
 coalesce("", 15, "str3", ...) // return the string "str3"
 coalesce("", "", "") // return undefined
 ----
-
+* isValidIP(s) 
+** return true if the input string is a valid ip address
+* isValidIPv4(s)
+** return true if the input string is a valid IPv4 address
+* isValidIPv6(s)
+** return true if the input string is a valid IPv6 address
+* ipNormalize(s)
+** return normalized IP address.
 * replace(s, old, new, count) 
 ** returns a copy of the given string, starting with the first 'count' non-overlapping instances of the old string replaced with the new one
 ** s: the input string
