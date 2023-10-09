@@ -133,6 +133,8 @@ function main() {
 ** Lookup device information from Fluency Device database
 * Fluency_Device_Add(device)
 ** Add device information to Fluency Device database
+* Fluency_Device_Update(ipAddress, newName)
+** assign ipAddress to a new name
 ----
 function main({obj, size}) {
    
@@ -146,7 +148,7 @@ function main({obj, size}) {
      deviceEntry = {
        name:"$name",
        description:"Added by FPL processor",
-       ip: sender,
+       ips: [sender],
        group:"$group",
        device: {
          name:"$subCategory",
