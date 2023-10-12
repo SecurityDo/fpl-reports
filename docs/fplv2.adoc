@@ -1122,6 +1122,18 @@ threats.NewColumns( ( {sha256} ) => {
 ----
 let t2 = t1.Clone() // t2 is a copy of t1 
 ----
+* GetRow(columnMap) 
+** return row with the specified column values
+----
+let arr = [
+  {col1: "foo", col2: "bar", col3: "abc"}
+]
+let t = jsonTable(arr)
+let row = t.GetRow({col1:"foo", col2:"bar"}) 
+// row = {col1: "foo", col2: "bar", col3: "abc"}
+// else row = undefined
+
+----
 
 
 * JoinStream(stream, aggregationType, columnName, unit)
