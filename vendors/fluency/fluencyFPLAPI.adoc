@@ -201,7 +201,7 @@ Platform_Metric_Counter("fluency_import_bytes", dimensions,size)
 ----
 * Platform_Metric_QueryBuild(options)
 ** build a promQL query
-** options: {metric, duration, stat, groupBy, aggregate, sort, limit}
+** options: {metric, select, duration, stat, groupBy, aggregate, sort, limit}
 * Platform_Metric_Query(query, time)
 ** return a fpl table
 * Platform_Metric_QueryRange(query, from, to, step)
@@ -226,13 +226,14 @@ function main() {
      return row.component
   })
   
-  let metric = sprintf(`platform_component_bytes{component=~"%s"}`, keys.Join("|"))
+  let select = sprintf(`component=~"%s"`, keys.Join("|"))
   
-  printf("%s",metric)
+  printf("%s",select)
 
   
   let query2 = Platform_Metric_QueryBuild({
-    metric: metric,
+    metric: "platform_component_bytes",
+    select: select,
     duration: "1h",
     stat: "increase",
     aggregate:"sum",
@@ -246,5 +247,32 @@ function main() {
   //let stream = Platform_Metric_QueryRange(query, "-48h@h", "@h", "1h")
   return {table, stream}
 }
+----
+* Platform_Metric_Alert_Counter_Stop(options)
+** alert if counter stop increasing for some time
+** options: {metric, select, groupBy, window, refWindow, interval, recordWindow}
+** metric:  metric name (must be a counter type)
+** select:  metric label select
+** groupBy: groupBy field(s), string or list of strings
+** duration: detection thresold. default is "10m"
+** lookback: lookback offset. default is "1h"
+** interval: polling interval. default is "1m"
+** history: alert record duration, default is "1h"
+** if no alert found, return undefined. 
+** else return alerts.
+----
+
+  let options = {
+    metric: `platform_component_total`,
+    groupBy: "id",
+    duration: "10m",
+    lookback: "1h",
+    interval: "1m",
+    history: "1h"
+  }
+  let alerts = Platform_Metric_Alert_Counter_Stop(options)
+  if alerts {
+      alerts.Emit("Component_Stop", "component stopped for 10 minutes", "warn", 3600)
+  }
 ----
 
