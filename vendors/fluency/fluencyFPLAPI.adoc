@@ -248,6 +248,44 @@ function main() {
   return {table, stream}
 }
 ----
+* Platform_Metric_Sort({metric, select, groupBy, from, to, sort, limit})
+** return top/bottom N rows
+** metric:  metric name (must be a counter type)
+** select:  metric label select
+** groupBy: groupBy field(s), string or list of strings
+** from/to:  time range in relative or absolute time format
+** sort:  "topk" or "bottomk"
+** limit:  number of rows
+* Platform_Metric_Sort_Histogram({metric, select, groupBy, from, to, interval, sort, limit})
+** return top/bottom N metrics
+** metric:  metric name (must be a counter type)
+** select:  metric label select
+** groupBy: groupBy field(s), string or list of strings
+** from/to:  time range in relative or absolute time format
+** sort:  "topk" or "bottomk"
+** limit:  number of rows
+** interval:  histogram interval "1h", "1d", "1w", "1m"
+----
+function main({from="-24h@h", to="@h"}) {
+  let groupBy="importSource"
+  let options = {
+    metric: "fluency_import_bytes",
+    from: from,
+    to: to,
+    groupBy: groupBy,
+    sort: "topk",
+    limit: 10
+  }
+  // promQL: topk(10, sum by (importSource) (increase(fluency_import_bytes[24h])))
+  let table = Platform_Metric_Sort(options)
+
+  options.interval= "1h"
+  // promQL: (sum by (importSource) (increase(fluency_import_bytes{importSource="foo" or importSource="bar"}[1h]))) [24h:1h]
+  let histogram = Platform_Metric_Sort_Histogram(options)
+
+  return {table, histogram}
+}
+----
 * Platform_Metric_Alert_Counter_Stop(options)
 ** alert if counter stop increasing for some time
 ** options: {metric, select, groupBy, window, refWindow, interval, recordWindow}
