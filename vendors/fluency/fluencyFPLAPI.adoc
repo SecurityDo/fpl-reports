@@ -131,6 +131,8 @@ function main() {
 
 * Fluency_Device_Lookup(ipAddress)
 ** Lookup device information from Fluency Device database
+* Fluency_Device_LookupName(deviceName)
+** Lookup device information by name from Fluency Device database
 * Fluency_Device_Add(device)
 ** Add device information to Fluency Device database
 * Fluency_Device_Update(ipAddress, newName)
