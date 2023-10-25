@@ -1184,6 +1184,22 @@ cpu.IsEmpty()
 cpu.Sort(10, "Average")
 ----
 
+* ReplaceKey(keyValueMap)
+** replace metric key based on a key/value map
+----
+  // replace compoment metric key (compoment.id) with compoment name
+  let idMap = {}
+  let components = Platform_LoadComponent()
+  components.Each( (_, c) => {
+    idMap[c.id] = c.name
+  })
+
+  let {table:sources, histogram: sourceHistogram} = groupByBytes(from, to, "platform_component_bytes", `component="datasource"`,  "id", 10)
+
+  sources.NewColumnLambda("name", "", (row) => idMap[row.id])
+  sourceHistogram.ReplaceKey(idMap)
+----
+
 * SummaryTable(column, unit, aggregationType)
 ** create a new table with a new column which holds the aggreation results for each data series
 ** aggregationType:  Sum|Average|Min|Max|Count|Last

@@ -315,4 +315,13 @@ function main({from="-24h@h", to="@h"}) {
       alerts.Emit("Component_Stop", "component stopped for 10 minutes", "warn", 3600)
   }
 ----
-
+* Platform_LoadComponent()
+** return all components (datasource, datasink, router and pipe)
+----
+  // create a key value map for component id => name translation
+  let idMap = {}
+  let components = Platform_LoadComponent()
+  components.Each( (_, c) => {
+    idMap[c.id] = c.name
+  })
+----
