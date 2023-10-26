@@ -365,6 +365,16 @@ coalesce("", "", "") // return undefined
 ** return true if the input string is a valid IPv6 address
 * ipNormalize(s)
 ** return normalized IP address.
+* timezoneOffset(timezone)
+** return timezone offset in seconds against the UTC timezone
+----
+ printf("America/New_York offset: %d", timezoneOffset("America/New_York"))
+ printf("Europe/Berlin offset: %d", timezoneOffset("Europe/Berlin"))
+
+ // America/New_York offset: -14400
+ // Europe/Berlin offset: 7200
+
+----
 * replace(s, old, new, count) 
 ** returns a copy of the given string, starting with the first 'count' non-overlapping instances of the old string replaced with the new one
 ** s: the input string
