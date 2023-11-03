@@ -359,9 +359,9 @@ coalesce("", "", "") // return undefined
 ----
 * isValidIP(s) 
 ** return true if the input string is a valid ip address
-* isValidIPv4(s)
+* isIPv4(s)
 ** return true if the input string is a valid IPv4 address
-* isValidIPv6(s)
+* isIPv6(s)
 ** return true if the input string is a valid IPv6 address
 * ipNormalize(s)
 ** return normalized IP address.
