@@ -1,0 +1,9 @@
+== Cylance API
+
+* Cylance_LoadThreat()
+* Cylance_LoadDevice()     
+* Cylance_GetThreatDevices(sha256)
+* Cylance_GetDevice(id)
+* Cylance_GetThreatInfo(sha256)
+* Cylance_GetThreatDownload(sha256)
+* Cylance_AddGlobalList(sha256, list_type, category, reason)

@@ -1,0 +1,20 @@
+== Peplink InControl API
+
+* Plugin_InControl_LoadDevice
+** load all devices from one organization
+* Plugin_InControl_LoadClient
+** load all clients from one organization
+
+----
+return Platform_PluginLambda("InControl", "*", (customer) => {
+    let devices = Plugin_InControl_LoadDevice((obj) => {
+      let {id, group_id, group_name, sn, name, status, product_id, lan_mac} = obj
+      return {id, group_id, group_name, sn, name, status, product_id, lan_mac}
+    })
+    let clients = Plugin_InControl_LoadClient((obj) => {
+        let {client_id, mac, name, status, bssid, ssid, ip, radio_mode, signal, manufacturer} = obj
+        return {client_id, mac, name, status, bssid, ssid, ip, radio_mode, signal, manufacturer} 
+    })
+    return {devices, clients}
+})
+----

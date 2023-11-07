@@ -325,3 +325,32 @@ function main({from="-24h@h", to="@h"}) {
     idMap[c.id] = c.name
   })
 ----
+
+* Platform_Cache_Check(cacheName)
+** return true if cache exists 
+* Platform_Cache_Register(cacheName, options)
+** register a cache
+** return true if success
+** return false if cache is already registered
+** options: {expire=0}
+** cache expire time in seconds, default is 0 (never expire)
+* Platform_Cache_Set(cacheName, key, value)
+** Set a key value pair to cache
+* Platform_Cache_SetMultiple(cacheName, keys, values)
+** Set multiple key value pairs to cache
+* Platform_Cache_Get(cacheName, key)
+** Get a value from cache. return undefined is key not found
+----
+let flag = Platform_Cache_Check("cache1")
+printf("flag %v", flag)
+let ok = Platform_Cache_Register("cache1", {expire: 3600})
+printf("ok %v", ok) 
+if ok {
+  Platform_Cache_Set("cache1", "foo", "bar")
+  Platform_Cache_SetMultiple("cache1", ["k1", "k2"], ["v1", "v2"])
+}
+    
+let  b = Platform_Cache_Get("cache1", "foo")
+printf("b: %s", b)
+----
+

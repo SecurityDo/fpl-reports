@@ -1,0 +1,5 @@
+== CrowdStrike Falcon API
+
+* Plugin_Falcon_GetIncident(incidentID)
+* Plugin_Falcon_LoadHost()
+* Plugin_Falcon_GetHost(hostID)
