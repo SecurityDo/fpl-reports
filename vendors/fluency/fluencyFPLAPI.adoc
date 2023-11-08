@@ -112,6 +112,14 @@ function main() {
     return {behaviorEvents, behaviorSummary}
 }
 ----
+* Fluency_DeviceSearch(query, from, to, ()=>{})
+** Search Fluency Import Device database
+----
+let newDevices = Fluency_DeviceSearch("", "-7d@m", "@m", (obj) => {
+  let {name, group, device:{name:devName, category}, ips, createdOn} = obj
+  return {name, group, devName, category, ips, createdOn}
+})
+----
 * Fluency_ResourceLoad(vendor, resource, customer, (obj <,customer>)=> {})
 ** vendor: Office365: resource: user, group, device, application, installedApp
 ** vendor Sentinelone: resource: agent, threat, application
