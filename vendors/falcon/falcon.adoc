@@ -1,5 +1,33 @@
 == CrowdStrike Falcon API
 
 * Plugin_Falcon_GetIncident(incidentID)
-* Plugin_Falcon_LoadHost()
+----
+    let {incident} = Platform_PluginLambda("Falcon", "*", () => {
+        let incident = Plugin_Falcon_GetIncident(incidentID)
+        if incident {
+            return {incident}
+        } else {
+            printf("unknown incidentID: %s", incidentID)
+            return {}
+        }
+    })
+----
+* Plugin_Falcon_LoadIncident(options <, lambda>)
+** options: filter, limit, sort, order ("asc"/"desc")
+* Plugin_Falcon_LoadHost(<lambda)>
 * Plugin_Falcon_GetHost(hostID)
+----
+function main() {
+  return Platform_PluginLambda("Falcon", "*", (customer) => {
+    let hosts = Plugin_Falcon_LoadHost((obj) => {
+        let {cid, device_id, hostname, os_version, os_product_name, status, site_name, serial_number} = obj
+        return {cid, device_id, hostname, os_version, os_product_name, status, site_name, serial_number}
+    })       
+    let incidents = Plugin_Falcon_LoadIncident({}, (obj) => {
+        let {incident_id, state, status, objectives, tactics, techniques, users, created} = obj
+        return {incident_id, state, status, objectives, tactics, techniques, users, created}       
+    })       
+    return {hosts, incidents}
+  })
+}
+----
