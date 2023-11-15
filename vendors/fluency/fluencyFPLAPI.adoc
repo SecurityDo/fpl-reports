@@ -93,7 +93,17 @@ let office_aad_by_ops = fluencyLavadbFpl(
 
 return {office_aad_by_ops}
 ----
-
+* Fluency_LavadbQuery(query, options, ()=>{})
+** Search LavaDB with Lucene query
+** options: {from, to, dataType}
+** from, to could be relative time "@h", "@m", "@d" or absolute time "2021-01-01T00:00:00Z", OR unix epoch time in millisecond
+** dataType: "event" or "metaflow"
+----
+let hits = Fluency_LavadbQuery("", {from:"-4h@m", to:"@m"}, (obj) => {
+   return {sender:obj["@sender"], source:obj["@source"]}
+}) 
+return {hits}
+----
 * Fluency_BehaviorSearch(query, from, to, ()=>{})
 ** Search Fluency Behavior Event database
 * Fluency_SummarySearch(query, from, to, ()=>{})
