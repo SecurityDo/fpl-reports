@@ -371,6 +371,10 @@ if ok {
 let  b = Platform_Cache_Get("cache1", "foo")
 printf("b: %s", b)
 ----
+*  Platform_Channel(channel, eventEnvelop)
+** send event to a channel
+** event will be sent to all rules in this channel.
+** runtime excpetions will be ignored
 
 * Platform_Notification_Email(options)
 ** send email notification
