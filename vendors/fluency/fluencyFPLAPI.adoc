@@ -381,9 +381,40 @@ printf("b: %s", b)
 ** subject:  email subject
 ** html:  email body in html format
 ** text:  email body in text format
+----
+   let template = `<p>Time: {{ .time }}</p><p>Alert: <b>{{.name}}</b> ({{ .description }})</p>`
+   let subjectTemplate = `Fluency Platform Alert: {{.name}} - {{ .action }}: {{.displayName}}`
+   let html = htmlTemplate(template, event)
+   let subject = template(subjectTemplate, event)
+
+   let options = {
+      to: config.to,
+      cc: config.cc,
+      subject,
+      html
+    }
+    Platform_Notification_Email(options)
+----
 * Platform_Notification_Slack(integrationName, options)
 ** send slack notification
 ** integrationName:  slack integration name
 ** options: {channel, message}
 ** channel:  slack channel name
 ** message:  slack message
+----
+   let template = `
+     Alert: *{{.name}}*
+     Description: *{{.description}}*
+     Severity: *{{.severity}}*
+     Action: *{{.action}}*
+    Source: *{{.source}}*
+   `
+   let message = template(template, event)
+   let integrationName = config.integrationName
+   let options = {
+      channel: "#fluency_grid",
+      message,
+   }
+   Platform_Notification_Slack(integrationName, options)
+
+----
