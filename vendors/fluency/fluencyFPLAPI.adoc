@@ -372,3 +372,18 @@ let  b = Platform_Cache_Get("cache1", "foo")
 printf("b: %s", b)
 ----
 
+* Platform_Notification_Email(options)
+** send email notification
+** options: {to, cc, bcc, subject, html, text}
+** to:  email address or list of email addresses
+** cc:  email address or list of email addresses
+** bcc:  email address or list of email addresses
+** subject:  email subject
+** html:  email body in html format
+** text:  email body in text format
+* Platform_Notification_Slack(integrationName, options)
+** send slack notification
+** integrationName:  slack integration name
+** options: {channel, message}
+** channel:  slack channel name
+** message:  slack message
