@@ -1,0 +1,17 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701230.131218203 ABC_FW01 firewall src=52.89.221.122 dst=201.174.71.93 protocol=icmp type=8 pattern: 0 icmp && dst 201.174.71.93",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

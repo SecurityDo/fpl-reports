@@ -1,0 +1,125 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701563619.342721957 ABCCorp_250 flows src=192.168.1.208 dst=8.8.8.8 mac=11:22:22:33:AA:01 protocol=udp sport=59826 dport=53 pattern: allow all",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701563619.435708958 ABCCorp_250 flows src=18.22.121.226 dst=17.221.27.153 protocol=tcp sport=46459 dport=445 pattern: 1 dst 17.221.27.153",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573598010.220624549 CORP_MainOffice flows src=52.96.79.213 dst=139.60.127.231 protocol=tcp sport=42271 dport=52354 pattern: 1 all",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701406.676621771 ABC_MR44_AP05 flows allow src=192.168.250.66 dst=157.240.11.54 mac=C2:2D:33:4C:9C:B5 protocol=tcp sport=56696 dport=5222",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597145.495708158 Company_East flows allow src=fe80::18c7:d20a:fdaa:441b dst=ff02::16 mac=CC:08:8D:66:BC:9F protocol=0",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597166.514327339 Company_East flows allow src=10.2.1.31 dst=224.0.0.22 mac=80:00:0B:DE:4E:E1 protocol=2",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597192.415420750 Company_East flows allow src=154.21.84.96 dst=68.0.228.112 mac=E4:70:B8:0E:E3:86 protocol=16",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

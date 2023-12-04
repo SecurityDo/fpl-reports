@@ -1,0 +1,143 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701563619.342728501 ABCCorp_250 ip_flow_start src=192.168.1.28 dst=8.8.8.8 protocol=udp sport=59826 dport=53 translated_src_ip=216.12.123.106 translated_port=59826",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701563619.469325121 ABCCorp_250 ip_flow_end src=192.168.1.3 dst=17.19.68.209 protocol=tcp sport=42926 dport=443 translated_src_ip=210.12.123.45 translated_port=42926",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701230.093996908 ABC_FW01 ip_flow_end src=54.183.61.82 dst=201.174.71.93 protocol=icmp translated_dst_ip=201.174.71.93",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701406.663237574 ABC_FW01f ip_flow_start src=192.168.250.66 dst=157.240.11.54 protocol=tcp sport=56696 dport=5222 translated_src_ip=201.174.71.93 translated_port=56696",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691702710.318935121 CORP_MainOffice ip_flow_end src=192.168.150.184 dst=13.78.111.198 protocol=tcp sport=58635 dport=443 translated_src_ip=139.60.127.231 translated_port=58635",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597710.297462242 ip_flow_start src=10.2.87.72 dst=172.25.89.254 protocol=tcp sport=54498 dport=445 translated_dst_ip=172.25.89.254 translated_port=445",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597164.870306998 ip_flow_start src=10.2.1.57 dst=10.2.0.254 protocol=icmp translated_dst_ip=192.0.2.1",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597710.118639164 ip_flow_end src=10.2.87.65 dst=172.25.89.254 protocol=tcp sport=34817 dport=445 translated_dst_ip=172.25.89.254 translated_port=445",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

@@ -1,0 +1,89 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701563619.408719669 ABCCorp_250 urls src=192.168.1.5:64972 dst=12.13.3.195:443 mac=08:26:22:01:01:01 request: UNKNOWN https://agent-app.ninjarmm.com/...",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701609416.051167343 ABCCorp_250 urls src=192.168.5.19:63970 dst=13.112.245.214:80 mac=08:26:22:01:01:01 agent='MICROSOFT_DEVICE_METADATA_RETRIEVAL_CLIENT' request: POST http://go.microsoft.com/fwlink/?LinkID=252669&clcid=0x409",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691702710.115778104 CORP_MainOffice urls src=10.1.1.65:57955 dst=172.25.87.59:80 mac=54:14:F3:E9:3E:E6 agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0' request: POST http://172.25.87.59/live",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597710.641940948 CORP_MainOffice urls src=10.1.96.105:56212 dst=13.107.4.50:80 mac=8C:A9:82:72:D1:36 agent='Microsoft-Delivery-Optimization/10.0' request: GET http://7.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/e9asdfasdfasdfd68e8874?P1=1573603384&P2=402&P3=2&P4=l68wsasdfasdf5V%2fzU6C8jkXU9dGsHo0CajIM6FTiYmgpgasdfasdfeDXvylJK3VLyKBQ%3d%3d",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701230.085864087 ABC_FW01 urls src=10.152.10.126:54438 dst=104.208.16.90:443 mac=00:18:0A:4F:00:02 request: UNKNOWN https://v10.events.data.microsoft.com/...",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
