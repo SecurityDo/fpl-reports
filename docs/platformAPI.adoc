@@ -71,6 +71,11 @@ Platform_Metric_Counter("fluency_import_bytes", dimensions,size)
 * Platform_Metric_QueryBuild(options)
 ** build a promQL query
 ** options: {metric, select, duration, stat, groupBy, aggregate, sort, limit}
+*** for the select option, the select labels are:
+**** =: Select labels that are exactly equal to the provided string.
+**** !=: Select labels that are not equal to the provided string.
+**** =~: Select labels that regex-match the provided string.
+**** !~: Select labels that do not regex-match the provided string.
 * Platform_Metric_Query(query, time)
 ** return a fpl table
 * Platform_Metric_QueryRange(query, from, to, step)
