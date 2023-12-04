@@ -830,6 +830,8 @@ if testTable.IsEmpty() {
   // code block
 }
 ----
+* RenameColumn(columnName, newColumnName)
+** rename column "columnName" to "newColumnName" 
 
 * RemoveColumn(columnName)
 ** remove columnName from the table
