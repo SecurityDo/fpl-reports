@@ -39,7 +39,8 @@ function main({obj, size}) {
 * input
 ** main({event, config={}})
 * output
-** return status 
+** return status
+** OR return {status:"", error:"", result:{}} 
 ----
 let message = template(template, event)
 printf("message: %s", message)
