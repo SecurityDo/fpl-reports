@@ -1,21 +1,21 @@
 == Processor API
 
 * FPL Parser: Process event in FPL router pipleline 
-* input 
-** main({obj, text, size, props, source})
-** obj:  event as a json object.  For parsed event
-** text:  event as a string. For un-parsed raw event 
-** size:  event size in bytes
-** props:  event properties
-** source:  event source (legacy)
-* output
-** return status   OR  {status: ""}  (legacy)
-** status is a string, "pass" | "drop" | "abort" | "error" 
-** "pass" means pass the event to next processor or datasink
-** "drop" means drop the event
-** "abort" means abort the current pipeline and continue to next pipeline
-** "error" will skip the rest of processors in the current pipeline. Then pass to the data sink(s) of the current pipeline.
-** uncaught exception will be treated as "error"
+** input 
+*** main({obj, text, size, props, source})
+*** obj:  event as a json object.  For parsed event
+*** text:  event as a string. For un-parsed raw event 
+*** size:  event size in bytes
+*** props:  event properties
+*** source:  event source (legacy)
+** output
+*** return status   OR  {status: ""}  (legacy)
+*** status is a string, "pass" | "drop" | "abort" | "error" 
+*** "pass" means pass the event to next processor or datasink
+*** "drop" means drop the event
+*** "abort" means abort the current pipeline and continue to next pipeline
+*** "error" will skip the rest of processors in the current pipeline. Then pass to the data sink(s) of the current pipeline.
+*** uncaught exception will be treated as "error"
 ----
 function main({obj, size}) {
   if(!obj["@timestamp"]){
@@ -29,18 +29,18 @@ function main({obj, size}) {
 ----
 
 * FPL Rule: Process event in channels 
-* input (same as FPL Parser)
-** main({obj, text, size, props, source})
-* output (same as FPL Parser)
-** return status
-** the "drop" and "error" status have no side effect. Only for metric statistics.
+** input (same as FPL Parser)
+*** main({obj, text, size, props, source})
+** output (same as FPL Parser)
+*** return status
+*** the "drop" and "error" status have no side effect. Only for metric statistics.
 
 * FPL Action: Pre-Defined tasks, called by Platform APIs
-* input
-** main({event, config={}})
-* output
-** return status
-** OR return {status:"", error:"", result:{}} 
+** input
+*** main({event, config={}})
+** output
+*** return status
+*** OR return {status:"", error:"", result:{}} 
 ----
 let message = template(template, event)
 printf("message: %s", message)
