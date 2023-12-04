@@ -1,0 +1,17 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701230.135295782 HTX_FW01 vpn_firewall src=10.151.10.171 dst=10.150.30.31 mac=00:18:0A:4F:00:01 protocol=udp sport=64037 dport=53 pattern: allow all",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

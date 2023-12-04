@@ -1,0 +1,17 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701609415.145961537 ABCCorp_250 l7_firewall src=192.168.1.3 dst=14.56.21.46 protocol=udp sport=38689 dport=10001 decision=blocked",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

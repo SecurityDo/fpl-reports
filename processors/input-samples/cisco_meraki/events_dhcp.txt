@@ -1,0 +1,35 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691681382.493403766 ABC_FW01 events dhcp no offers for mac D4:72:26:27:FB:CA",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691681382.493403766 ABC_FW01 events dhcp no offers for mac D4:72:26:27:FB:CA",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}

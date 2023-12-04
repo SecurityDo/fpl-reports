@@ -1,0 +1,161 @@
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701609323.986503659 ABCCorp_250 events content_filtering_block url='https://dns.google/...' category0='Proxy Avoidance and Anonymizers' server='8.8.8.8:853' client_mac='11:22:22:33:AA:01'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1701609150.492781995 ABCCorp_250 events type=test_vlan 6877633 unexpected packets seen (6876780 packets since last report)",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701406.354409949 ABC_MR44_AP05 events type=association radio='0' vap='0' client_mac='54:13:79:2A:1E:8E' band='2' channel='1' rssi='37' identity='BRW0-56-13-79-2A-9E-8E' aid='212311041'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701406.351551980 ABC_MR44_AP05 events type=cli_set_rad_parms radio='0' vap='0' group='' rtt='0.004 ms' attr=''",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691701397.699292822 ABC_MR44_AP04 events type=disassociation radio='1' vap='0' client_mac='50:E0:85:16:EE:55' band='5' channel='44' reason='34' da_vendor='none' duration='99.657571993' auth_neg_dur='0.009156198' last_auth_ago='99.639022149' is_8021x='1' full_conn='0.210303437' ip_resp='0.210303437' ip_src='10.152.110.159' http_resp='0.265151094' arp_resp='0.078720677' arp_src='10.152.110.159' dns_server='10.150.30.32' dns_req_rtt='0.046146614' dns_resp='0.155314635' dhcp_lease_completed='0.059309948' dhcp_ip='10.152.110.159' dhcp_server='10.152.110.254' dhcp_server_mac='00:18:0A:4F:00:02' dhcp_resp='0.059309948' identity='ABC\\SteveJobs' aid='97598791'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691702709.284691162 MR53_Office01 events type=disassociation radio='1' vap='2' client_mac='F2:FC:AC:F5:2C:64' band='5' channel='157' reason='1' da_vendor='none' duration='71.942847386' auth_neg_dur='0.006357760' last_auth_ago='71.930955866' is_wpa='1' full_conn='14.477656485' ip_resp='14.477656485' ip_src='10.1.1.3' aid='314145083'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1691702709.284446842 MR53_Office01 events type=wpa_deauth radio='1' vap='2' client_mac='F2:FC:AC:F5:2C:64' aid='314145083'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597053.209053070 SW350_06 events Port 1 changed STP role from disabled to designated",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
+
+{
+  "obj": {
+  "@collector": "Local",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "1573597197.081587573 Company_East events type=disassociation radio='0' vap='5' client_mac='CC:08:8D:66:BC:9F' channel='1' reason='6' instigator='1' duration='88.672289912' auth_neg_dur='0.029990626' last_auth_ago='88.642299286' is_wpa='1' full_conn='0.349890658' ip_resp='0.349890658' ip_src='172.26.95.62' arp_resp='0.059981254' arp_src='172.26.95.62' dns_server='172.26.95.1' dns_req_rtt='0.019993752' dns_resp='0.619806310' aid='805584611'",
+  "@sender": "192.168.0.1",
+  "@source": "192.168.0.1",
+  "@tags": [
+    "1"
+  ],
+  "@timestamp": 1701563619000,
+  "@type": "event"
+},
+  "size": 158,
+  "source": ""
+}
