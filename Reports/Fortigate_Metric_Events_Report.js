@@ -92,7 +92,7 @@ function getTotalEvents(metric, from, to, interval) {
  * @param {string} from - The start of the time range
  * @param {string} to - The end of the time range
  * @param {string} interval - The interval of the time range
- * @param {string / string[]} field - The field(s) to group the events by
+ * @param {string || string[]} field - The field(s) to group the events by
  * 
  * @returns {table} table - Returns a table with the total events in the metric grouped by field from the time range specified
  */

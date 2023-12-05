@@ -13,10 +13,10 @@
  * obtained are returned as an object.
  * 
  * @param {string} group - The group to be investigated
- * @param {string} from - The start of the time range
- * @param {string} to - The end of the time range
+ * @param {string || int} from - The start of the time range
+ * @param {string || int} to - The end of the time range
  * 
- * @returns {object} - Returns an object containing all the tables obtained from the queries
+ * @returns {object} - Returns an object containing all the tables/metrics/alerts obtained from the queries
  */
 function main({group, from="-48h@h", to="@h"}) {
   validateTimeRange(new Time(from), new Time(to))
