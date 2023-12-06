@@ -2,9 +2,9 @@
 
 ## Documentation
 
-Main, Fluency-related language documentation in `docs` folder.
+Main, **FPL** language documentation in `docs` folder.
 
-Third party related API language documentation in the `vendors` folder.
+Documentation on supported **Third-party APIs** in the `vendors` folder.
 
 ### Code Examples
 
@@ -16,5 +16,5 @@ FPL code examples found in the `reports` folder are used in Fluency to generate 
 
 #### Processors
 
-FPL code examples for **Actions**, **Rules** and **Parsers** are round in the `processors` folder, under their respective folders.
+FPL code examples for **Actions**, **Rules** and **Parsers** are found in the `processors` folder, under their respective folders.
 
