@@ -1,20 +1,61 @@
-function validateTimeRange(from, to) {
-  if (from.After(to)) {
-    throw new Error("rangeFrom must be less than rangeTo", "RangeError")
-  }
-  return true
-}
+/**
+ * @file Cisco_Duo_User_Activity_Report
+ * @reportoverview A summary report that shows a table listing all Cisco Duo user activity over the time period. 
+ */
 
-function main({from="-1d<d", to="@d"}) {
-  validateTimeRange(new Time(from), new Time(to))
-  let env = {from, to}
+/**
+ * Main method. This gets the Cisco Duo user activity over the time range from LavaDB.
+ * 
+ * @param {string || int} from - The start of the time range. Default is past day
+ * @param {string || int} to - The end of the time range. Default is the past hour
+ * 
+ * @returns {object} - Returns an object containing all the tables/metric/alert obtained from the queries
+ */
+function main({from="-1d<m", to="@m"}) {
+  let rangeFrom = new Time(from)
+  let rangeTo = new Time(to)
+  validateTimeRange(rangeFrom, rangeTo)
+  setEnv("from", from)
+  setEnv("to", to)
+
+  // initializes the table and query used
+  let signIns = new Table()
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@event_type","duoAuthLog")
     let {TargetHost="access_device.hostname", ClientIP="access_device.ip", Application="application.name", AuthDeviceName="auth_device.name", AuthDeviceIP="auth_device.ip", AuthDeviceCity="auth_device.location.city", AuthDeviceCountry="auth_device.location.country", Email="email", EventType="event_type", Factor="factor", ISOTimestamp="isotimestamp", Reason="reason", Result="result", User="user.name"} = f("@duoAuthLog")
     let timestamp=f("@timestamp")
-    assign iso2822=strftime("%a, %d %b %Y %T %z", timestamp)
+    let iso2822=strftime("%a, %d %b %Y %T %z", timestamp)
     table iso2822, EventType, Application, User, Email, TargetHost, Result, Reason, Factor, AuthDeviceName, AuthDeviceIP, AuthDeviceCountry, AuthDeviceCity, ISOTimestamp
   `
-  let signIns = fluencyLavadbFpl(template(fplTemplate, env))
+
+  let interval = "1d"
+  // breaks the time down into 1 day intervals and gets the total number of sign ins by the specified field
+  for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+    let from = t
+    let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+    let env = {from, to}
+    signIns.Append(fluencyLavadbFpl(template(fplTemplate, env)))
+  }
+
   return {signIns}
+}
+
+/**
+ * Thie method is a helper method to validate the time range passed by the user.
+ * 
+ * @param {Time} from - The start of the time range
+ * @param {Time} to - The end of the time range
+ * 
+ * @returns {boolean} - Returns true if the time range is valid
+ */
+function validateTimeRange(from, to) {
+  // checks to see if the start of the time range is after the end of the time range
+  if (from.After(to)) {
+      throw new Error("rangeFrom must be less than rangeTo", "RangeError")
+  }
+  // checks to see if the time range is more than 2 months
+  if (to.After(from.Add("60d"))) {
+      throw new Error("total duration must not exceed 2 months", "RangeError")
+  }
+  return true
 }

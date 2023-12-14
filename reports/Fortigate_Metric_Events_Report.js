@@ -11,9 +11,9 @@
  * It also calls getEventsByGroup method to get the events grouped by level, type, subtype, source IP, and destination country.
  * The tables obtained from the queries are returned in an object.
  * 
- * @param {string} from - The start of the time range. Default is 24 hours ago
- * @param {string} to - The end of the time range. Default is 1 min ago
- * @param {string} interval - The interval of the time range. Default is 5 min
+ * @param {string || int} from - The start of the time range. Default is the past day
+ * @param {string || int} to - The end of the time range. Default is the past minute
+ * @param {string || int} interval - The interval of the time range. Default is 5 min
  * 
  * @returns {object} - Returns an object containing all the tables obtained from the queries
  */
@@ -22,7 +22,6 @@ function main({from="-24h@m", to="@m", interval="5m"}) {
   // set the report environment variables
   setEnv("from", from)
   setEnv("to", to)
-
   let totalEvents = getTotalEvents("fortigate_event_count", from, to, interval)
   let levels = getEventsByGroup("fortigate_event_count", from, to, interval, "level")
   let types = getEventsByGroup("fortigate_event_count", from, to, interval, "type")
@@ -70,7 +69,7 @@ function validateTimeRange(from, to) {
  * @param {string} to - The end of the time range
  * @param {string} interval - The interval of the time range
  * 
- * @returns {table} table - Returns a table with the total events in the metric from the time range specified
+ * @returns {Table} table - Returns a table with the total events in the metric from the time range specified
  */
 function getTotalEvents(metric, from, to, interval) {
   let options = {
@@ -94,7 +93,7 @@ function getTotalEvents(metric, from, to, interval) {
  * @param {string} interval - The interval of the time range
  * @param {string || string[]} field - The field(s) to group the events by
  * 
- * @returns {table} table - Returns a table with the total events in the metric grouped by field from the time range specified
+ * @returns {Table} table - Returns a table with the total events in the metric grouped by field from the time range specified
  */
 function getEventsByGroup(metric, from, to, interval, field) {
   let options = {

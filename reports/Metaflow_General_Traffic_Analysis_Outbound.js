@@ -1,6 +1,6 @@
 /**
- * @file Metaflow_Traffic_Analysis_Outbound_SSH
- * @reportoverview A summary report of the ssh outbound traffic. The report has the total event count and total
+ * @file Metaflow_General_Traffic_Analysis_Outbound
+ * @reportoverview A summary report of the general outbound traffic. The report has the total event count and total
  * bandwidth used over the time range grouped by the source IP, destination IP and country. The report also has a map
  * of the source IP addresses. 
  */
@@ -55,7 +55,6 @@ function main({from="-24h@m", to="@m"}) {
     bandwidth_sip_top10 = getTotalByField(bandwidth_sip_top10, "sip", "totalbytes").Sort(10, "-totalbytes")
     bandwidth_dip_top20 = getTotalByField(bandwidth_dip_top20, "dip", "totalbytes").Sort(20, "-totalbytes")
     bandwidth_country_top10 = getTotalByField(bandwidth_country_top10, "country", "totalbytes").Sort(10, "-totalbytes")
-    
     let map = bandwidth_dip_top20.GetColumnValues("dip").Table((_, obj) => {
         let {country = "", city = "", countryCode = "", isp = "", org= "" , latitude = "", longitude = ""} = geoip(obj)
         return {
@@ -116,8 +115,6 @@ function GetDataBySip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {sip} = f()
         aggregate count_SourceIP=count() by sip
     `
@@ -138,8 +135,6 @@ function GetDataByDip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {dip} = f()
         aggregate count_DestIP=count() by dip
     `
@@ -160,8 +155,6 @@ function GetDataByDCountry(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {dip} = f()
         let {}=geoip(dip)
         aggregate count_Country=count() by country
@@ -183,8 +176,6 @@ function GetDataAgregateSip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {sip} = f()
         let {txB,rxB} = f()
         let psent = parseInt(txB)
@@ -233,8 +224,6 @@ function GetDataAgregateDCountry(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {dip} = f()
         let {}=geoip(dip)
         let {txB,rxB} = f()
@@ -260,8 +249,6 @@ function UniqueDip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {dip,sip} = f()
         aggregate count_UniqueDip=unique(sip) by dip
     `
@@ -282,8 +269,6 @@ function UniqueSip(env) {
             and not sEntityinfo("dip","HOME_NET")
             and not sContent("txB","0") 
             and not sContent("rxB","0")
-            and sContent("dp","22")
-            and sContent("prot","6")
         let {dip,sip} = f()
         aggregate count_UniqueSip=unique(dip) by sip
     `

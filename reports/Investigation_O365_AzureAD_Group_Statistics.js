@@ -1,5 +1,5 @@
 /**
- * @file Investigation_O365_AzureAD_Group_Statistics.js
+ * @file Investigation_O365_AzureAD_Group_Statistics
  * @reportoverview This is an investigation report that shows the statistics of Azure AD events from the time range
  * for a given group. It shows all the users in the group and the events they generated grouped by operation,
  * application, IP, and country. The report contains tables with the data obtained from the queries which can be used
@@ -13,15 +13,15 @@
  * obtained are returned as an object.
  * 
  * @param {string} group - The group to be investigated
- * @param {string || int} from - The start of the time range
- * @param {string || int} to - The end of the time range
+ * @param {string || int} from - The start of the time range. The default is 48 hours ago
+ * @param {string || int} to - The end of the time range. THe default is the past minute
  * 
  * @returns {object} - Returns an object containing all the tables/metrics/alerts obtained from the queries
  */
-function main({group, from="-48h@h", to="@h"}) {
-  validateTimeRange(new Time(from), new Time(to))
-
-  // set the report environment variables
+function main({group, from="-48h@m", to="@m"}) {
+  let rangeFrom = new Time(from)
+  let rangeTo = new Time(to)
+  validateTimeRange(rangeFrom, rangeTo)
   setEnv("from", from)
   setEnv("to", to)
 
@@ -30,17 +30,29 @@ function main({group, from="-48h@h", to="@h"}) {
     let fields = obj["@office365User"]
     let UserId = fields.userPrincipalName
     let {displayName, groups} = fields
-    if (!groups.Some((_, g) => g == group)) {
+    if (!groups?.Some((_, g) => g == group)) {
       return null
     }
     return {UserId, displayName, groups}
   })
 
   // get all the Azure AD events grouped by the field
-  let events_by_ops = office_aad_by_field("Operation", from, to)
-  let events_by_application = office_aad_by_field("ApplicationName", from, to)
-  let events_by_ip = office_aad_by_field("ClientIP", from, to)
-  let events_by_country = office_aad_by_field("country", from, to)
+  let events_by_ops = new Table()
+  let events_by_application = new Table()
+  let events_by_ip = new Table()
+  let events_by_country = new Table()
+
+  let interval = "1d"
+  // break the time range into intervals of 1 day and append the data to the tables
+  for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+    let from = t
+    let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+    
+    events_by_ops.Append(office_aad_by_field("Operation", from, to))
+    events_by_application.Append(office_aad_by_field("ApplicationName", from, to))
+    events_by_ip.Append(office_aad_by_field("ClientIP", from, to))
+    events_by_country.Append(office_aad_by_field("country", from, to))
+  }
 
   // get only the events that are from the users in the group
   let events_by_user = events_by_field_selected(selected_users, events_by_ops, "UserId")
@@ -86,7 +98,7 @@ function validateTimeRange(from, to) {
  * @param {string} from - The start of the time range
  * @param {string} to - The end of the time range
  * 
- * @returns {table} table - Returns a table with the total events in the metric grouped by field from the time range specified
+ * @returns {object} - Returns a table with the total event count by user id and field or an error if the query fails
  */
 function office_aad_by_field(field, from, to) {
   let env = {field, from, to}
@@ -117,7 +129,8 @@ function office_aad_by_field(field, from, to) {
  * @param {string} selected_users 
  * @param {string} events_table 
  * @param {string} fieldName 
- * @returns 
+ * 
+ * @returns {Table} - Returns a table with the top 15 events of the selected user grouped by the field passed in
  */
 function events_by_field_selected(selected_users, events_table, fieldName) {
   let table = events_table.Clone().Join(selected_users, {UserId: "UserId"})
@@ -130,6 +143,6 @@ function events_by_field_selected(selected_users, events_table, fieldName) {
         sum: {events}
       }
     }
-  })
-  return table.Sort(15, "-events")
+  }).Sort(15, "-events")
+  return table
 }
