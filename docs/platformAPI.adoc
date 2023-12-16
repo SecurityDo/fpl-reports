@@ -53,20 +53,21 @@ Platform_Notification_Slack(integrationName, options)
 return "pass"
 ----
 
-== Platform API
+== Platform Metric API: read/write metrics to Prometheus database (local or remote)
 
 * Platform_Metric_Counter(name, labels, increment)
 ** Write Counter metric to Prometheus database
+** "undefined" or "null" label will be ignored
 ----
 let customer = obj["@customer"]
-let dimensions = {
+let labels = {
    namespace:"fluency",
    app:"import",
    eventType:"Office365",
    customer: customer
 }
-Platform_Metric_Counter("fluency_import_count", dimensions,1)
-Platform_Metric_Counter("fluency_import_bytes", dimensions,size)
+Platform_Metric_Counter("fluency_import_count", labels,1)
+Platform_Metric_Counter("fluency_import_bytes", labels,size)
 ----
 * Platform_Metric_QueryBuild(options)
 ** build a promQL query
@@ -187,6 +188,9 @@ function main({from="-24h@h", to="@h"}) {
       alerts.Emit("Component_Stop", "component stopped for 10 minutes", "warn", 3600)
   }
 ----
+
+== Platform API
+
 * Platform_LoadComponent()
 ** return all components (datasource, datasink, router and pipe)
 ----
@@ -295,6 +299,55 @@ if hit {
    if exist {
       printf("value %s", value)
    }
+----
+
+== Platform EntityProvider API:  UEBA entity lookup
+
+* the default entity info : {id, obj, entity}
+** id is the entity key: EDR agent uuid, device name or username. Must be unique for each integration
+** obj is the entity object from the vendor
+** entity is the normalized fields for UEBA correlation: {agentID, username, asset, ADAsset, ADUser, privateIP, publicIP}
+** typical user case is to run  Platform_EntityProvider_Refresh as a hourly cronjob.  Then run Platform_EntityProvider_Lookup in FPL parser or rule.
+* Platform_EntityProvider_Lookup(plugin, customer, key)
+----
+      let agentInfos = Platform_EntityProvider_Lookup("SentinelOne", "*", agentID)
+      if len(agentInfos) > 0 {
+         let agentInfo = agentInfos[0]
+         newObj.agent = agentInfo.obj
+         newObj.uuid = agentID
+         envelop.obj["entity"] = agentInfo.entity
+      } else {
+         // printf("agentID lookup missing: %s", agentID)
+      }
+----
+* Platform_EntityProvider_Refresh(plugin, customer, entries)
+----
+function main(doc) {
+    Platform_PluginLambda("SentinelOne", "*", (customer) => {
+       let agents = Plugin_SentinelOne_LoadAgent()
+       let agentInfos = agents.Map( (_, obj) => {
+           // printf("uuid %s", obj.uuid)
+           let entity = {
+              agentID: obj.uuid,
+              username: obj.externalId,
+              asset: obj.computerName,
+              ADAsset: obj.activeDirectory?.computerDistinguishedName,
+              ADUser: obj.activeDirectory?.lastUserDistinguishedName
+           }
+           if obj.machineType == "server" {
+              entity.privateIP = obj.lastIpToMgmt
+           }
+           return {
+             id: obj.uuid,
+             obj: obj,
+             entity: entity
+           }
+       })
+       Platform_EntityProvider_Refresh("SentinelOne", customer, agentInfos)
+       return {}
+    })
+    return {}
+}
 ----
 
 == Platform Import Device API
