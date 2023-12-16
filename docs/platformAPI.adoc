@@ -191,6 +191,10 @@ function main({from="-24h@h", to="@h"}) {
 
 == Platform API
 
+* sleep(delayInMillisecnod)
+----
+  sleep(1000)  // sleep for one second
+----
 * Platform_LoadComponent()
 ** return all components (datasource, datasink, router and pipe)
 ----
