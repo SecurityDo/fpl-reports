@@ -238,6 +238,9 @@ printf("b: %s", b)
 ** event will be sent to all rules in this channel.
 ** runtime excpetions will be ignored
 
+* Platform_Sink(sink, eventEnvelop)
+** send event to one data sink
+
 * Platform_Notification_Email(options)
 ** send email notification
 ** options: {to, cc, bcc, subject, html, text}
