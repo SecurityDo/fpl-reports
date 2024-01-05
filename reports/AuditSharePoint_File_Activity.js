@@ -18,7 +18,7 @@ function main({from="-24h@m", to="@m"}) {
   let rangeTo = new Time(to)
   validateTimeRange(new Time(from), new Time(to))
   setEnv("from", from)
-  setEnv("from", to)
+  setEnv("to", to)
   let interval = "1d"
   
   let table = new Table()

@@ -19,7 +19,7 @@ function main({username, from="-1d@m", to="@m"}) {
   let rangeTo = new Time(to)
   validateTimeRange(new Time(from), new Time(to))
   setEnv("from", from)
-  setEnv("from", to)
+  setEnv("to", to)
 
   // initializes the table and query used
   let activityTable = new Table()
