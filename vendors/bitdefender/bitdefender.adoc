@@ -1,0 +1,33 @@
+== Bitdefender API
+
+* Plugin_Bitdefender_LoadEndpoint()
+** Load the Bitdefender endpoints 
+----
+function main() {
+    return Platform_PluginLambda("Bitdefender", "*", (customer) => {
+      let endpoints = Plugin_Bitdefender_LoadEndpoint((obj) => {
+        let {id, name,  operatingSystemVersion, ip, isManaged} = obj
+        return {id, name,  operatingSystemVersion, ip, isManaged}
+      })
+      return {endpoints}
+    })
+}
+/*
+{  
+   "id":"65a19efa9a81dc504fd6740e",
+   "name":"EC2AMAZ-A1HFR9K",
+   "label":"",
+   "fqdn":"ec2amaz-a1hfr9k",
+   "groupId":"65a19ced52b0b0e01104742e",
+   "isManaged":true,
+   "machineType":2,
+   "operatingSystemVersion":"Windows Server 2022 Datacenter",
+   "ip":"10.54.1.244",
+   "macs":["0acb224f3337"],
+   "ssid":"",
+   "managedWithBest":true,
+   "policy":{"id":"65a1a461fc4324475a0a07f9","name":"Data Export Fluency","applied":true}
+}
+*/
+
+----
