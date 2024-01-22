@@ -48,7 +48,8 @@ function main() {
 ** vendor Sentinelone: resource: agent, threat, application
 ** vendor AD: resource: user, asset
 ** vendor fehx (FireEyeHx):  resource: device
-** vendor Qualys:  resource: host  
+** vendor Qualys:  resource: host
+** This function will throw a ServiceError Exception if no results are found
 ----
 function main() {
   let users = Fluency_ResourceLoad("office365", "user", "*", (obj, customer) => {
