@@ -22,7 +22,7 @@ function convert (str) {
       const fieldValue = envField.split('=')[1].trim()
 
       if (fieldValue.startsWith('__')) {
-        const regex = new RegExp('(argument\\s+' + fieldValue + '.*)')
+        const regex = new RegExp('(argument\\s+' + fieldValue + '.*)', 'g')
         const field__value = str.match(regex)[0].split(/\s+/g)[2]
         envFields.push(fieldName)
         envValues.push(field__value)
@@ -215,7 +215,7 @@ function convert (str) {
     // convert all arguments into env variables
     for (const arg of arguments) {
       const argVal = arg.trim()
-      const regex = new RegExp('(' + argVal + '\\b)')
+      const regex = new RegExp('(' + argVal + '\\b)', 'g')
       fplTemplate = fplTemplate.replaceAll(regex, '"{{.' + argVal + '}}"')
     }
 
@@ -224,11 +224,15 @@ function convert (str) {
 
     // add search env into the template and close template with
     template += '\t`\n'
-    template += '\treturn fluencyLavadbFpl(template(fplTemplate, env))\n'
-    template += '}'
     if (envFields.includes('from') && envFields.includes('to')) {
       template = template.replace('search ', 'search {from="{{.from}}", to="{{.to}}"} ')
+      template += '\treturn fluencyLavadbFpl(template(fplTemplate, env))\n'
+    } else if (arguments.length > 0) {
+      template += '\treturn fluencyLavadbFpl(template(fplTemplate, env))\n'
+    } else {
+      template += '\treturn fluencyLavadbFpl(fplTemplate)\n'
     }
+    template += '}'
     newStr += '\n\n' + template
   }
   return newStr
