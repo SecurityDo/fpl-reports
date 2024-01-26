@@ -8,11 +8,11 @@
  * workload events by userid, p1sender, p2sender, subject and datafields.
  * 
  * @param {string || int} from - The start of the time range. Default is 1 day ago from the past hour
- * @param {string || int} to - The end of the time range. Default is the past minute
+ * @param {string || int} to - The end of the time range. Default is the past hour
  * 
  * @returns {object} - Returns an object containing all the tables/metric/alert obtained from the queries
  */
-function main({from="-1d@m", to="@m"}) {
+function main({from="-1d@h", to="@h"}) {
   let rangeFrom = new Time(from)
   let rangeTo = new Time(to)
   validateTimeRange(rangeFrom, rangeTo)
@@ -29,6 +29,8 @@ function main({from="-1d@m", to="@m"}) {
   let p2senders = new Table()
   let subjects = new Table()
   let datafields = new Table()
+  let policyNames = new Table()
+  let policyTypes = new Table()
 
   let interval = "1d"
   // break the time range into intervals of 1 day and append the data to the tables
@@ -45,6 +47,8 @@ function main({from="-1d@m", to="@m"}) {
     p2senders.Append(top_scc_by_field(from, to, "P2Sender"))
     subjects.Append(top_scc_by_field(from, to, "Subject"))
     datafields.Append(top_scc_datafields(from, to))
+    policyNames.Append(policy_name(from, to))
+    policyTypes.Append(policy_type(from, to))
   }
 
   // aggregates the data by the given field
@@ -57,6 +61,8 @@ function main({from="-1d@m", to="@m"}) {
   p2senders = aggregate_by_field(p2senders, "P2Sender").Sort(10, "-count")
   subjects = aggregate_by_field(subjects, "Subject").Sort(10, "-count")
   datafields = aggregate_by_field(datafields, "DataFields").Sort(10, "-count")
+  policyNames = aggregate_by_field(policyNames, "PolicyName").Sort(10, "-count")
+  policyTypes = aggregate_by_field(policyTypes, "type").Sort(10, "-count")
 
   return {
     events,
@@ -67,7 +73,9 @@ function main({from="-1d@m", to="@m"}) {
     p1senders,
     p2senders,
     subjects,
-    datafields
+    datafields,
+    policyNames,
+    policyTypes
   }
 }
 
@@ -143,6 +151,42 @@ function top_scc_datafields(from, to) {
     let {DataFields="an"}=f("@fields.DataFields")
     where sContent(Workload, "SecurityComplianceCenter")
     aggregate count=count() by DataFields
+  `
+  return fluencyLavadbFpl(template(fplTemplate, env))
+}
+
+/**
+ * This method gets the policy names and the event count for the given time range
+ * 
+ * @param {Time} from - The start of the time range
+ * @param {Time} to - The end of the time range
+ * 
+ * @returns {Table} - Returns a table with the count grouped by the field
+ */
+function policy_name(from, to) {
+  let env = {from, to}
+  let fplTemplate = `
+    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "DLP.All")
+    let {PolicyName}=f("@fields.PolicyDetails")
+    aggregate count=count() by PolicyName
+  `
+  return fluencyLavadbFpl(template(fplTemplate, env))
+}
+
+/**
+ * This method gets the policy data type used and the event count for the given time range
+ * 
+ * @param {Time} from - The start of the time range
+ * @param {Time} to - The end of the time range
+ * 
+ * @returns {Table} - Returns a table with the count grouped by the field
+ */
+function policy_type(from, to) {
+  let env = {from, to}
+  let fplTemplate = `
+    search {from="{{.from}}", to="{{.to}}"} sContent("@source", "DLP.All")
+    let type=f("@fields.PolicyDetails.Rules.ConditionsMatched.SensitiveInformation.SensitiveInformationTypeName")
+    aggregate count=count() by type
   `
   return fluencyLavadbFpl(template(fplTemplate, env))
 }
