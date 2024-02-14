@@ -1,0 +1,31 @@
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "warning",
+  "@message": "15:47:32  device92 0-PPE-0 : default AAA LOGIN_FAILED 24222144 0 :  User admin - Client_ip 8.8.8.8 - Failure_reason \"External authentication server denied access\" - Browser chrome",
+  "@parser": "CitrixNetScalerParser",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [],
+  "@timestamp": 1707839253000,
+  "@type": "event",
+  "@parserVersion": "20240213-1",
+  "@netscaler": {
+    "cn_feature": "AAA",
+    "cn_msg": "LOGIN_FAILED",
+    "cn_id": "24222144",
+    "user": "admin",
+    "client_ip": "8.8.8.8",
+    "failure_reason": "external authentication server denied access",
+    "browser": "chrome",
+    "_ip": {
+      "country": "Country",
+      "city": "City",
+      "org": "AAA Corp",
+      "countryCode": "ABC",
+      "isp": "Service Ltd"
+    }
+  },
+  "@event_type": "@netscaler",
+  "@eventType": "NetScaler"
+}

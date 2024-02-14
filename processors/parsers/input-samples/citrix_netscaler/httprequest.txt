@@ -1,0 +1,21 @@
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "14:57:00  device 0-PPE-0 : default SSLVPN HTTPREQUEST 24192611 0 : Context user@corp.com@192.0.2.0 - SessionId: 166994 - access.corp.com User user@corp.com : Group(s) N/A : Vserver 192.168.22.203:443 - 13/02/2024:14:57:00  : SSO is ON : GET /Citrix/StoreWeb/clients/HTML5Client/ThirdPartyLibrary/Compiled/speex.js - -",
+  "@parser": "CitrixNetScalerParser",
+  "@sender": "192.168.22.148",
+  "@source": "192.168.22.148",
+  "@tags": [],
+  "@timestamp": 1707836221000,
+  "@type": "event",
+  "@parserVersion": "20240213-1",
+  "@netscaler": {
+    "cn_feature": "SSLVPN",
+    "cn_msg": "HTTPREQUEST",
+    "cn_id": "24192611",
+    "msg": "context user@corp.com@192.0.2.0 - sessionid: 166994 - access.corp.com user user@corp.com : group(s) n/a : vserver 192.0.2.0 - 13/02/2024:14:57:00  : sso is on : get /citrix/storeweb/clients/html5client/thirdpartylibrary/compiled/speex.js - -"
+  },
+  "@event_type": "@netscaler",
+  "@eventType": "NetScaler"
+}

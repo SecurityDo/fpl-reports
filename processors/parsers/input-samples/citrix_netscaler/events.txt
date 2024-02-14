@@ -1,0 +1,59 @@
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "15:47:33  device 0-PPE-0 : default TCP CONN_TERMINATE 24222151 0 :  Source 192.0.2.0:0 - Destination 192.0.2.0:0 - Start Time 13/02/2024:15:47:33  - End Time 13/02/2024:15:47:33  - Total_bytes_send 347 - Total_bytes_recv 54",
+  "@parser": "fpl",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [
+    "13/02/2024"
+  ],
+  "@timestamp": 1707836009000,
+  "@type": "event"
+}
+
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "15:47:32  device 0-PPE-0 : default AAA LOGIN_FAILED 24222144 0 :  User admin - Client_ip 8.8.8.8 - Failure_reason \"External authentication server denied access\" - Browser chrome",
+  "@parser": "fpl",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [
+    "13/02/2024"
+  ],
+  "@timestamp": 1707835938000,
+  "@type": "event"
+}
+
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "14:57:00  device 0-PPE-0 : default SSLVPN HTTPREQUEST 24192611 0 : Context user@corp.com@192.0.2.0 - SessionId: 166994 - access.corp.com User user@corp.com : Group(s) N/A : Vserver 192.168.22.203:443 - 13/02/2024:14:57:00  : SSO is ON : GET /Citrix/StoreWeb/clients/HTML5Client/ThirdPartyLibrary/Compiled/speex.js - -",
+  "@parser": "fpl",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [
+    "13/02/2024"
+  ],
+  "@timestamp": 1707835939000,
+  "@type": "event"
+}
+
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "15:47:33  device 0-PPE-0 : default AAA Message 24222153 0 :  \"ns_aaa_login_handler : X509 cert not found \"",
+  "@parser": "fpl",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [
+    "13/02/2024"
+  ],
+  "@timestamp": 1707835963000,
+  "@type": "event"
+}
