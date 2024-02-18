@@ -1,0 +1,26 @@
+{
+  "@collector": "corp-us-c0",
+  "@facility": "local0",
+  "@level": "info",
+  "@message": "15:47:33  device 0-PPE-0 : default TCP CONN_TERMINATE 24222151 0 :  Source 192.0.2.0:0 - Destination 192.0.2.0:0 - Start Time 13/02/2024:15:47:33  - End Time 13/02/2024:15:47:33  - Total_bytes_send 347 - Total_bytes_recv 54",
+  "@parser": "CitrixNetScalerParser",
+  "@sender": "192.0.2.0",
+  "@source": "192.0.2.0",
+  "@tags": [],
+  "@timestamp": 1707839254000,
+  "@type": "event",
+  "@parserVersion": "20240213-1",
+  "@netscaler": {
+    "cn_feature": "TCP",
+    "cn_msg": "CONN_TERMINATE",
+    "cn_id": "24222151",
+    "source": "192.0.2.0:0",
+    "destination": "192.0.2.0:0",
+    "start": "time 13/02/2024:15:47:33",
+    "end": "time 13/02/2024:15:47:33",
+    "total_bytes_send": "347",
+    "total_bytes_recv": "54"
+  },
+  "@event_type": "@netscaler",
+  "@eventType": "NetScaler"
+}

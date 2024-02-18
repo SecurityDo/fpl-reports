@@ -1,0 +1,44 @@
+function main() {
+	let totalbytes =  totalbytes()
+	let src_change =  src_change()
+	let totalbytes_per_hour =  totalbytes_per_hour()
+
+	return {
+		totalbytes,
+		src_change,
+		totalbytes_per_hour
+	}
+}
+
+function totalbytes() {
+	let fplTemplate = `
+    search {from="-3d<h", to="-1h>h"} sContent("@source","balance-6a00")
+    let sent=f("@fields.bytes_sent"),recvd=f("@fields.bytes_recvd"),session=f("@fields.session_state")
+    let sent2=parseInt(sent),recvd2=parseInt(recvd)
+    where session=="END"
+    aggregate s=sum(sent2+recvd2)
+	`
+	return fluencyLavadbFpl(template(fplTemplate, env))
+}
+
+function totalbytes_per_hour() {
+	let fplTemplate = `
+    search {from="-3d<h", to="-1h>h"} sContent("@source","balance-6a00")
+    let sent=f("@fields.bytes_sent"),recvd=f("@fields.bytes_recvd"),session=f("@fields.session_state"),timestamp=f("@timestamp")
+    let sent2=parseInt(sent),recvd2=parseInt(recvd)
+    where session=="END"
+    let Hour=strftime("%D:%H:%M",timebucket("1h",timestamp))  
+    aggregate s=sum(sent2+recvd2)by Hour
+	`
+	return fluencyLavadbFpl(template(fplTemplate, env))
+}
+
+function src_change() {
+	let fplTemplate = `
+    search {from="-3d<h", to="-1h>h"} sContent("@source","balance-6a00") and sStartswith("@fields.src","192")
+    let src=f("@fields.src"),session=f("@fields.session_state"),timestamp=f("@timestamp")
+    where session=="END"
+    aggregate src_count=count() by src
+	`
+	return fluencyLavadbFpl(template(fplTemplate, env))
+}

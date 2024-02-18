@@ -10,22 +10,20 @@
  * The table is further processed to get the top 20 source IPs by bandwidth, count, and duration. The tables obtained
  * and processed are then returned as an object.
  * 
- * @param {string} from - The start of the time range. Default is 12 hours ago from the past hour
- * @param {string} to - The end of the time range. Default is the past hour
+ * @param {string || int} from - The start of the time range. Default is the past 12 hours
+ * @param {string || int} to - The end of the time range. Default is the past minute
  * @param {string} devname - The name of the device
  * 
- * @returns {object} - Returns an object containing all the tables obtained from the queries
+ * @returns {object} - Returns an object containing all the tables/metric/alert obtained from the queries
  */
-function main({from="-12h@h", to="@h", devname}) {
+function main({from="-12h@m", to="@m", devname}) {
   validateTimeRange(new Time(from), new Time(to))
 
   // set the report environment variables
   setEnv("from", from)
   setEnv("to", to)
 
-  // create the environment object that holds variables for the queries
-  let env = {from, to, devname}
-  let ip_utilization = getData(env).Sort(0, "totalBandwidth")
+  let ip_utilization = getData(devname)
   let top20bandwidth = ip_utilization.Clone("srcip", "totalBandwidth").Sort(20, "totalBandwidth")
   let top20count = ip_utilization.Clone("srcip", "totalCount").Sort(20, "totalCount")
   let top20duration = ip_utilization.Clone("srcip", "totalDuration").Sort(20, "totalDuration")
@@ -61,17 +59,45 @@ function validateTimeRange(from, to) {
 /**
  * This method uses the environment variables to build a fpl query to get the source ip utilization data from LavaDB.
  * 
- * @param {object} env - The environment object that holds variables for the queries
+ * @param {string} devname - The name of the device
  *  
- * @returns {table} table - Returns a table containing the source ip utilization data
+ * @returns {Table} table - Returns a table containing the source ip utilization data
  */
-function getData(env) {
+function getData(devname) {
+  // get the time range from the environment variables
+  let rangeFrom = new Time(getEnv("from"))
+  let rangeTo = new Time(getEnv("to"))
+
+  // initialize the table and the fpl template
+  let table = new Table()
   let fplTemplate = `
     search {from="{{.from}}", to="{{.to}}"} sContent("@eventType", "FortigateNGFW") and sContent("@fortigate.devname", "{{.devname}}") and not sContent("@fortigate.logid", "0000000020") and not sContent("srcip", "0.0.0.0")
     let {srcip, srcname} = f("@fortigate")
     let {dur, totalB} = f("@metaflow.flow")
     aggregate names=values(srcname), totalCount=count(), totalBandwidth=sum(totalB), totalDuration=sum(dur) by srcip
   `
-  let table = fluencyLavadbFpl(template(fplTemplate, env))
+  
+  let interval = "1d"
+  // break the time range into intervals of 1 day and get the source ip utilization data for each interval
+  for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
+    let from = t
+    let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+    let env = {from, to, devname}
+    table.Append(fluencyLavadbFpl(template(fplTemplate, env)))
+  }
+
+  // aggregate the data from all the intervals for each source ip and sort by the total bandwidth
+  table.Aggregate(({names, totalCount, totalBandwidth, totalDuration, srcip}) => {
+    return {
+      groupBy: {srcip},
+      columns: {
+        sum: {totalCount},
+        sum: {totalBandwidth},
+        sum: {totalDuration},
+        values: {names}
+      }
+    }
+  }).Sort(0, "totalBandwidth")
+
   return table
 }

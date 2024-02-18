@@ -1,5 +1,5 @@
 /**
- * @file Event_Ingress_Monthly_Report.js
+ * @file Event_Ingress_Report
  * @reportoverview Shows the overview of the total event ingress over the time range specified by the user by default,
  * it is a monthly report. It gets all events from LavaDB as a total events table and tables grouped by source, sender,
  * and event type. These tables can be used to create visualizations.
@@ -10,16 +10,15 @@
  * event size and count grouped by source, sender, and event type from the time range. The tables obtained are returned
  * as an object.
  * 
- * @param {string} from - The start of the time range. Default is last 30 days
- * @param {string} to - The end of the time range. Default is the past day
+ * @param {string || int} from - The start of the time range. Default is the past day
+ * @param {string || int} to - The end of the time range. Default is the past minute
  *  
- * @returns 
+ * @returns {object} - Returns an object containing all the tables/metric/alert obtained from the queries
  */
-function main({from="-30d<d", to="@d"}) {
+function main({from="-1d<m", to="@m"}) {
   let rangeFrom = new Time(from)
   let rangeTo = new Time(to)
   validateTimeRange(rangeFrom, rangeTo)
-  // sets the report environment variables
   setEnv("from", from)
   setEnv("to", to)
 
@@ -27,60 +26,22 @@ function main({from="-30d<d", to="@d"}) {
   let statsBySource = new Table()
   let statsBySender = new Table()
   let statsByEventType = new Table()
-  let interval = "5d"
-
-  // break the time range into intervals of 5 days and append the data to the tables
+  
+  let interval = "1d"
+  // break the time range into intervals of 1 day and append the data to the tables
   for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
-    let from = rangeFrom
+    let from = t
     let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
+
     statsBySource.Append(eventSizeBySource(from, to))
     statsBySender.Append(eventSizeBySender(from, to))
     statsByEventType.Append(eventSizeByEventType(from, to))
   }
 
-  // aggregate the data grouped by source to get the total size and count
-  statsBySource = statsBySource.Aggregate(({source, totalSize, eventCount})=>{
-      return {
-        groupBy: {source},
-        columns: {
-          sum: {totalSize},
-          sum: {eventCount}
-        }
-      }
-  })
-
-  // aggregate the data grouped by sender to get the total size and count
-  statsBySender = statsBySender.Aggregate(({sender, totalSize, eventCount})=>{
-      return {
-        groupBy: {sender},
-        columns: {
-          sum: {totalSize}, 
-          sum: {eventCount
-          }
-        }
-      }
-  })
-
-  // aggregate the data grouped by event type to get the total size and count
-  statsByEventType = statsByEventType.Aggregate(({eventtype, totalSize, eventCount})=>{
-      return {
-        groupBy: {eventtype},
-        columns: {
-          sum: {totalSize},
-          sum: {eventCount}
-        }
-      }
-  })
-
-  // use the event type table to get the overall total ingress size and total number of events
-  let totalStats = statsByEventType.Aggregate(({totalSize})=>{
-      return {
-        columns: { 
-          sum: {totalIngressSize: totalSize},
-          count: {totalEventTypes: true}
-        }
-      }
-  })
+  // aggregate the data to get the total size and count grouped by the field
+  statsBySource = getTotal(statsBySource, "source")
+  statsBySender = getTotal(statsBySender, "sender")
+  statsByEventType = getTotal(statsByEventType, "eventtype")
 
   // sort the overall total ingress size and total number of events by sender then calculate the EPS and EPH
   let totalStatsBySender = statsBySender.GroupBy(({totalSize, eventCount})=>{
@@ -93,6 +54,16 @@ function main({from="-30d<d", to="@d"}) {
   })
   totalStatsBySender.NewColumnLambda("totalEPS", "", (row) => row.totalEventCount / 2592000)
   totalStatsBySender.NewColumnLambda("totalEPH", "", (row) => row.totalEventCount / 720)
+
+  // use the event type table to get the overall total ingress size and total number of events
+  let totalStats = statsByEventType.Aggregate(({totalSize})=>{
+    return {
+      columns: { 
+        sum: {totalIngressSize: totalSize},
+        count: {totalEventTypes: true}
+      }
+    }
+  })
 
   // sort the tables by total size to get the top 10 sources, senders, and event types
   let topSizeBySource = statsBySource.Clone().Sort(10, "totalSize")
@@ -135,13 +106,13 @@ function validateTimeRange(from, to) {
  * @param {string} from - The start of the time range
  * @param {string} to - The end of the time range 
  * 
- * @returns {table} table - Returns a table containing the total event size and count grouped by source from the time range
+ * @returns {Table} table - Returns a table containing the total event size and count grouped by source
  */
 function eventSizeBySource(from, to) {
   let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
-      assign source=f("@source"), size=f("__size__")
+      let source=f("@source"), size=f("__size__")
       aggregate totalSize=sum(size), eventCount=count() by source
   `
   let table = fluencyLavadbFpl(template(fplTemplate, env))
@@ -154,13 +125,13 @@ function eventSizeBySource(from, to) {
  * @param {string} from - The start of the time range
  * @param {string} to - The end of the time range 
  * 
- * @returns {table} table - Returns a table containing the total event size and count grouped by sender from the time range
+ * @returns {Table} table - Returns a table containing the total event size and count grouped by sender
  */
 function eventSizeBySender(from, to) {
   let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
-      assign sender=f("@sender"), size=f("__size__")
+      let sender=f("@sender"), size=f("__size__")
       aggregate totalSize=sum(size), eventCount=count() by sender
   `
   let table = fluencyLavadbFpl(template(fplTemplate, env))
@@ -173,16 +144,39 @@ function eventSizeBySender(from, to) {
  * @param {string} from - The start of the time range
  * @param {string} to - The end of the time range 
  * 
- * @returns {table} table - Returns a table containing the total event size and count grouped by event type from the time range
+ * @returns {Table} table - Returns a table containing the total event size and count grouped by event type
  */
 function eventSizeByEventType(from, to) {
   let env = {from, to}
   let fplTemplate = `
       search {from="{{.from}}", to="{{.to}}"}
-      assign eventType=f("@eventType"), event_type=f("@event_type"), size=f("__size__")
+      let eventType=f("@eventType"), event_type=f("@event_type"), size=f("__size__")
       let eventtype = coalesce(eventType, event_type)
       aggregate totalSize=sum(size), eventCount=count() by eventtype
   `
   let table = fluencyLavadbFpl(template(fplTemplate, env))
   return table
+}
+
+/**
+ * This helper function groups the table by the specified field and gets the total size.
+ * 
+ * @param {Table} table - The table to be aggregated
+ * @param {string} field - The field to be grouped by
+ * 
+ * @returns {Table} - Returns an aggregated table grouped by the specified field with the total size and count
+ */
+function getTotal(table, field) {
+  return table.Aggregate((obj) => {
+    let fieldValue = obj[field]
+    let totalSize = obj.totalSize
+    let eventCount = obj.eventCount
+    return {
+      groupBy: {[field]: fieldValue},
+      columns: {
+          sum: {totalSize: totalSize},
+          sum: {eventCount: eventCount}
+      }
+    }
+  })
 }

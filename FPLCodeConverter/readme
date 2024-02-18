@@ -1,0 +1,12 @@
+To execute:
+- copy the fpl1 code to be converted into the fpl1.txt file
+- run node fpl_convert.js on the command line
+- the output will be in fpl2.txt file
+
+Notes:
+- does not support query as env variable. Need to move query fields into the search line insteat
+  - query=sContent("", "") => search sContent("", "")
+- add use TABLENAME as default table is not supported. Require the code block to be in the following format:
+  - use TABLENAME ... export OUTPUTTABLENAME
+- if code fails to execute in fpl1, the conversion may fail or the output code in fpl2 will also fail to compile
+- only support join, aggregate, sort, let statement conversions
