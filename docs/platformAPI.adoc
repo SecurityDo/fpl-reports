@@ -240,7 +240,15 @@ printf("b: %s", b)
 
 * Platform_Sink(sink, eventEnvelop)
 ** send event to one data sink
+----
+// processor S3Passthrough
+// send event to S3 data sink without a direct connection from router pipe to the sink
+function main({obj, size}) {
 
+   Platform_Sink("BehaviorEventBackup", {obj, size})   
+   return "abort"
+} 
+----
 * Platform_Notification_Email(options)
 ** send email notification
 ** options: {to, cc, bcc, subject, html, text}
