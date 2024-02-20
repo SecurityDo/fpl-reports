@@ -221,17 +221,15 @@ function main({from="-24h@h", to="@h"}) {
 * Platform_Cache_Get(cacheName, key)
 ** Get a value from cache. return undefined is key not found
 ----
-let flag = Platform_Cache_Check("cache1")
-printf("flag %v", flag)
-let ok = Platform_Cache_Register("cache1", {expire: 3600})
-printf("ok %v", ok) 
-if ok {
-  Platform_Cache_Set("cache1", "foo", "bar")
-  Platform_Cache_SetMultiple("cache1", ["k1", "k2"], ["v1", "v2"])
+let exist = Platform_Cache_Check("cache1")
+if !exist {
+  Platform_Cache_Register("cache1", {expire: 3600})
 }
+Platform_Cache_Set("cache1", "foo", "bar")
+Platform_Cache_SetMultiple("cache1", ["k1", "k2"], ["v1", "v2"])
     
-let  b = Platform_Cache_Get("cache1", "foo")
-printf("b: %s", b)
+let  value = Platform_Cache_Get("cache1", "foo")
+printf("value: %s", value)
 ----
 *  Platform_Channel(channel, eventEnvelop)
 ** send event to a channel
