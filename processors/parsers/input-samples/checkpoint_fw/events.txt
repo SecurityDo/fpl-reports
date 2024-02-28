@@ -5,8 +5,8 @@
       "@level": "notice",
       "@message": "1 2024-02-28T22:16:06+02:00 10.11.8.208 CP-GW - Log [Fields@1.3.6.1.4.1.2620 inzone=\"External\" outzone=\"Local\" service_id=\"echo-request\" ICMP=\"Echo Request\" src=\"183.94.179.239\" dst=\"78.28.226.154\" proto=\"1\" ICMP Type=\"8\" ICMP Code=\"0\" xlatesrc=\"\" xlatedst=\"78.28.226.155\" NAT_rulenum=\"0\" NAT_addtnl_rulenum=\"0\" user=\"\" src_user_name=\"\" src_machine_name=\"\" src_user_dn=\"\" snid=\"\" dst_user_name=\"\" dst_machine_name=\"\" dst_user_dn=\"\" UP_match_table=\"TABLE_START\" ROW_START=\"0\" match_id=\"0\" layer_uuid=\"c0264a80-1832-4fce-8a90-d0849dc4ba33\" layer_name=\"Network\" rule_uid=\"0E3B6801-8AB0-4b1e-A317-8BE33055FB43\" rule_name=\"Implied Rule \" ROW_END=\"0\" ROW_START=\"1\" match_id=\"16777216\" layer_uuid=\"ab5fcdb9-d1d5-44ea-9016-2b3333a6964e\" layer_name=\"AllowALL\" rule_uid=\"0E3B6801-8AB0-4b1e-A317-8BE33055FB43\" rule_name=\"Implied Rule \" ROW_END=\"1\" UP_match_table=\"TABLE_END\" NAT_rule_uid=\"\" NAT_addtnl_rule_uid=\"\" ProductName=\"VPN-1 & FireWall-1\" xlatedport_svc=\"\" xlatesport_svc=\"\" ProductFamily=\"Network\" ]",
       "@parser": "fpl",
-      "@sender": "10.11.8.208",
-      "@source": "10.11.8.208",
+      "@sender": "192.168.0.1",
+      "@source": "192.168.0.1",
       "@timestamp": 1709151367000,
       "@tags": [
           "checkpoint"
@@ -23,8 +23,8 @@
       "@level": "notice",
       "@message": "1 2024-02-27T16:37:49Z LFI-MGTr80.30 CheckPoint 11172 - [action:\"Accept\"; flags:\"149764\"; ifdir:\"inbound\"; ifname:\"wlan0\"; loguid:\"{0xe8597340,0xc7fc8041,0xf3868d0b,0xc5cca39c}\"; origin:\"98.187.164.228\"; time:\"1709051869\"; version:\"1\"; __policy_id_tag:\"product=VPN-1 & FireWall-1[db_tag={B5496287-B297-544E-A0C7-9F05E95D122D};mgmt=LFI-MGTr80.30;date=1704883027;policy_name=Remote_Sites_1430\\]\"; dst:\"23.47.48.140\"; inzone:\"Internal\"; nat_addtnl_rulenum:\"0\"; nat_rulenum:\"0\"; origin_sic_name:\"CN=SpringDale-1430,O=LFI-MGTr80.30.LFI.COM.jfnbju\"; outzone:\"External\"; product:\"VPN-1 & FireWall-1\"; proto:\"6\"; rule:\"8\"; rule_name:\"Allowed Internet Outbound\"; rule_uid:\"{85413BF3-D3B2-466B-885C-3F8A8E4F7587}\"; s_port:\"40912\"; service:\"443\"; service_id:\"https\"; src:\"172.27.72.170\"; xlatedport:\"0\"; xlatedst:\"0.0.0.0\"; xlatesport:\"49236\"; xlatesrc:\"98.187.164.228\"]",
       "@parser": "fpl",
-      "@sender": "10.11.8.208",
-      "@source": "10.11.8.208",
+      "@sender": "192.168.0.1",
+      "@source": "192.168.0.1",
       "@timestamp": 1709151367000,
       "@tags": [
           "checkpoint"
