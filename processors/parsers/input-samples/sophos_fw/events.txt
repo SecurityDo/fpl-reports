@@ -21,7 +21,7 @@
     "@collector": "fluency-collector",
     "@facility": ".source.s_remote",
     "@level": "info",
-    "@message": "02:27-16:35:19 asg-cdha ulogd[20251]: id=\"2002\" severity=\"info\" sys=\"SecureNet\" sub=\"packetfilter\" name=\"Packet accepted\" action=\"accept\" fwrule=\"5\" initf=\"eth1\" outitf=\"eth0\" srcmac=\"00:50:56:01:18:86\" dstmac=\"00:50:56:0a:01:3e\" srcip=\"192.168.25.5\" dstip=\"38.90.226.59\" proto=\"17\" length=\"74\" tos=\"0x00\" prec=\"0x00\" ttl=\"127\" srcport=\"64619\" dstport=\"53\"",
+    "@message": "02:27-16:35:19 asg-abcd ulogd[20251]: id=\"2002\" severity=\"info\" sys=\"SecureNet\" sub=\"packetfilter\" name=\"Packet accepted\" action=\"accept\" fwrule=\"5\" initf=\"eth1\" outitf=\"eth0\" srcmac=\"00:50:56:01:18:86\" dstmac=\"00:50:56:0a:01:3e\" srcip=\"192.168.25.5\" dstip=\"38.90.226.59\" proto=\"17\" length=\"74\" tos=\"0x00\" prec=\"0x00\" ttl=\"127\" srcport=\"64619\" dstport=\"53\"",
     "@parser": "SophosFlowGenerator",
     "@sender": "192.168.0.1",
     "@source": "192.168.0.1",
