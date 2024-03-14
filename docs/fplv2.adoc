@@ -751,6 +751,14 @@ function queueAlerts(queues) {
 ** All collection method take a lambda as argument
 ** (k, v) => {} for map type collections
 ** (i, v) => {} for list type collections.
+* Each()
+** iterate through the collection and apply the lambda function
+----
+let arr = [1, 2, 3]
+arr.Each((i, v) => {
+  printf("index: %d:  value: %d", i, v)
+})
+----
 * Map()
 ** return a new list populated with the results of calling a provided function on every element in the calling collection.
 * Filter()
