@@ -14,25 +14,34 @@
  *  
  * @returns {object} - Returns an object containing all the tables/metric/alert obtained from the queries
  */
-function main({from = "-24h@m", to = "@m"}) {
+function main({from = "-24h@h", to = "@h"}) {
   let rangeFrom = new Time(from)
   let rangeTo = new Time(to) 
   validateTimeRange(rangeFrom, rangeTo)
   setEnv("from", from)
   setEnv("to", to)
+  let diffsec = (rangeTo.Unix() - rangeFrom.Unix())
+  let diff = diffsec/3600.0 // range in hours
 
   // initializes the tables to be used
   let eventIDStats = new Table()
   let hostnameStats = new Table()
+  let totalStatsTimeTable = new Table()
 
-  let interval = "1d"
+  let interval = "7d"
+  let hist_interval = "1h"
+  
+  if (diff > 48) {
+    hist_interval = "1d"
+  }
   // break the time range into intervals of 1 day and append the data to the tables
   for (let t = rangeFrom; t.Before(rangeTo); t = t.Add(interval)) {
       let from = t
       let to = t.Add(interval).After(rangeTo) ? rangeTo : t.Add(interval)
-      let env = {from, to}
-      eventIDStats.Append(sizeByEventID(env))
-      hostnameStats.Append(sizeByHostname(env))
+      
+      totalStatsTimeTable.Append(eventsTimeTable(from, to, hist_interval))
+      eventIDStats.Append(sizeByEventID(from, to))
+      hostnameStats.Append(sizeByHostname(from, to))
   }
   
   // aggregate the tables to get the overall total size over all time intervals
@@ -68,13 +77,15 @@ function main({from = "-24h@m", to = "@m"}) {
   // gets the top 10 size by event id and hostname
   let topADSizeByEventID = eventIDStats.Clone().Sort(10, "-totalSize")
   let topADSizeByHostname = hostnameStats.Clone().Sort(10, "-totalSize")
+  totalStatsTimeTable = totalStatsTimeTable.Clone().Sort(0, "+Date") // sort by Date, for histogram
   
   return {
     eventIDStats,
     hostnameStats,
     totalADStats,
     topADSizeByEventID,
-    topADSizeByHostname
+    topADSizeByHostname,
+    totalStatsTimeTable
   }
 }
 
@@ -102,13 +113,15 @@ function validateTimeRange(from, to) {
  * This method is a helper method to get the total size and event count of windows AD data
  * grouped by the event id over the time range.
  * 
- * @param {object} env - The environment variables to be used in the fpl template
+ * @param {string} from - The start of the time range
+ * @param {string} to - The end of the time range 
  *  
  * @returns {Table} table - Returns a table containing the total size and event count grouped by event id
  */
-function sizeByEventID(env) {
+function sizeByEventID(from, to) {
+  let env = {from, to}
   let fplTemplate = `
-      search {from="{{.from}}", to="{{.to}}"}
+      search {from="{{.from}}", to="{{.to}}"} sContent("@eventType", "nxlogAD")
       let eid=f("@fields.EventID"), size=f("__size__")
       let {Description} = entitylookup(eid, "AD_EventID")
       let eventID = condition(len(Description)>0, eid .. " - " .. Description, eid) 
@@ -122,13 +135,15 @@ function sizeByEventID(env) {
  * This method is a helper method to get the total size and event count of windows AD data
  * grouped by the hostname over the time range.
  * 
- * @param {object} env - The environment variables to be used in the fpl template
+ * @param {string} from - The start of the time range
+ * @param {string} to - The end of the time range 
  *  
  * @returns {Table} table - Returns a table containing the total size and event count grouped by hostname
  */
-function sizeByHostname(env) {
+function sizeByHostname(from, to) {
+  let env = {from, to}
   let fplTemplate = `
-      search {from="{{.from}}", to="{{.to}}"}
+      search {from="{{.from}}", to="{{.to}}"} sContent("@eventType", "nxlogAD")
       let host=f("@fields.Hostname"), size=f("__size__")
       let {sp} = split(host, ".")
       let hostname = tolower(sp)
@@ -137,4 +152,23 @@ function sizeByHostname(env) {
   let table = fluencyLavadbFpl(template(fplTemplate, env))
   return table
 }
-  
+
+/**
+ * Thie method uses the environment variables to build a fpl query to get the event size and count grouped by timestamp
+ * 
+ * @param {string} from - The start of the time range
+ * @param {string} to - The end of the time range 
+ * 
+ * @returns {Table} table - Returns a table containing the total event size and count grouped by source
+ */
+function eventsTimeTable(from, to, interval) {
+  let env = {from, to, interval}
+  let fplTemplate = `
+      search {from="{{.from}}", to="{{.to}}"} sContent("@eventType", "nxlogAD")
+      let timestamp=f("@timestamp"), size=f("__size__")
+      let Date=strftime("%D %H:%M",timebucket("{{.interval}}", timestamp))
+      aggregate totalSize=sum(size), eventCount=count() by Date
+  `
+  let table = fluencyLavadbFpl(template(fplTemplate, env))
+  return table
+}
