@@ -382,16 +382,6 @@ let newDevices = Fluency_DeviceSearch("", "-7d@m", "@m", (obj) => {
 ** assign ipAddress to a new name
 * Fluency_Device_Delete(deviceName)
 ** delete device by name
-* Fluency_Tenant_Device_Lookup(tenant, ipAddress)
-** Lookup Tenant device information from Fluency Device database
-* Fluency_Tenant_Device_LookupName(tenant, deviceName)
-** Lookup tenant device information by name from Fluency Device database
-* Fluency_Tenant_Device_Add(tenant, device)
-** Add device information to Fluency Tenant Device database
-* Fluency_Tenant_Device_Update(tenant, ipAddress, newName)
-** assign ipAddress to a new name
-* Fluency_Tenant_Device_Delete(tenant, deviceName)
-** delete device by name
 ----
 function main({obj, size}) {
    
