@@ -513,6 +513,20 @@ isNumber("abc") // return false
 isNumber(64) // return true
 ----
 
+* run(lambda, arguments...)
+** run lambda function with optional arguments
+----
+let printLabel = () => {
+  printf("hello world")
+}
+run(printLabel)
+
+let inc = (i) => {
+  return i+1
+}    
+printf("inc %d", run(inc, 2))
+----
+
 * sprintf(format, arguments...)
 ** golang's printf format
 ** if format is not given, will default to string
