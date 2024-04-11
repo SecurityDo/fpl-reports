@@ -513,6 +513,15 @@ isNumber("abc") // return false
 isNumber(64) // return true
 ----
 
+* jsonClone(jsonValue) 
+** return a deep copy of the input json object or array
+----
+let a = {"string":"abc", "int": 1, "float": 2.01, "bool": true, "null":null, "array":[1,2,3], "map":{"foo":"bar"}}
+let b = jsonClone(a)
+printf("%s",b)
+// {"array":[1,2,3],"bool":true,"float":2.01,"int":1,"map":{"foo":"bar"},"null":null,"string":"abc"}
+----
+
 * run(lambda, arguments...)
 ** run lambda function with optional arguments
 ----
