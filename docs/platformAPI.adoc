@@ -297,6 +297,11 @@ function main({obj, size}) {
 ** send PagerDuty notification
 ** integrationName:  pagerduty integration name
 ** options: {event_action, dedup_key, payload:{summary, source, severity, component, group, class, eventTime}, details}
+* Platform_Notification_ServiceNow(integrationName, options)
+** call ServiceNow API
+** integrationName:  serviceNow integration name
+** options: {action, key, entry:{}}
+** action: "add" | "update"
 * Platform_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
 ----
