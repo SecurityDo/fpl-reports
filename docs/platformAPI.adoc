@@ -293,6 +293,10 @@ function main({obj, size}) {
    Platform_Notification_Slack(integrationName, options)
 
 ----
+* Platform_Notification_PagerDuty(integrationName, options)
+** send PagerDuty notification
+** integrationName:  pagerduty integration name
+** options: {event_action, dedup_key, payload:{summary, source, severity, component, group, class, eventTime}, details}
 * Platform_EntityinfoCheck(entity, key)
 ** check if one key exists in one entity table
 ----
