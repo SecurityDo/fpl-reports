@@ -312,6 +312,33 @@ if hit {
   printf("internet")
 }
 ----
+* Platform_Action(action, doc, config)
+** call a pre-defined FPL action
+----
+let doc = {
+  time: "2024-01-01",
+  name: "alert1",
+  severity: "error",
+  action: "drop",
+  source: "fpl"
+}
+let config = {
+  to:"kun@fluencysecurity.com"
+}
+Platform_Action("PlatformAlertEmail", doc, config)
+----
+* Platform_Action_Endpoint(endpoint, doc)
+** call a pre-defined FPL action endpoint
+----
+let doc = {
+  time: "2024-01-01",
+  name: "alert1",
+  severity: "error",
+  action: "drop",
+  source: "fpl"
+}
+Platform_Action_Endpoint("FluencySupport", doc)
+----
 * Platform_EntityinfoLookup(entity, keyCol, key, valueCol)
 ** check value from one column based on key column value
 ** return an object {exist, value}
