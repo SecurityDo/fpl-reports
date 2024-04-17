@@ -10,7 +10,8 @@
 == Data Types
 
 * Primitive Value
-** string 
+** string
+** blob 
 ** int64
 ** float64
 ** bool
@@ -505,6 +506,8 @@ isUndef(s) // return true
 isString("abc") // return true
 isString(64) // return false
 ----
+* isBlob(var)
+** return true if var is of blob type, false otherwise
 
 * isNumber(var)
 ** return false if var is of int64 or float64 type, false otherwise
@@ -521,7 +524,30 @@ let b = jsonClone(a)
 printf("%s",b)
 // {"array":[1,2,3],"bool":true,"float":2.01,"int":1,"map":{"foo":"bar"},"null":null,"string":"abc"}
 ----
+* toString(variable)
+** convert the input variable to a string (string|blob|int64|float64|bool|null|undefined|jsonObj|jsonArray)
 
+* base64Encode(blob|string)
+** base64 encode the input string or blob
+* base64Decode(string)
+** base64 decode the input string and return the decoded string as a blob
+----
+let s = "Hello World"
+let enc = base64Encode(s)
+printf("enc=%s", enc)
+let dec = base64Decode(enc)
+printf("dec=%s", toString(dec))
+----
+* gzipCompress(blob|string)
+** gzip compress the input string or blob
+* gzipDecompress(blob)
+** gzip decompress the input blob and return the decompressed as a blob 
+----
+let s = "Hello World"
+let gzBlob = gzipCompress(s)
+let b = gzipDecompress(gzBlob)
+printf("%s", toString(b))
+----
 * run(lambda, arguments...)
 ** run lambda function with optional arguments
 ----
