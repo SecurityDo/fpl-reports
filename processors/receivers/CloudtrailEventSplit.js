@@ -1,4 +1,4 @@
-// Data input format: {raw} or {line}, or {doc}
+// Data input format: {raw} or {line}, or {obj}
 function main({obj}) {
   let records = obj.Records
   if !records {
