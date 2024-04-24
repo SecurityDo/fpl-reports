@@ -205,6 +205,10 @@ function main({from="-24h@h", to="@h"}) {
     idMap[c.id] = c.name
   })
 ----
+* Platform_Site_GetInfo()
+** return site information // {siteURL, account, multiTenant}
+* Platform_Site_GetTenants()
+** return tenant list // [{name, displayName, description}]
 
 * Platform_Cache_Check(cacheName)
 ** return true if cache exists 
