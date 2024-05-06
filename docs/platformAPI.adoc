@@ -27,6 +27,57 @@ function main({obj, size}) {
   return "pass"
 }
 ----
+* FPL Receiver: Process event in data source component 
+** Receiver can be appiled to two input stages:  "raw", or "json"
+** "raw" input receiver will receive raw blob data from the data source
+*** input:  main({raw}) {}   // return a list of json objects
+----
+// the input blob is one json array [{},{}...]
+function main({raw}) {
+  return parseJson(raw)
+}
+----
+** "json" input receiver will receive decoded json object from the data source
+** the input data could be one json object or a stream of json objects or json object separated by new line (json lines)
+*** input:  main({obj}) {}   // return a list of json objects
+----
+// the input blob is a json object with a list of records 
+function main({obj}) {
+  let records = obj.Records
+  if !records {
+    throw "no Records field"
+  }
+  let list = []
+  for i, record = range records {
+    list = append(list, record)
+  }
+  return list
+}
+----
+* FPL Packer: Process event in data sink component
+** typical operation of packer is data aggregation, compression and encoding(base64)
+** input: a list of events with a meta object
+** output: a object with status and data field 
+----
+// kinesis data sink packer
+// events is a list of json object
+// meta is a map of properties
+// data is a blob or string for PutRecord API
+// partitionKey will be set to a random number is not set
+function main({events, meta}) {
+    let record = {
+       logEvents:events
+    }
+    let s = toString(record)
+    // printf("%s",s)    
+    return {
+      "status":"pass",
+      "data":gzipCompress(s)
+      // "partitionKey":""
+    }
+}
+
+----
 
 * FPL Rule: Process event in channels 
 ** input (same as FPL Parser)
