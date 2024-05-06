@@ -1,0 +1,61 @@
+== AWS Cloudwatch LogGroup event export 
+
+There are three ways to export logs from a log group to an S3 bucket/SIEM/Data Lake or any other destinations.
+https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html[AWS Documentation]
+
+* Subscription filters with Kinesis Data Streams
+* Subscription filters with Amazon Data Firehose
+* Subscription filters with AWS Lambda
+
+Fluency Platform support all three methods. 
+
+=== Subscription filters with Amazon Data Firehose
+
+* Step 1: Setup IAM Roles for Cloudwatch and Firehose service. 
+** Create a S3 bucket to hold the loggroup data. (shared by all loggroups)
+** Create a new IAM role, allow Firehose to write to S3 bucket.
+** Create a new IAM role, allow Cloudwatch to write to Firehose stream.
+** Create a new IAM user for Fluency Platform. Allow Fluency to read from the S3 bucket.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchFirehose.yaml[Cloudformation Template]
+** Cloudformation Parameters: 
+*** CloudWatchRole:  fluencyCloudwatchToFireHose 
+*** FirehoseRole: fluencyFireHoseToS3
+*** S3Bucket: {yourcompany}-fluency-cloudwatch-firehose
+*** IAMUserForFluency: fluency-s3-read
+
+* Step 2: Add Loggroup one by one 
+** Create a new Firehose stream.
+** Create a new subscription filter for the loggroup, set the destination to the Firehose stream.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchSubscriptionFilter.yaml[Cloudformation Template]
+** Cloudformation Parameters:
+*** CloudWatchRole:  fluencyCloudwatchToFireHose 
+*** FilterName: passthrough
+*** FilterPattern: ""
+*** FirehoseRole: fluencyFireHoseToS3
+*** LogGroup:  
+*** S3Bucket: {yourcompany}-fluency-cloudwatch-firehose
+*** Name:    //S3 object Prefix
+
+* Pros:
+** Easy to setup
+** Cheaper than Kinesis data stream
+* Cons:
+** One firehose for one destination
+** Limited destination options
+
+=== Subscription filters with Kinesis Data Streams
+
+* Pros:
+** Easy to setup
+** Flexible destination options
+** 24 hours data retention
+* Cons:
+** More expensive (each stream cost $0.10 per hour plus data ingress cost)
+
+=== Subscription filters with Lambda
+
+* Pros:
+** Flexible destination options
+** Cheapest solution. Only pay lambda invocation cost
+* Cons:
+** More complex setup
