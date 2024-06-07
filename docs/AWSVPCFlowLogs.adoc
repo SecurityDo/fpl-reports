@@ -1,0 +1,34 @@
+== AWS VPC flow logs 
+
+=== Setup VPC flow logs
+
+* Create a "Flow log" for the VPC. 
+* Set the destination to S3 bucket.
+** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html[AWS User Guide]
+
+=== Read VPC flow logs from the S3 bucket
+
+* Step 1: Create a SQS message queue
+** Setup policy for the SQS queue to allow the S3 bucket to post notification events.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyPlatformS3AddNotification.yaml[Cloudformation Template]
+** Cloudformation Parameters: 
+*** S3Bucket: fluency-bucket-with-notification
+*** SQSQueueName: fluency-vpc-s3notification
+* Step 2: Setup S3 bucket event notification on AWS Management console
+** Select the bucket with the VPC flow logs
+** Click "Properties" -> "Event notifications" -> "Create event notification"
+** Set the Event name,  Prefix.
+** Select "All object create events"
+** Select "SQS queue" as the destination
+** Select the SQS queue created in step 1
+*Step 3: Setup in Fluency Platform
+** Create a new integration "S3 with SQS"
+** Set the SQS queue URL OR ARN
+** Set the SQS region
+** Select AWS authentication method (Role or Access Key)
+** Click "Setup CloudFormation", follow the instruction to run Cloudformation for Fluency Platform.
+** Add a new data source "AWS S3 w/SQS".
+*** select the integration created, 
+*** set the "Receiver" to "AWSVPCFlowLogs", set the "Receiver Input" to "raw"
+
+
