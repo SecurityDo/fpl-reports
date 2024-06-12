@@ -1,0 +1,23 @@
+== AWS Security Lake event import
+
+=== Add a new subscriber (one for each AWS region)
+
+* In "Subscribers" page, click "Create subscriber" 
+** fill in "Subscriber name" and "Description"
+** Go to Fluency Platform "AWS Roles" page, click "Add role"
+** Generate a new random ExternalID. 
+** In "Subscriber credentials" section: set AccountID and ExternalID to the values from the AWS role. 
+** Select sources to ingest
+** Select "S3" as the "Data access method"
+** Click "Create"
+** Once the subscriber is created, go back to Fluency Platform "AWS Roles" page, fill the RoleARN and click "Save"
+
+=== Add a new integration "S3 with SQS"
+
+* Fill the QueueARN of the Subscriber just created.
+* Fill the region of the Subscriber.
+* Select the authentication method:  Role
+* Select the role created in the previous step.
+* Select "Create new data source"
+
+
