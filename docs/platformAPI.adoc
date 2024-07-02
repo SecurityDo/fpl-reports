@@ -275,6 +275,8 @@ function main({from="-24h@h", to="@h"}) {
 ** Set multiple key value pairs to cache
 * Platform_Cache_Get(cacheName, key)
 ** Get a value from cache. return undefined is key not found
+* Platform_Cache_Delete(cacheName, key)
+** Delete a key from the cache. (do nothing if key not found)
 ----
 let exist = Platform_Cache_Check("cache1")
 if !exist {
