@@ -267,8 +267,12 @@ function main({from="-24h@h", to="@h"}) {
 ** register a cache
 ** return true if success
 ** return false if cache is already registered
-** options: {expire=0}
+** options: {expire: 0}
 ** cache expire time in seconds, default is 0 (never expire)
+* Platform_Cache_DeRegister(cacheName)
+** deregister a cache
+** return true if success
+** return false if cache is not found
 * Platform_Cache_Set(cacheName, key, value)
 ** Set a key value pair to cache
 * Platform_Cache_SetMultiple(cacheName, keys, values)
