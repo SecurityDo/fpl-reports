@@ -277,6 +277,9 @@ function main({from="-24h@h", to="@h"}) {
 ** Get a value from cache. return undefined is key not found
 * Platform_Cache_Delete(cacheName, key)
 ** Delete a key from the cache. (do nothing if key not found)
+* Platform_Cache_Replace(newName, currentName)
+** Rename cache "$currentName" to "$newName".
+** newName must be different from currentName 
 ----
 let exist = Platform_Cache_Check("cache1")
 if !exist {
