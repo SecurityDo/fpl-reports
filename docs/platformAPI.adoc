@@ -414,6 +414,61 @@ Platform_Action_Endpoint("FluencySupport", doc)
    }
 ----
 
+== Platform Asset API:  Asset management
+
+* Platform_Asset_Refresh(plugin, entries)
+** plugin is the asset plugin name: "AD", "SentinelOne", "Qualys"
+** entries is a list of asset objects: {name, fqdn, model, platform, machineType, category, os, publicIP, privateIP, location, osVersion, vendor, uuid, serialNumber, region, vpc, account, sites, groups, tags}
+** name is the required field
+** fqdn is the fully qualified domain name (optional)
+** cronjob to populate the asset table from Qualys plugin
+** each refresh will trigger a rebuild of the asset table
+----
+function main() {
+    let table = loadQualysDevices() 
+    let list = table.Map( (row) => row)
+    Platform_Asset_Refresh("Qualys", list)
+    return {table}
+}
+
+function loadQualysDevices() {
+  let table =  Fluency_ResourceLoad("Qualys", "host", "*", (obj, customer) => {
+    let fields= obj["@qualysHost"]
+    let {created, name, fqdn, model, manufacturer:vendor, os, type:machineType, address:privateIP} = fields
+    let timestamp = obj["@timestamp"]
+    return {
+      aggregate: {
+        groupBy: {fqdn},
+        columns: {
+          argmax: {
+            created,
+            name,
+            model,
+            privateIP,
+            os,
+            machineType,
+            vendor,
+            customer,
+            timestamp
+          }
+        }
+      }
+    }
+  })
+  return table
+}
+----
+* Platform_Asset_Lookup(name)
+** return an asset object {key, asset, updatedOn, providers}, if name match the asset name or fqdn.
+** call this function in FPL event parser to get asset information. 
+----
+  let asset = Platform_Asset_Refresh(obj["@sender"])
+  if asset {
+    printf("asset key %s", asset.key)
+  }
+----
+
+
 == Platform EntityProvider API:  UEBA entity lookup
 
 * the default entity info : {id, obj, entity}
