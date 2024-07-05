@@ -462,7 +462,7 @@ function loadQualysDevices() {
 ** return an asset object {key, asset, updatedOn, providers}, if name match the asset name or fqdn.
 ** call this function in FPL event parser to get asset information. 
 ----
-  let asset = Platform_Asset_Refresh(obj["@sender"])
+  let asset = Platform_Asset_Lookup(obj["@sender"])
   if asset {
     printf("asset key %s", asset.key)
   }
