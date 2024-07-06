@@ -459,15 +459,24 @@ function loadQualysDevices() {
 }
 ----
 * Platform_Asset_Lookup(name)
-** return an asset object {key, asset, updatedOn, providers}, if name match the asset name, fqdn, agentID or instanceID.
+** return an asset object, if the name match the asset name, fqdn, agentID or instanceID.
 ** call this function in FPL event parser to get asset information. 
+* Platform_Asset_Register({name, fqdn, category, machineType, groups, flags...})
+** register an asset
 ----
-  let asset = Platform_Asset_Lookup(obj["@sender"])
-  if asset {
-    printf("asset key %s", asset.key)
+  // get hostname from the parsed event
+  let asset = Platform_Asset_Lookup(hostname)
+  if (!asset) {
+     assetEntry = {
+       name: hostname,
+       groups: ["FPL-detect: FortiGate NGFW"],
+       machineType: "FortiGate NGFW",
+       category: "Firewall"
+     }
+     platform_Asset_Register(assetEntry)
   }
+  printf("asset name %s", asset.name)
 ----
-
 
 == Platform EntityProvider API:  UEBA entity lookup
 
