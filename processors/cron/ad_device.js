@@ -19,7 +19,7 @@ function loadADAssets() {
          aggregate:{
            groupBy:{name},
            columns: {
-             argmax:{updatedOn, description, dNSHostName, flags:propertyFlags, customer}
+	     argmax:{updatedOn, description, fqdn:dNSHostName, flags:propertyFlags, customer}
            }
          }
       }
