@@ -464,16 +464,16 @@ function loadQualysDevices() {
 * Platform_Asset_Register({name, fqdn, category, machineType, groups, flags...})
 ** register an asset
 ----
-  // get hostname from the parsed event
-  let asset = Platform_Asset_Lookup(hostname)
+  // get deviceName from the parsed event
+  let asset = Platform_Asset_Lookup(deviceName)
   if (!asset) {
-     assetEntry = {
-       name: hostname,
+      // register a new asset. the provider will be set to "FPL"
+     assetEntry = platform_Asset_Register({
+       name: deviceName,
        groups: ["FPL-detect: FortiGate NGFW"],
        machineType: "FortiGate NGFW",
        category: "Firewall"
-     }
-     platform_Asset_Register(assetEntry)
+     })
   }
   printf("asset name %s", asset.name)
 ----
