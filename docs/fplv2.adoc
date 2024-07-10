@@ -699,6 +699,41 @@ let t3 = mergeTable(t1, t2) // t3 is a new table with data from t1 followed by t
 |US
 |===
 
+== Sort Function
+
+* sort(list, <lambda>)
+** in place sort. 
+** sort(list) 
+** sort in ascending order, the list must be a list of numbers or strings
+** sort(list, (i, j) =>  return int | bool)
+** sort with a compare function.
+** the compare function should return 
+** a positive value if i should come after j,
+** a negative value if j should come before j, 
+** or 0 if i and j should keep their original order
+** the compare function should return bool value
+** if the bool value is true, i should come after j
+** false value if i should come before j, 
+----
+let a=["abc", "xyz" , "mnl"]
+//default sort in ascending order, apply to string or number type
+//sort(a)
+    
+// sort with a compare function
+// return true:  place i after j
+// return false: place i before j
+sort(a, (i, j) => i > j)
+printf("%v",a) //  ["abc","mnl","xyz"]
+    
+    
+let b=[100, 10, 50]
+// return positive number:  place i after j
+// return negative number:  place i before j
+// return 0:                no change
+sort(b, (i, j) => i - j)
+printf("%v",b) // [10,50,100]
+----
+
 == System Functions
 
 * pluginLambda(pluginType, customers, (customer) => {}
