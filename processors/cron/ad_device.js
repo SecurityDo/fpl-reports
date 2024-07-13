@@ -9,7 +9,7 @@ function main() {
 
 function loadADAssets() {
 
-  let assets = Fluency_ResourceLoad("AD", "asset", "*", (obj, customer) => {
+  return Fluency_ResourceLoad("AD", "asset", "*", (obj, customer) => {
       let fields = obj["@ADAsset"]
       let {customer, name, description, dNSHostName, updatedOn, propertyFlags} = fields
       if (propertyFlags.Some((_, e) => e == "ACCOUNTDISABLE")) {
@@ -24,5 +24,4 @@ function loadADAssets() {
          }
       }
   })
-  return {assets}
 }
