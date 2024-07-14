@@ -104,6 +104,27 @@ Platform_Notification_Slack(integrationName, options)
 return "pass"
 ----
 
+== Platform REST API: call REST API
+
+* Platform_REST_Call(integration, request)
+** call REST API via "RESTAPI" integration.
+** integration: { url, path, method, timeout, skipVerify, headers, authentication}
+** support HTTP Basic, Bearer authentication
+** request:  {method, path, headers, parameters, body, debug}
+----
+  let response = Platform_REST_Call("Terplab", {
+    path: "/api/ds/behavior_incident_update",
+    debug: true,
+    body: {
+      kargs: {
+        id: "username_foo",
+        status:"resolved"
+      }
+    }    
+  })    
+  printf("%v", response)
+----
+
 == Platform Metric API: read/write metrics to Prometheus database (local or remote)
 
 * Platform_Metric_Counter(name, labels, increment)
