@@ -1357,51 +1357,6 @@ function main() {
 
 == Bulit-in Resource Loading Support
 
-* AWS_Cli_List(<cmd_line>, (obj) => { }) 
-** list AWS assets via AWS cli
-
-* AWS_Cli_Get(<cmd_line>, idList, (id, obj) => {})
-** get asset attributes from a list of ID
-
-* NOTE the AWS_Cli_List and AWS_Cli_Get are not open for production deployment. For security concerns.  If the role IAM policy is not properly configured, it may cause security issues.
-----
-let natGateways = AWS_Cli_List("ec2 describe-nat-gateways", (obj) => {
-      let ID = obj.NatGatewayId
-      let State = obj.State
-      let VpcId = obj.VpcId
-      let PublicIp = obj.NatGatewayAddresses[0].PublicIp
-      return {ID, State, VpcId, PublicIp}
-})
-// call AWS cli:  "aws ec2 describe-nat-gateways"
-// same as AWS_LoadAsset( "ec2:natgateway", ...
-function main() {
-   return AWS_AccountRegionLambda("*", "us-west-2", () => {
-      let queues = AWS_Cli_List("sqs list-queues", (url) => {
-         let QueueUrl = url
-         let segments = split(QueueUrl, "/")
-         let ID = segments[len(segments)-1]
-         let fifo = endsWith(ID, ".fifo")
-         return { ID, QueueUrl, fifo }
-      })
-
-      let queueTags = AWS_Cli_Get("sqs list-queue-tags --queue-url", queues.GetColumnValues("QueueUrl"), (id, obj) => {
-           let QueueUrl = id
-           let TagCount = len(obj.Tags)
-           return {QueueUrl, TagCount}
-      })
-
-      let queueAttributes = AWS_Cli_Get("sqs get-queue-attributes --attribute-names All  --queue-url", queues.GetColumnValues("QueueUrl"), (id, obj) => {
-           let QueueUrl = id
-           let QueueArn = obj.Attributes.QueueArn
-           return {QueueUrl, QueueArn}
-      })
-      queues.Join(queueTags, {QueueUrl:"QueueUrl"})
-      queues.Join(queueAttributes, {QueueUrl:"QueueUrl"})
-      return {queues}
-   })
-}
-----
-
 * AWS_LoadAsset(<resource>, (obj) => { })
 
 ** loads an AWS resource and convert them into a table
