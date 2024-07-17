@@ -10,6 +10,11 @@ function loadSentinelOneAgents() {
     let fields= obj["@sentinelOneAgent"]
     let {updatedAt, computerName:name, uuid:agentID, modelName:model, osName:os, machineType, lastIpToMgmt:privateIP, externalIp: publicIP} = fields
     let timestamp = obj["@timestamp"]
+    if contains(name, ".") {
+      let segments = split(name, ".")
+      name = segments[0]
+    }
+
     return {
       aggregate: {
         groupBy: {agentID},
