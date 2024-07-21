@@ -1345,6 +1345,8 @@ function main() {
 ** convert asset table columns into tags for the metric stream key
 * SetUnit(unit)
 ** set unit for metric stream
+* ApplyDivider(divider)
+** apply divider to the metric stream. (value /= divider)
 
 === FplAlert Methods
 
@@ -1448,6 +1450,8 @@ function getLambdaCost(assetTable) {
 == Built-in AWS Pricing API
 
 * AWS_GetPrice(service, resource, options)
+** service: "EC2", resource: "Hour" or "Minute",  options: {InstanceType, Platform, Tenancy}
+** service: "EBS", resource: "Hour" or "Minute",  options: {VolumeType, Size, Throughput, Iops}
 ** service: "Lambda", resource: "GB-Second" , "Request"
 ** service: "S3",  resource: "StorageType"
 ** service: "NatGateway", resource "GB" , "Hour"
