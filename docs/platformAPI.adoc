@@ -419,6 +419,16 @@ if hit {
   printf("internet")
 }
 ----
+* Platform_EntityinfoLookupRow(entity, key)
+** return entityinfo row object based on the key
+----
+let entry = Fluency_EntityinfoCheck("HOME_NET", "20.0.0.1")
+if entry {
+  printf("home net: %s", entry)
+} else {
+  printf("miss")
+}
+----
 * Platform_Action(action, doc, config)
 ** call a pre-defined FPL action
 ----
