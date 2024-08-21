@@ -25,7 +25,7 @@
 ** Create a new integration "S3 with SQS"
 ** Set the SQS queue URL OR ARN
 ** Set the SQS region
-** Select AWS authentication method (Role or Access Key)
+** Select AWS authentication method (Role, User or Access Key/Secret)
 ** Click "Setup CloudFormation", follow the instruction to run Cloudformation for Fluency Platform.
 ** Add a new data source "AWS S3 w/SQS".
 *** select the integration created, 
