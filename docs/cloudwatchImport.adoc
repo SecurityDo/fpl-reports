@@ -15,13 +15,11 @@ Fluency Platform support all three methods.
 ** Create a S3 bucket to hold the loggroup data. (shared by all loggroups)
 ** Create a new IAM role, allow Firehose to write to S3 bucket.
 ** Create a new IAM role, allow Cloudwatch to write to the Firehose stream.
-** Create a new IAM user for Fluency Platform. Allow Fluency to read from the S3 bucket.
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchFirehose.yaml[Cloudformation Template]
 ** Cloudformation Parameters: 
 *** CloudWatchRole:  fluencyCloudwatchToFireHose 
 *** FirehoseRole: fluencyFireHoseToS3
 *** S3Bucket: {yourcompany}-fluency-cloudwatch-firehose
-*** IAMUserForFluency: fluency-s3-read
 
 * Step 2: Add Loggroup one by one 
 ** Create a new Firehose stream.
@@ -35,6 +33,12 @@ Fluency Platform support all three methods.
 *** LogGroup:  
 *** S3Bucket: {yourcompany}-fluency-cloudwatch-firehose
 *** Name:    //S3 object Prefix
+
+* Step 3: Configure in Fluency Platform to read from this S3 bucket. 
+** Attach the permission to an configured EC2 instance profile. 
+** Attach the permission to an existing IAM user integration.
+** Create a new IAM user to read from this S3 bucket
+
 
 * Pros:
 ** Easy to setup
@@ -56,12 +60,10 @@ Fluency Platform support all three methods.
 *** StreamName
 *** LogGroup
 
-* Step 2: Setup IAM User for Fluency Platform
-** Allow this IAM user to read from the Kinesis stream.
-** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyPlatformKinesisRead.yaml[Cloudformation Template]
-** Cloudformation Parameters:
-*** KinesisStream
-*** IAMUser
+* Step 2: Configure in Fluency Platform to read from the Kinesis stream. 
+** Attach the permission to an configured EC2 instance profile. 
+** Attach the permission to an existing IAM user integration.
+** Create a new IAM user to read from this S3 bucket
 
 * Pros:
 ** Easy to setup
@@ -103,7 +105,6 @@ def lambda_handler(event, context):
 ----
 * Attach a resource permission policy to this lambda, allow Cloudwatch loggroup to invoke this lambda function.
 * Create a new subscription filter for the loggroup, set the destination to the Lambda function.
-* Create IAM User for Fluency Platform. Allow Fluency to read from the S3 bucket.
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchLambdaS3.yaml[Cloudformation Template]
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchLambdaS3WithLogging.yaml[Cloudformation Template with logging support]
 ** Cloudformation Parameters:
@@ -114,8 +115,11 @@ def lambda_handler(event, context):
 *** LogGroup
 *** FilterPattern
 *** FilterName
-*** IAMUserForFluency
 
+* Step 2: Configure in Fluency Platform to read from this S3 bucket. 
+** Attach the permission to an configured EC2 instance profile. 
+** Attach the permission to an existing IAM user integration.
+** Create a new IAM user to read from this S3 bucket
 
 * Pros:
 ** Flexible destination options

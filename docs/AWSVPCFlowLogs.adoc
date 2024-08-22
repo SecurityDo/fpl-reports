@@ -5,6 +5,8 @@
 * Create a "Flow log" for the VPC. 
 * Set the destination to S3 bucket.
 ** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html[AWS User Guide]
+* OR set the destination to a Cloudwatch loggroup:
+** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-iam-role.html[AWS User Guide]
 
 === Read VPC flow logs from the S3 bucket
 
