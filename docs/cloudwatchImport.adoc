@@ -34,11 +34,40 @@ Fluency Platform support all three methods.
 *** S3Bucket: {yourcompany}-fluency-cloudwatch-firehose
 *** Name:    //S3 object Prefix
 
-* Step 3: Configure in Fluency Platform to read from this S3 bucket. 
-** Attach the permission to an configured EC2 instance profile. 
-** Attach the permission to an existing IAM user integration.
-** Create a new IAM user to read from this S3 bucket
+* Step 3: Configure a "S3 bucket" integration in Fluency. 
+** Set the bucket and region
+** Set the mode to "read"
+** Select the AWS authentication method: EC2 Instance Role, IAM User or Access Key (create a new IAM user)
 
+
+* Step 4: Add a "S3" type data source in Fluency.  
+** Set the Receiver to "CloudwatchEventSplit", input set to "JSON"
+----
+function main({obj, size, source, props}) {
+    if (obj.messageType != "DATA_MESSAGE") {
+      return null
+    }
+    let list = []
+    let logEvents = obj.logEvents
+    if (!logEvents) {
+       printf("logEvents field not found")
+       return null
+    }
+    for i, event = range logEvents {
+      let envelop = {
+         logGroup: obj.logGroup,
+         logStream: obj.logStream,
+         subscriptionFilters: obj.subscriptionFilters,
+         "@message": event.message,
+         "@type": "event",
+         "@timestamp": event.timestamp,
+         "@source": obj.logStream
+      }
+      list = append(list, envelop)
+    }
+    return list
+}
+----
 
 * Pros:
 ** Easy to setup
@@ -60,10 +89,14 @@ Fluency Platform support all three methods.
 *** StreamName
 *** LogGroup
 
-* Step 2: Configure in Fluency Platform to read from the Kinesis stream. 
-** Attach the permission to an configured EC2 instance profile. 
-** Attach the permission to an existing IAM user integration.
-** Create a new IAM user to read from this S3 bucket
+* Step 2: Configure a "AWS Kinesis" integration in Fluency. 
+** Set the kinesis stream name, region
+** Set the mode to "read"
+** Select the AWS authentication method: EC2 Instance Role, IAM User or Access Key (create a new IAM user)
+
+* Step 3: Add a "Kinesis" type data source in Fluency.  
+** Set the Receiver to "CloudwatchEventSplit", input set to "JSON"
+
 
 * Pros:
 ** Easy to setup
@@ -116,10 +149,14 @@ def lambda_handler(event, context):
 *** FilterPattern
 *** FilterName
 
-* Step 2: Configure in Fluency Platform to read from this S3 bucket. 
-** Attach the permission to an configured EC2 instance profile. 
-** Attach the permission to an existing IAM user integration.
-** Create a new IAM user to read from this S3 bucket
+* Step 2: Configure a "S3 bucket" integration in Fluency. 
+** Set the bucket and region
+** Set the mode to "read"
+** Select the AWS authentication method: EC2 Instance Role, IAM User or Access Key (create a new IAM user)
+
+* Step 3: Add a "S3" type data source in Fluency.  
+** Set the Receiver to "CloudwatchEventSplit", input set to "JSON"
+
 
 * Pros:
 ** Flexible destination options
