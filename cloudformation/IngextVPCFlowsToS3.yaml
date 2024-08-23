@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Configure VPC flow logs export to S3 bucket.
+Parameters:    
+  S3BucketARN: 
+    Type: String
+    Description: Destination S3 bucket ARN
+
+  VPCID:
+    Type: String
+    Description: VPC id
+
+  TrafficType:
+    Type: String
+    Description: The type of traffic to monitor (accepted traffic, rejected traffic, or all traffic)
+    Default: ALL
+    AllowedValues:
+      - ACCEPT
+      - ALL
+      - REJECT
+
+
+Resources:
+  VPCFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      ResourceType: VPC
+      ResourceId: !Ref VPCID
+      LogDestinationType: s3
+      LogDestination: !Ref S3BucketARN
+      TrafficType: !Ref TrafficType

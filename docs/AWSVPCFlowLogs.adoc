@@ -2,35 +2,39 @@
 
 === Setup VPC flow logs
 
-* Create a "Flow log" for the VPC. 
-* Set the destination to S3 bucket.
+* Step 1: Create a s3 bucket for VPC flow logs, setup bucket notification to SQS queue.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextVPCFlowsS3BucketSQS.yaml[Cloudformation Template]
+** Cloudformation Parameters:
+*** S3Bucket
+*** SQSQueueName
+*** ExpirationInDays
+
+* Step 2: Setup one VPC flow logs to write to the S3 bucket
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextVPCFlowsToS3.yaml
 ** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html[AWS User Guide]
-* OR set the destination to a Cloudwatch loggroup:
-** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-iam-role.html[AWS User Guide]
+** Cloudformation Parameters:
+*** S3BucketARN
+*** VPCID
+*** TrafficType
 
-=== Read VPC flow logs from the S3 bucket
-
-* Step 1: Create a SQS message queue
-** Setup policy for the SQS queue to allow the S3 bucket to post notification events.
-** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyPlatformS3AddNotification.yaml[Cloudformation Template]
-** Cloudformation Parameters: 
-*** S3Bucket: fluency-bucket-with-notification
-*** SQSQueueName: fluency-vpc-s3notification
-* Step 2: Setup S3 bucket event notification on AWS Management console
-** Select the bucket with the VPC flow logs
-** Click "Properties" -> "Event notifications" -> "Create event notification"
-** Set the Event name,  Prefix.
-** Select "All object create events"
-** Select "SQS queue" as the destination
-** Select the SQS queue created in step 1
-*Step 3: Setup in Fluency Platform
+* Step 3: Setup in Fluency Platform
 ** Create a new integration "S3 with SQS"
-** Set the SQS queue URL OR ARN
-** Set the SQS region
-** Select AWS authentication method (Role, User or Access Key/Secret)
-** Click "Setup CloudFormation", follow the instruction to run Cloudformation for Fluency Platform.
-** Add a new data source "AWS S3 w/SQS".
-*** select the integration created, 
-*** set the "Receiver" to "AWSVPCFlowLogs", set the "Receiver Input" to "raw"
+** Select the AWS authentication method: EC2 Instance Role, IAM User or Access Key (create a new IAM user)
+** Add a "S3 with SQS" type data source in Fluency.  
+** Set the Receiver to "AWSVPCFlowTextFormat", input set to "raw"
 
+=== Option 2: Setup VPC flow logs to Cloudwatch
+
+* Step 1: Create a IAM role to allow VPC flow logs to write to Cloudwatch loggroup.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextVpcFlowsToCloudwatchRole.yaml[Cloudformation Template]
+** Cloudformation Parameters:
+*** IAMRole
+* Step 2: Setup one VPC flow logs to write to the cloudwatch loggroup
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextVPCFlowsToCloudwatch.yaml[Cloudformation Template]
+** Cloudformation Parameters:
+*** RoleARN
+*** LogGroupName
+*** VPCID
+*** TrafficType
+** https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-iam-role.html[AWS User Guide]
 

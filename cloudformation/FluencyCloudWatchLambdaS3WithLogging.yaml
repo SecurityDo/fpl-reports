@@ -1,0 +1,177 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Fluency CloudWatch LogGroup to S3 via Lambda
+Parameters:
+
+  S3Bucket:
+    Type: String
+    Default: yourcompany-fluency-cloudwatch-lambda
+    Description: Bucket for cloudwatch events. Must be global unique
+
+  S3ObjectPrefix:
+    Type: String
+    Default: "logGroups"
+    Description: S3 Object Prefix
+
+  LambdaRole:
+    Type: String
+    Default: fluencyCloudwatchToLambda
+    Description: Allow Lambda function to write to S3 bucket
+
+  IAMUserForFluency:
+    Type: String
+    Default: fluency-s3-lambda-read
+    Description: User for Fluency SIEM. Read and list permission on cloudwatch S3 bucket
+
+  LambdaFunctionName:
+    Type: String
+    Description: Lambda Function Name
+    Default: "cloudwatchLogGroupToS3"
+
+  LogGroup:
+    Type: String
+    Description: CloudWatch log group name
+
+  FilterPattern:
+    Type: String
+    Default: ""
+
+  FilterName:
+    Type: String
+    Default: passthrough
+
+  LambdaLogGroup:
+    Type: String
+    Description: Loggroup for lambda logs
+    Default: "cloudwatchLogGroupToS3"  
+
+Resources:
+  S3BucketR:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3Bucket
+
+  LambdaFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt LambdaFunction.Arn
+      SourceArn: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:*"
+      Principal: logs.amazonaws.com
+
+  SimpleLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaLogGroup}"
+      RetentionInDays: 3
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      FunctionName: !Ref LambdaFunctionName
+      Description: "Upload logGroup data to S3 bucket"
+      Role: !GetAtt LambdaRoleR.Arn
+      LoggingConfig:
+        LogGroup: !Sub "/aws/lambda/${LambdaLogGroup}"
+      Environment:
+        Variables:
+          BUCKET: !Ref S3Bucket
+          LOGGROUP: !Ref LogGroup
+          PREFIX: !Ref S3ObjectPrefix
+      Code: 
+        ZipFile: |
+          import datetime
+          import os
+          import uuid 
+          import base64
+          import boto3
+          import time
+
+          def lambda_handler(event, context):
+            LOGGROUP = os.environ['LOGGROUP']
+            DESTINATION_BUCKET = os.environ['BUCKET']
+            PREFIX = os.environ['PREFIX']
+            currentTime = datetime.datetime.now()
+            LOGGROUP = LOGGROUP.replace('/','_')
+            OBJECT_PREFIX = os.path.join(PREFIX, LOGGROUP, currentTime.strftime('%Y%m%d').format(os.path.sep))
+            encoded_zipped_data = event['awslogs']['data']
+            zipped_data = base64.b64decode(encoded_zipped_data)
+    
+            basename = currentTime.strftime('%H-%M-%S')
+            object_path = '{}/{}-{}.json.gz'.format(OBJECT_PREFIX, currentTime.strftime('%H-%M-%S'),uuid.uuid1())
+            #print(object_path)
+            s3 = boto3.client('s3') 
+            s3.put_object(Body=zipped_data, Bucket=DESTINATION_BUCKET, Key=object_path)
+
+  SubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: !GetAtt LambdaFunction.Arn
+      FilterName: !Ref FilterName
+      FilterPattern: !Ref FilterPattern
+      LogGroupName: !Ref LogGroup
+    DependsOn: LambdaFunctionPermission
+
+  LambdaRoleR:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref LambdaRole
+      Description: Allow Lambda to write to S3 bucket
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: 
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: createAndWriteToLogstream
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaLogGroup}:*"
+        - PolicyName: writeToS3
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+  IAMUserForFluencyR:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref IAMUserForFluency
+      Policies:
+        - PolicyName: firehoseBucketRead
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource: 
+                  - !Sub "arn:aws:s3:::${S3Bucket}"
+                  - !Sub "arn:aws:s3:::${S3Bucket}/*"
+  IAMUserKeys:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref 'IAMUserForFluencyR'
+
+Outputs:
+  AccessKey:
+    Value: !Ref 'IAMUserKeys'
+    Description: AWSAccessKeyId of new user
+  SecretKey:
+    Value: !GetAtt [IAMUserKeys, SecretAccessKey]
+    Description: AWSSecretAccessKey of new user

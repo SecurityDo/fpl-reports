@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Fluency CloudWatch to FireHose setup
+Parameters:
+
+  S3Bucket:
+    Type: String
+    Default: yourcompany-fluency-cloudwatch-firehose
+    Description: Bucket for cloudwatch events. Must be global unique
+
+  CloudWatchRole:
+
+    Type: String
+    Default: fluencyCloudwatchToFireHose
+    Description: Allow CloudWatch service send events to FireHose streams
+
+  FirehoseRole:
+
+    Type: String
+    Default: fluencyFireHoseToS3
+    Description: Allow Firehose service write to S3 bucket
+
+Resources:
+  S3BucketR:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3Bucket
+  
+  FirehoseRoleR:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref FirehoseRole
+      Description: Allow Firehose service write to S3 bucket
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: 
+            Service: firehose.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: s3Write
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource: 
+                  - !Sub "arn:aws:s3:::${S3Bucket}"
+                  - !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+  CloudWatchRoleR:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref CloudWatchRole
+      Description: Allow Cloudwatch service write to Firehose stream
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: 
+            Service: logs.amazonaws.com
+          Action: sts:AssumeRole
+          Condition:
+            StringLike:
+              aws:SourceArn: !Sub "arn:aws:logs:*:${AWS::AccountId}:*"
+
+      Policies:
+        - PolicyName: PutToFirehose
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - firehose:PutRecord
+                Resource: 
+                  - !Sub "arn:aws:firehose:*:${AWS::AccountId}:deliverystream/fluency-cloudwatch-*"
+

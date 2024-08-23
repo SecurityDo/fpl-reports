@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Fluency CloudWatch to FireHose setup
+Transform: 'AWS::LanguageExtensions'
+Parameters:
+
+  Name:
+    Type: String
+    Description: Firehose delivery stream name will be fluency-cloudwatch-$Name
+
+  LogGroup:
+    Type: String
+    Description: CloudWatch log group name
+
+  S3Bucket:
+    Type: String
+    Default: yourcompany-fluency-cloudwatch-firehose
+    Description: Bucket for cloudwatch events. Must be global unique
+
+  FilterPattern:
+    Type: String
+    Default: ""
+
+  FilterName:
+    Type: String
+    Default: passthrough
+
+  CloudWatchRole:
+    Type: String
+    Default: fluencyCloudwatchToFireHose
+    Description: Allow CloudWatch service send events to FireHose streams
+
+  FirehoseRole:
+    Type: String
+    Default: fluencyFireHoseToS3
+    Description: Allow Firehose service write to S3 bucket
+
+Resources:
+  SubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: !GetAtt FluencyKinesisFirehoseStream.Arn
+      FilterName: !Ref FilterName
+      FilterPattern: !Ref FilterPattern
+      LogGroupName: !Ref LogGroup
+      RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/${CloudWatchRole}"
+
+  FluencyKinesisFirehoseStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamType: DirectPut
+      DeliveryStreamName: !Sub "fluency-cloudwatch-${Name}"
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Sub "arn:aws:s3:::${S3Bucket}"
+        RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/${FirehoseRole}"
+        Prefix: !Sub "cloudwatch/${Name}/"
+        FileExtension: ".json.gz"

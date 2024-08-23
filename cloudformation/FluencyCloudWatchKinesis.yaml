@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Fluency CloudWatch to Kinesis setup
+Parameters:
+
+  CloudWatchRole:
+    Type: String
+    Default: fluencyCloudwatchToKinesis
+    Description: Allow CloudWatch service send events to Kinesis streams
+
+  StreamName:
+    Type: String
+    Description: Kinesis Stream name
+
+  LogGroup:
+    Type: String
+    Description: CloudWatch log group name
+
+  FilterPattern:
+    Type: String
+    Default: ""
+
+  FilterName:
+    Type: String
+    Default: passToKinesis
+
+Resources:
+
+  KinesisStream: 
+    Type: AWS::Kinesis::Stream 
+    Properties: 
+      Name: !Ref StreamName
+      RetentionPeriodHours: 24
+      StreamModeDetails:
+        StreamMode: ON_DEMAND
+  CloudWatchRoleR:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref CloudWatchRole
+      Description: Allow Cloudwatch service write to Firehose stream
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: 
+            Service: logs.amazonaws.com
+          Action: sts:AssumeRole
+          Condition:
+            StringLike:
+              aws:SourceArn: !Sub "arn:aws:logs:*:${AWS::AccountId}:*"
+
+      Policies:
+        - PolicyName: PutToKinesis
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:PutRecord
+                Resource: 
+                  - !Sub "arn:aws:kinesis:*:${AWS::AccountId}:stream/${StreamName}"
+
+  SubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: !GetAtt KinesisStream.Arn
+      FilterName: !Ref FilterName
+      FilterPattern: !Ref FilterPattern
+      LogGroupName: !Ref LogGroup
+      RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/${CloudWatchRole}"
+    DependsOn: 
+      - KinesisStream
+      - CloudWatchRoleR

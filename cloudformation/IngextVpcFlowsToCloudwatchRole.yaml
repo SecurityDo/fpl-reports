@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Allow vpc flow logs export to cloudwatch loggroup
+Parameters:
+
+  IAMRole:
+    Type: String
+    Default: ingext_vpcflows_cloudwatch
+    Description: Role for VPC flow logs 
+
+Resources:
+  IAMRoleR: 
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref IAMRole
+      Description: Role for VPC flow logs
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Sid: CloudwatchLogGroup
+          Effect: Allow
+          Action: 
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - logs:DescribeLogGroups
+            - logs:DescribeLogStreams
+          Resource: "*"
+          Condition:
+            StringEquals:
+              'aws:SourceAccount': !Sub "${AWS::AccountId}"
+            ArnLike:
+              'aws:SourceArn': !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc-flow-log/*"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: vpc-flow-logs.amazonaws.com
+          Action: sts:AssumeRole
+
+Outputs:
+  RoleARN:
+    Value: !GetAtt IAMRoleR.Arn

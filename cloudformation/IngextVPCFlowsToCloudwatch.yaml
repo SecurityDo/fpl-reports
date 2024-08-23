@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Configure VPC flow logs export to a cloudwatch loggroup.
+Parameters:    
+  LogGroupName: 
+    Type: String
+    Description: Cloudwatch loggroup name
+
+  VPCID:
+    Type: String
+    Description: VPC id
+
+  TrafficType:
+    Type: String
+    Description: The type of traffic to monitor (accepted traffic, rejected traffic, or all traffic)
+    Default: ALL
+    AllowedValues:
+      - ACCEPT
+      - ALL
+      - REJECT
+  RoleARN:
+    Type: String
+    Description: The ARN of the IAM role that allows Amazon EC2 to publish flow logs to the cloudwatch loggroup
+
+
+Resources:
+  VPCFlowLog:
+    Type: AWS::EC2::FlowLog
+    Properties:
+      ResourceType: VPC
+      ResourceId: !Ref VPCID
+      LogDestinationType: cloud-watch-logs
+      LogDestination: !Ref LogGroupName
+      TrafficType: !Ref TrafficType
+      DeliverLogsPermissionArn: !Ref RoleARN
