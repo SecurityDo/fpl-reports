@@ -13,7 +13,8 @@
 ** Create a new role/user if you have more than 10 AWS integrations.
 
 * In Fluency/Ingext, setup roles in "AWS Roles" page.
+
 image::Ingext_AWS_Role.png[AWS Role]
-![AWS Role](Ingext_AWS_Role.png?raw=true)
+
 
 
