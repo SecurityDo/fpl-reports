@@ -13,23 +13,20 @@ Resources:
     Properties:
       RoleName: !Ref IAMRole
       Description: Role for VPC flow logs
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-        - Sid: CloudwatchLogGroup
-          Effect: Allow
-          Action: 
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - logs:DescribeLogGroups
-            - logs:DescribeLogStreams
-          Resource: "*"
-          Condition:
-            StringEquals:
-              'aws:SourceAccount': !Sub "${AWS::AccountId}"
-            ArnLike:
-              'aws:SourceArn': !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:vpc-flow-log/*"
+      Policies:
+        - PolicyName: CloudWatchLoGGroup
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Sid: CloudwatchLogGroup
+              Effect: Allow
+              Action: 
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                - logs:DescribeLogGroups
+                - logs:DescribeLogStreams
+              Resource: "*"
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:

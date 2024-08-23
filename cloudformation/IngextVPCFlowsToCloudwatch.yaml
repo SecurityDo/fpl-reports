@@ -29,6 +29,6 @@ Resources:
       ResourceType: VPC
       ResourceId: !Ref VPCID
       LogDestinationType: cloud-watch-logs
-      LogDestination: !Ref LogGroupName
+      LogGroupName: !Ref LogGroupName
       TrafficType: !Ref TrafficType
       DeliverLogsPermissionArn: !Ref RoleARN
