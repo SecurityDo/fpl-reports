@@ -4,7 +4,7 @@
    "group": "AWS",
    "gitPath": "community/receivers/code/AWSCloudtrail_EventSplit.js",
    "name": "AWSCloudtrail_EventSplit",
-   "type": "fpl_processor",
+   "type": "fpl_receiver",
    "channel": "",
    "description": "split one cloudtrail event with records array into a list of events",
    "scriptLang": "",

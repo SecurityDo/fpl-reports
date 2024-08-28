@@ -4,7 +4,7 @@
    "group": "AWS",
    "gitPath": "community/packers/code/AWSKinesis_PutRecordGzip.js",
    "name": "AWSKinesis_PutRecordGzip",
-   "type": "fpl_processor",
+   "type": "fpl_packer",
    "channel": "",
    "description": "pack a list of events into a compressed record for Kinesis",
    "scriptLang": "",

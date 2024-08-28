@@ -4,7 +4,7 @@
    "group": "AWS",
    "gitPath": "community/packers/code/AWSLambda_Payload.js",
    "name": "AWSLambda_Payload",
-   "type": "fpl_processor",
+   "type": "fpl_packer",
    "channel": "",
    "description": "pack a list of events into payload for AWS Lambda input. The payload is gzipped and base64 encoded",
    "scriptLang": "",
