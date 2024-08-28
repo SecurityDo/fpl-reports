@@ -1,0 +1,15 @@
+{
+   
+   "repository": "IngextCommunity",
+   "group": "AWS",
+   "gitPath": "community/packers/code/AWSLambda_Payload.js",
+   "name": "AWSLambda_Payload",
+   "type": "fpl_processor",
+   "channel": "",
+   "description": "pack a list of events into payload for AWS Lambda input. The payload is gzipped and base64 encoded",
+   "scriptLang": "",
+   "scriptText": "",
+   "createdOn": "2024-03-20T21:36:06.687805981Z",
+   "updatedOn": "2024-04-30T00:00:00Z"
+}
+
