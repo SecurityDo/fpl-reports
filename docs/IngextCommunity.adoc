@@ -4,6 +4,34 @@
 * Go to EC2 Dashboard and click on "Launch Instance".
 * Search for "Ingext Community" in the AWS Marketplace.
 ** Select "Ingext Community Edition" and click on "Subscribe Now".
+
+
+== Continue Launching EC2 instance from the AWS Management Console
+
+* Select "Instance Type" 
+* Select "Key Pair"
+* Select VPC and Subnet
+* Configure Security Group
+** Select "Allow SSH"
+** Select "Allow HTTPS traffic from the internet"
+* Configure storage: set 25 GB as the root volume size. select "gp3" for the volume type.
+* Click "Launch instance"
+* Once the instance is running, login from the web interface: https://<public-ip>
+* Login with the default username and password: "admin@ingext.io" and "ingext".
+** Select AWS Role as the authentication method.
+** Run cloudformation template to create the required resources.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextInitRole.yaml[Cloudformation Template]
+** This template will create the following resources:
+*** One S3 bucket in the same region. 
+*** Create one IAM role and attach the role to the EC2 instance profile. 
+*** Create another IAM role for the EC2 instance to assume.
+*** Create a IAM policy for the role to access the S3 bucket. 
+** After the stack is created. Associate the newly created instance profile with the EC2 instance launched.
+* Complete the setup wizard with the required information.
+
+
+
+== OR Launch Ingext Community via Cloudformation
 ** Copy the "Image ID" (ami-xxxxxx)
 * Run the following Cloudformation template to launch the Ingext Community.
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextCommunity.yaml[Cloudformation Template]
