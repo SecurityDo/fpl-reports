@@ -1,0 +1,29 @@
+== Launch Ingext Community From AWS Marketplace
+
+* Login into AWS Management Console in the region where you want to launch the Ingext Community.
+* Go to EC2 Dashboard and click on "Launch Instance".
+* Search for "Ingext Community" in the AWS Marketplace.
+** Select "Ingext Community Edition" and click on "Subscribe Now".
+** Copy the "Image ID" (ami-xxxxxx)
+* Run the following Cloudformation template to launch the Ingext Community.
+** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextCommunity.yaml[Cloudformation Template]
+** This template will create the following resources: 
+** One EC2 instance and one S3 bucket in the same region. 
+** Create one IAM role and attach the role to the EC2 instance profile. 
+** Create another IAM role for the EC2 instance to assume.
+** Create a IAM policy for the role to access the S3 bucket. 
+** Cloudformation Parameters:
+*** Name:  The name of the EC2 instance.
+*** ImageId:  The AMI ID copy from the AWS Marketplace.
+*** VpcId:  The VPC ID where the EC2 instance will be launched.
+*** SubnetId:  The Subnet ID where the EC2 instance will be launched.
+*** KeyPairName:  The key pair name to access the EC2 instance.
+*** InstanceType:  The EC2 instance type. (default: c2.large)
+*** AssociatePublicIpAddress: Associate a public IP address to the EC2 instance. (default: true)
+*** IAMRole:  The IAM role name for the EC2 instance to assume.
+*** InstanceRole: The IAM role name for the EC2 instance.
+*** S3Bucket:  The S3 bucket for Ingext's persistent storage.
+* Create a stack with the Cloudformation template. 
+** after the stack is created, you can access the Ingext Community via the public IP address of the EC2 instance. 
+* Login with the default username and password: "admin@ingext.io" and "ingext".
+* Complete the setup wizard with the required information.
