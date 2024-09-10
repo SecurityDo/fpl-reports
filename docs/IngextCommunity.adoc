@@ -32,8 +32,9 @@
 
 
 == OR Launch Ingext Community via Cloudformation
-** Copy the "Image ID" (ami-xxxxxx)
-* Run the following Cloudformation template to launch the Ingext Community.
+* Subscribe to the Ingext Community from the AWS Marketplace:  
+** https://aws.amazon.com/marketplace/server/procurement?productId=prod-ow6xyajjq2264[AWS Marketplace]
+* Run the following Cloudformation template to launch the Ingext Community. (works in us-east-1, us-east-2, us-west-1, us-west-2)
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/IngextCommunity.yaml[Cloudformation Template]
 ** This template will create the following resources: 
 ** One EC2 instance and one S3 bucket in the same region. 
@@ -42,7 +43,6 @@
 ** Create a IAM policy for the role to access the S3 bucket. 
 ** Cloudformation Parameters:
 *** Name:  The name of the EC2 instance.
-*** ImageId:  The AMI ID copy from the AWS Marketplace.
 *** VpcId:  The VPC ID where the EC2 instance will be launched.
 *** SubnetId:  The Subnet ID where the EC2 instance will be launched.
 *** KeyPairName:  The key pair name to access the EC2 instance.
