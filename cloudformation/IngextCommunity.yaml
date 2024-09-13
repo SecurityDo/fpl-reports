@@ -1,0 +1,193 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Ingext Community AMI Setup.
+Parameters:
+
+  Name:
+    Type: String
+    Default: IngextCommunity
+    Description: EC2 instance name
+    
+  VpcId:
+    Type: String
+    Description: VPC hosting the Ingext EC2 instance
+
+  SubnetId:
+    Type: String
+    Description: Subnet hosting the Ingext EC2 instance
+
+  KeyPairName:
+    Type: String
+    Description: The name of the Keypair for the Ingext EC2 instance
+
+  InstanceType:
+    Type: String
+    Default: c5.large
+    Description: The EC2 instance type
+
+  AssociatePublicIpAddress:
+    Type: String 
+    Default: "true"
+    Description: Assign a public IP address to the Ingext instance
+  
+  ExternalID:
+    Type: String
+    Default: abcdefg
+    Description: Site identifier for STS AssumeRole call
+
+  IAMRole:
+    Type: String
+    Default: ingextRole 
+    Description: Role for Ingext Instance to assume
+
+  InstanceRole:
+    Type: String
+    Default: ingextInstanceRole 
+    Description: Ec2 instance role for Ingext server instance(s)
+
+  S3Bucket:
+    Type: String
+    Description: Bucket names can consist only of lowercase letters, numbers, dots (.), and hyphens (-).
+
+Mappings: 
+  AMIIDMap: 
+    us-east-1:
+      Server: ami-020f7dd33abd86e1e
+    us-east-2:
+      Server: ami-0e329b481402c8b85
+    us-west-1:
+      Server: ami-08d7c475ffbd17ccb
+    us-west-2:
+      Server: ami-0949b69a76210c434      
+
+Resources:
+  InstanceRoleR: 
+    Type: AWS::IAM::Role
+    DependsOn:
+      - IAMRoleR
+    Properties:
+      RoleName: !Ref InstanceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: "ec2.amazonaws.com"
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AssumeRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource:  !GetAtt IAMRoleR.Arn
+
+  InstanceProfileR: 
+    Type: "AWS::IAM::InstanceProfile"
+    DependsOn:
+      - InstanceRoleR
+    Properties: 
+      InstanceProfileName: !Ref InstanceRole
+      Path: "/"
+      Roles: 
+        - !Ref InstanceRole
+
+  BucketR:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3Bucket
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire
+            Status: Enabled
+            ExpirationInDays: 30
+
+  S3Policy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    DependsOn:
+      - IAMRoleR
+    Properties:      
+      Roles:
+        - !Ref IAMRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: s3Read
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              - !Sub "arn:aws:s3:::${S3Bucket}/*"
+          - Sid: s3ListObject
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
+            Resource:
+              - !Sub "arn:aws:s3:::${S3Bucket}"
+          - Sid: s3Write
+            Effect: Allow
+            Action:
+              - s3:PutObject
+            Resource:
+              - !Sub "arn:aws:s3:::${S3Bucket}/*"    
+
+  IAMRoleR: 
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref IAMRole
+      Description: Role for Ingext instance to assume
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub ${AWS::AccountId}
+          Action: sts:AssumeRole
+          Condition:
+            StringEquals:
+              sts:ExternalId: !Ref ExternalID 
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Enable SSH access via port 22, HTTPS access via port 443"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: "0.0.0.0/0"  
+
+  IngextInstance: 
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [AMIIDMap, !Ref "AWS::Region", Server] 
+      IamInstanceProfile: !Ref InstanceProfileR
+      KeyName: !Ref KeyPairName
+      InstanceType: !Ref InstanceType
+      Tags:
+       - Key: Name
+         Value: !Ref Name
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: !Ref AssociatePublicIpAddress
+          DeviceIndex: "0"
+          SubnetId: !Ref SubnetId
+          GroupSet:
+            - !Ref InstanceSecurityGroup
+
+Outputs:
+  RoleARN:
+    Value: !GetAtt IAMRoleR.Arn
+  S3Bucket:
+    Value: !Ref S3Bucket
+  ExternalID:
+    Value: !Ref ExternalID
+  PublicIP:
+    Description: ec2 public IP address
+    Value: !GetAtt IngextInstance.PublicIp
