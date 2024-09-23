@@ -125,10 +125,19 @@ return "pass"
   printf("%v", response)
 ----
 
-== Platform Metric API: read/write metrics to Prometheus database (local or remote)
+== Platform Metric API: push metrics to a remote Prometheus database via remote write protocol
+
+* Prom_Push_Counter(integrationName, name, labels, value)
+** push counter type metrics to Prometheus database
+** integrationName is the Prometheus integration name. {url, flushInterval, username, password}
+** default flushInterval is 60 seconds
+* Prom_Push_Gauge(integration, name, labels, value)
+** push gauge type metrics to Prometheus database
+
+== Platform Metric API: read/write metrics to Prometheus database
 
 * Platform_Metric_Counter(name, labels, increment)
-** Write Counter metric to Prometheus database
+** Write Counter metric to the local VictoriaMetric database
 ** "undefined" or "null" label will be ignored
 ----
 let customer = obj["@customer"]
