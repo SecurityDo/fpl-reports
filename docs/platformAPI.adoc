@@ -131,8 +131,9 @@ return "pass"
 ** push counter type metrics to Prometheus database
 ** integrationName is the Prometheus integration name. {url, flushInterval, username, password}
 ** default flushInterval is 60 seconds
-* Prom_Push_Gauge(integration, name, labels, value)
+* Prom_Push_Gauge(integration, name, labels, value, timestamp)
 ** push gauge type metrics to Prometheus database
+** timestamp is an unix timestamp in milliseconds
 
 == Platform Metric API: read/write metrics to Prometheus database
 
