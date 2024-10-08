@@ -1303,7 +1303,13 @@ cpu.Sort(10, "Average")
   sources.NewColumnLambda("name", "", (row) => idMap[row.id])
   sourceHistogram.ReplaceKey(idMap)
 ----
-
+* SetDimensions("dimension1", "dimension2", ...)
+** set the dimensions for the metric stream
+----
+let query = sum by (eventType, customer) (increase(event_ingress_count[1h]))
+let eventTypeData = Platform_Metric_QueryRange(query, from, to, "1h")
+eventTypeData.SetDimensions("customer", "eventType")
+----
 * SummaryTable(column, unit, aggregationType)
 ** create a new table with a new column which holds the aggreation results for each data series
 ** aggregationType:  Sum|Average|Min|Max|Count|Last
