@@ -288,7 +288,7 @@ function main({from="-24h@h", to="@h"}) {
   })
 ----
 * Platform_Site_GetInfo()
-** return site information // {siteURL, account, multiTenant}
+** return site information // {siteURL, account, multiTenant, managerURL}
 * Platform_Site_GetTenants()
 ** return tenant list // [{name, displayName, description}]
 
