@@ -110,7 +110,10 @@ return "pass"
 ** call REST API via "RESTAPI" integration.
 ** integration: { url, path, method, timeout, skipVerify, headers, authentication}
 ** support HTTP Basic, Bearer authentication
-** request:  {method, path, headers, parameters, body, debug}
+** request:  {method, path, headers, parameters, body, debug, encoding}
+** header format: {header, value, variable}
+** parameter format: {name, value, variable}
+** encoding: "json" | "form" | "url"  (default is "json")
 ----
   let response = Platform_REST_Call("Terplab", {
     path: "/api/ds/behavior_incident_update",
