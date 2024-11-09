@@ -294,6 +294,8 @@ function main({from="-24h@h", to="@h"}) {
 ** return site information // {siteURL, account, multiTenant, managerURL}
 * Platform_Site_GetTenants()
 ** return tenant list // [{name, displayName, description}]
+* Platform_Site_LoadTenantComponent(tenant)
+** return tenant component list // [{id, name}]
 
 * Platform_Grok_Check(grokName)
 ** return true if grok handle exists 
