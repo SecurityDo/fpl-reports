@@ -39,7 +39,7 @@ spec:
   processors:
     - Plugin_Passthrough
   sinks: 
-    - EventWatch
+    - "{{ .Application }}-{{ .AppInstance }}"
   router: "{{ .Application }}-{{ .AppInstance }}" 
 ---
 apiVersion: application.ingext.io/v1
@@ -90,3 +90,13 @@ spec:
         sensitive: true
       - name: ENTERPRISE_ID   
         value: "{{ .UserInput.EnterpriseID }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

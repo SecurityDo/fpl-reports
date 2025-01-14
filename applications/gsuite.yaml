@@ -31,7 +31,7 @@ spec:
   processors:
     - GSuite-Adjustments
   sinks: 
-    - EventWatch
+    - "{{ .Application }}-{{ .AppInstance }}"
   router: "{{ .Application }}-{{ .AppInstance }}" 
 ---
 apiVersion: application.ingext.io/v1
@@ -61,3 +61,13 @@ metadata:
 spec:
   type: GSuite
   adminConsent: "{{ .UserInput.adminConsentEmail }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

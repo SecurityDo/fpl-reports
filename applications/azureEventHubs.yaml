@@ -34,7 +34,7 @@ spec:
   processors:
     - Azure-EventHubs-Adjustments
   sinks: 
-    - EventWatch
+    - "{{ .Application }}-{{ .AppInstance }}"
   router: "{{ .Application }}-{{ .AppInstance }}" 
 ---
 apiVersion: application.ingext.io/v1
@@ -68,3 +68,13 @@ spec:
       eventhubs: 
         - endpoint: "{{ .UserInput.Endpoint }}"
           description: "{{ .UserInput.Description }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
