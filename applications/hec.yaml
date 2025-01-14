@@ -1,0 +1,45 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: HECSyslog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/splunk_hec.png"
+  description: "Syslog import from HEC"
+  displayName: "Syslog from HEC"
+  output:
+    - name: url
+      description: "HEC URL"
+      dataType: string
+      valueRef:
+        kind: DataSource
+        resource: HECImport
+        name: url
+    - name: token
+      description: "HEC security token"
+      dataType: string
+      sensitive: true
+      valueRef:
+        kind: DataSource
+        resource: HECImport
+        name: token
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: HECImport
+spec:
+  type: hec
+  format: json
+  router: SyslogRouter
+  config:
+    hec:
+      ack: false
+  output:
+    - name: url
+      description: "HEC URL"
+      dataType: string
+    - name: token
+      description: "HEC security token"
+      dataType: string
+      sensitive: true

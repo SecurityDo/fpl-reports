@@ -1,0 +1,114 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CatoNetworks
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/catonetworks-via-s3-sq.png"
+  category: network
+  description: "Cato Networks events import via a Fluency-managed S3 Bucket"
+  displayName: "Cato Networks"
+  output:
+    - name: roleARN
+      description: "AWS IAM Role ARN"
+      dataType: string
+      valueRef:
+        kind: Integration
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: roleARN
+    - name: region
+      description: "AWS region"
+      dataType: string
+      valueRef:
+        kind: Integration
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: region
+    - name: bucket
+      description: "AWS S3 bucket"
+      dataType: string
+      valueRef:
+        kind: Integration
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: bucket
+    - name: prefix
+      description: "S3 bucket folder"
+      dataType: string
+      valueRef:
+        kind: Integration
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: prefix
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: Cato
+  output:
+    - name: roleARN
+      description: "AWS IAM Role ARN"
+      dataType: string
+    - name: region
+      description: "AWS region"
+      dataType: string
+    - name: bucket
+      description: "AWS S3 bucket"
+      dataType: string
+    - name: prefix
+      description: "S3 bucket folder"
+      dataType: string
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: s3
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    s3:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+      randomSuffix: true
+      objectFilter: |-
+        (object) => {
+          return regexp(`(?P<prefix>.*)(?P<suffix>-[0-9a-zA-Z]+-[0-9a-zA-Z]+-[0-9a-zA-Z]+-[0-9a-zA-Z]+-[0-9a-zA-Z]+.log.gz)`, object)
+        }
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - CatoNetworks-Adjustments
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CatoNetworks-Adjustments
+spec:
+  type: parser
+  local: CatoNetworks_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

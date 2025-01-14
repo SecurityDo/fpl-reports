@@ -1,0 +1,44 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Varonis_DatAdvantage
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/varonis-via-syslog-sq.png"
+  resourceGroups:
+    - Varonis
+  category: onpremise
+  description: "Varonis DatAdvantage Events via (CEF) Syslog"
+  displayName: "Varonis DatAdvantage Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Varonis-Syslog
+spec:
+  type: parser
+  local: VaronisCEF_Syslog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Varonis-Syslog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

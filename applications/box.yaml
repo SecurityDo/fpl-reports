@@ -1,0 +1,92 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: BoxCom
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/boxcom.png"
+  category: cloud
+  displayName: "box.com"
+  description: "box.com audit event import"  
+  parameters:
+    - name: ClientID
+      description: ""
+      dataType: string
+      defaultValue: ""
+    - name: ClientSecret
+      description: ""
+      dataType: string
+      defaultValue: ""
+      sensitive: true
+    - name: EnterpriseID
+      description: ""
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Plugin_Passthrough
+  sinks: 
+    - EventWatch
+  router: "{{ .Application }}-{{ .AppInstance }}" 
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Plugin_Passthrough
+spec:
+  type: report
+  local: Plugin_Passthrough
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: BoxAPI_EventPull
+spec:
+  type: report
+  local: BoxAPI_EventPull
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: integration_pull
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    integrationPull:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+      processor: BoxAPI_EventPull
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: RESTAPI
+  config:
+    RESTAPI:
+      url: https://api.box.com
+      path: ""
+      method: "POST"
+      variables:
+      - name: CLIENT_ID   
+        value: "{{ .UserInput.ClientID }}"
+      - name: CLIENT_SECRET   
+        value: "{{ .UserInput.ClientSecret }}"
+        sensitive: true
+      - name: ENTERPRISE_ID   
+        value: "{{ .UserInput.EnterpriseID }}"

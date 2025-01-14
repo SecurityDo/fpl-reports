@@ -1,0 +1,42 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CheckPoint_FWLog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/checkpoint-via-syslog-sq.png"
+  category: onpremise
+  description: "Check Point Firewall Events via Syslog"
+  displayName: "Check Point Firewall Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CheckPoint-FWLog
+spec:
+  type: parser
+  local: CheckPoint_FWLog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - CheckPoint-FWLog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

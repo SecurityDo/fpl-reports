@@ -1,0 +1,87 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: MicrosoftDefender
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/defender-atp.png"
+  category: endpoint
+  description: "Microsoft Defender XDR Incidents via Entra Application"
+  displayName: "Microsoft Defender XDR Incidents"
+  parameters:
+    - name: tenantID
+      description: "Tenant ID"
+      dataType: string
+      defaultValue: ""
+    - name: clientID
+      description: "Client ID"
+      dataType: string
+      defaultValue: ""
+    - name: clientSecret
+      description: "Client Secret"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: DefenderATP
+  config:
+    DefenderATP:
+      tenantID: "{{ .UserInput.tenantID }}"
+      clientID: "{{ .UserInput.clientID }}"
+  secret:
+    DefenderATPSecret:
+      clientSecret: "{{ .UserInput.clientSecret }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - MicrosoftDefender-Adjustments
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: MicrosoftDefender-Adjustments
+spec:
+  type: parser
+  local: MicrosoftDefender_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

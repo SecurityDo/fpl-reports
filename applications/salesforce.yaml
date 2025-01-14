@@ -1,0 +1,87 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Salesforce_EventMonitoring
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/salesforce.jpg"
+  category: business
+  description: "Salesforce EventLogs via API Integration"
+  displayName: "Salesforce Event Monitoring"
+  parameters:
+    - name: baseURL
+      description: "API URL"
+      dataType: string
+      defaultValue: ""
+    - name: clientID
+      description: "Consumer Key"
+      dataType: string
+      defaultValue: ""
+    - name: clientSecret
+      description: "Consumer Secret"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: Salesforce
+  config:
+    Salesforce:
+      baseURL: "{{ .UserInput.baseURL }}"
+      clientID: "{{ .UserInput.clientID }}"
+  secret:
+    SalesforceSecret:
+      clientSecret: "{{ .UserInput.clientSecret }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - SalesforceEM-Adjustments
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: SalesforceEM-Adjustments
+spec:
+  type: parser
+  local: SalesforceEM_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

@@ -1,0 +1,137 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CloudTrail
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/aws-cloudtrail.png"
+  category: aws
+  description: "AWS CloudTrail event import"
+  displayName: "AWS CloudTrail"  
+  parameters:
+    - name: Region
+      description: "AWS Region"
+      dataType: string
+      defaultValue: "us-east-1"
+      enums:
+        - label: "US N.Virginia" 
+          value: us-east-1
+        - label: "US Ohio"
+          value: us-east-2
+        - label: "US N.California"
+          value: us-west-1
+        - label: "US Oregon"
+          value: us-west-2
+        - label: "Canada Central"
+          value: ca-central-1
+        - label: "Africa Cape Town"
+          value: af-south-1
+        - label: "Europe Frankfurt"
+          value: eu-central-1
+        - label: "Europe Ireland"
+          value: eu-west-1
+        - label: "Europe London"
+          value: eu-west-2
+        - label: "Europe Paris"
+          value: eu-west-3
+        - label: "Europe Stockholm"
+          value: eu-north-1
+    - name: SQS_URL
+      description: "SQS notification queue url"
+      dataType: string
+      defaultValue: ""
+    - name: AWS_Role
+      description: "Pre-defined AWs Role"
+      dataType: string
+      optional: true
+    - name: AWS_User
+      description: "Pre-defined AWs User"
+      dataType: string
+      optional: true
+    - name: IAM_AccessKey
+      description: "IAM access key"
+      dataType: string
+      optional: true
+    - name: IAM_AccessSecret
+      description: "IAM access secret"
+      dataType: string
+      optional: true
+      sensitive: true            
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - AWS-CloudTrail-Parser
+  sinks: 
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000 
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: AWS-CloudTrail-Parser
+spec:
+  type: parser
+  local: AWSCloudTrail_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: AWS-CloudTrail-Receiver
+spec:
+  type: receiver
+  local: AWSCloudTrail_ArraySplit
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: s3Notification
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  receiver:
+    processor: AWS-CloudTrail-Receiver
+    input: json
+  config:
+    s3Notification:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: S3Notification
+  config:
+    S3Notification:
+      queueURL: "{{ .UserInput.SQS_URL }}"
+      region: "{{ .UserInput.Region }}"
+      accessKey: "{{ .UserInput.IAM_AccessKey }}"
+      user: "{{ .UserInput.AWS_User }}"
+      role: "{{ .UserInput.AWS_Role }}"
+  secret:
+    IAMUserSecret:
+      secretKey: "{{ .UserInput.IAM_AccessSecret }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

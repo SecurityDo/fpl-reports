@@ -1,0 +1,42 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CiscoMeraki_FWLog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-meraki-via-syslog-sq.png"
+  category: onpremise
+  description: "Cisco Meraki Router / Firewall Events via Syslog"
+  displayName: "Cisco Meraki Router Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CiscoMeraki-FWLog
+spec:
+  type: parser
+  local: CiscoMeraki_FWLog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - CiscoMeraki-FWLog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

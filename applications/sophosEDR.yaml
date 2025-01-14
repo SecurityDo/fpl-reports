@@ -1,0 +1,84 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Sophos_EDR
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/sophos.png"
+  category: endpoint
+  resourceGroups:
+    - SophosEDR
+  description: "Sophos EDR via Sophos Central (API Integration) "
+  displayName: "Sophos EDR"
+  parameters:
+    - name: clientID
+      description: "Client ID"
+      dataType: string
+      defaultValue: ""
+    - name: clientSecret
+      description: "Client Secret"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: Sophos
+  config:
+    Sophos:
+      clientID: "{{ .UserInput.clientID }}"
+  secret:
+    SophosSecret:
+      clientSecret: "{{ .UserInput.clientSecret }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - SophosEDR-Adjustments
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: SophosEDR-Adjustments
+spec:
+  type: parser
+  local: SophosEDR_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

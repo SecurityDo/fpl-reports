@@ -1,0 +1,45 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: FluencyCollector
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fluency-collector-via-rockylinux-sq.png"
+  category: system
+  resourceGroups:
+    - System
+  description: "Fluency Collector (on Rocky Linux 9)"
+  displayName: "Fluency Collector"
+  output:
+    - name: token
+      description: "security token"
+      dataType: string
+      sensitive: true
+      valueRef:
+        kind: Collector
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: token
+---
+apiVersion: application.ingext.io/v1
+kind: Collector
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: "{{ .AppInstance }}"
+  description: "{{ .DisplayName }}"
+  output:
+    - name: token
+      description: "security token"
+      dataType: string
+      sensitive: true
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  router: SyslogRouter
+  config:
+    redis:
+      queue: "queue:Platform:Collector:{{ .AppInstance }}"

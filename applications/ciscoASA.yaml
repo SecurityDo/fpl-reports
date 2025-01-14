@@ -1,0 +1,42 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CiscoASA_FWLog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-asa-via-syslog-sq.png"
+  category: onpremise
+  description: "Cisco ASA Firewall Events via Syslog"
+  displayName: "Cisco ASA Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CiscoASA-FWLog
+spec:
+  type: parser
+  local: CiscoASA_FWLog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - CiscoASA-FWLog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

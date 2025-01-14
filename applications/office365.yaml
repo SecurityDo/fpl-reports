@@ -1,0 +1,73 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Office365
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/office365.png"
+  category: office
+  description: "Office365 audit event"
+  displayName: "Office365"
+  adminConsent: true  
+  parameters:
+    - name: adminConsentEmail
+      description: "Admin Email address"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Office365-Adjustments
+  sinks: 
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}" 
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Office365-Adjustments
+spec:
+  type: parser
+  local: Office365_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: Office365
+  adminConsent: "{{ .UserInput.adminConsentEmail }}"

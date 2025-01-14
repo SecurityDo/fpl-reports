@@ -1,0 +1,102 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CiscoUmbrella_DNSLogs
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-umbrella-via-s3-sq.png"
+  description: "CiscoUmbrella (dnslogs) import via a Cisco-managed S3 Bucket"
+  displayName: "CiscoUmbrella_DNSLogs"
+  parameters:
+    - name: Region
+      description: "AWS Region"
+      dataType: string
+      defaultValue: "us-east-1"
+    - name: S3Bucket
+      description: "Cisco-managed S3 Bucket"
+      dataType: string
+      defaultValue: "cisco-managed-us-east-1"
+    - name: DataPath
+      description: "Cisco-managed S3 Bucket Data Path (w/o S3 Bucket name)"
+      dataType: string
+      defaultValue: "1_2xxxxxxxxxxxxxxxxxa120c73a7c51fa6c61a4b6"
+    - name: IAM_AccessKey
+      description: "IAM access Key"
+      dataType: string
+    - name: IAM_AccessSecret
+      description: "IAM access Secret"
+      dataType: string
+      sensitive: true
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - CiscoUmbrella-DNSLogs-Parser
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CiscoUmbrella-DNSLogs-Parser
+spec:
+  type: parser
+  local: CiscoUmbrella_DNSLogs
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: s3
+  format: text
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    s3:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+      randomSuffix: true
+      objectFilter: |-
+        (object) => {
+          return regexp(`(?P<prefix>.*)(?P<suffix>-[0-9a-z]+.csv.gz)`, object)
+        }
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: S3Bucket
+  config:
+    S3Bucket:
+      region: "{{ .UserInput.Region }}"
+      bucket: "{{ .UserInput.Bucket }}"
+      prefix: "{{ .UserInput.DataPath }}/dnslogs/"
+      accessKey: "{{ .UserInput.IAM_AccessKey }}"
+      mode: "read"
+  secret:
+    IAMUserSecret:
+      secretKey: "{{ .UserInput.IAM_AccessSecret }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

@@ -1,0 +1,63 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: GSuite
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/google.png"
+  category: office
+  description: "Google GSuite audit events"
+  displayName: "Google GSuite"
+  adminConsent: true  
+  parameters:
+    - name: adminConsentEmail
+      description: "admin email address"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - GSuite-Adjustments
+  sinks: 
+    - EventWatch
+  router: "{{ .Application }}-{{ .AppInstance }}" 
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: GSuite-Adjustments
+spec:
+  type: parser
+  local: GSuite_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: GSuite
+  adminConsent: "{{ .UserInput.adminConsentEmail }}"

@@ -1,0 +1,98 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Mimecast
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/mimecast.png"
+  category: email
+  description: "Mimecast SIEM Events via API Integration"
+  displayName: "Mimecast Events"
+  parameters:
+    - name: baseURL
+      description: "Base URL"
+      dataType: string
+      defaultValue: ""
+    - name: applicationID
+      description: "Application ID"
+      dataType: string
+      defaultValue: ""
+    - name: applicationKey
+      description: "Application Key"
+      dataType: string
+      defaultValue: ""
+    - name: accessKey
+      description: "Access Key"
+      dataType: string
+      defaultValue: ""
+    - name: secretKey
+      description: "Secret Key"
+      dataType: string
+      defaultValue: ""
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: Mimecast
+  config:
+    Mimecast:
+      baseURL: "{{ .UserInput.baseURL }}"
+      applicationID: "{{ .UserInput.applicationID }}"
+      applicationKey: "{{ .UserInput.applicationKey }}"
+      accessKey: "{{ .UserInput.accessKey }}"
+  secret:
+    MimecastSecret:
+      secretKey: "{{ .UserInput.secretKey }}"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Mimecast-Adjustments
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Mimecast-Adjustments
+spec:
+  type: parser
+  local: Mimecast_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
+

@@ -1,0 +1,44 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: LinuxRHEL_Syslog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/linux-rhel-via-syslog-sq.png"
+  category: onpremise
+  resourceGroups:
+    - SophosEDR
+  description: "Red Hat Enterprise Linux (RHEL) Syslog Events"
+  displayName: "Linux (RHEL) Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: LinuxSrv-Syslog
+spec:
+  type: parser
+  local: LinuxSrv_Syslog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - LinuxSrv-FWLog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

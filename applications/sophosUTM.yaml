@@ -1,0 +1,44 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: Sophos_UTMSyslog
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/sophos-via-syslog-sq.png"
+  category: onpremise
+  resourceGroups:
+    - Sophos
+  description: "Sophos UTM Events via Syslog"
+  displayName: "Sophos UTM Syslog"
+  parameters:
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Sophos-UTMSyslog
+spec:
+  type: parser
+  local: Sophos_UTMSyslog
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Sophos-UTMSyslog
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: SyslogRouter
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"

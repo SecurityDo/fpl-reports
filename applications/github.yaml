@@ -1,0 +1,84 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: GitHub
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/github-via-webhook-sq.png"
+  category: office
+  description: "GitHub Audit via Webhook (with Validation)"
+  displayName: "GitHub Audit"
+  parameters:
+    - name: SecurityToken
+      description: "Security Token"
+      dataType: string
+      defaultValue: ""
+      optional: true
+    - name: SignatureHeader
+      description: "Signature Header"
+      dataType: string
+      defaultValue: ""
+      optional: true
+  output:
+    - name: url
+      description: "Webhook URL"
+      dataType: string
+      valueRef:
+        kind: DataSource
+        resource: "{{ .Application }}-{{ .AppInstance }}"
+        name: url
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: webhook
+  format: json
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  config:
+    webhook:
+      securityToken: "{{ .UserInput.SecurityToken }}"
+      signatureHeader:  "{{ .UserInput.SignatureHeader }}"
+  output:
+    - name: url
+      description: "webhook URL"
+      dataType: string
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  name: main
+  processors:
+    - Github-Parser
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: "{{ .Application }}-{{ .AppInstance }}"
+  priority: 1000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: Github-Parser
+spec:
+  type: parser
+  local: GitHub_Adjustments
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
