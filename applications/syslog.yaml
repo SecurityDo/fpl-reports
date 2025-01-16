@@ -32,6 +32,7 @@ spec:
   sinks:
     - EventWatch
   router: SyslogRouter
+  priority: 0
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
@@ -39,7 +40,28 @@ metadata:
   name: TimestampAdjustment
 spec:
   type: parser
-  local: System_Timestamp_Adjustment
+  local: Timestamp_Adjustment
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: CloudSyslogPassthrough
+spec:
+  name: Syslog_Passthrough
+  processors:
+    - SyslogPassthrough
+  sinks:
+    - EventWatch
+  router: SyslogRouter
+  priority: 3000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: SyslogPassthrough
+spec:
+  type: parser
+  local: Syslog_Passthrough
 ---
 apiVersion: application.ingext.io/v1
 kind: DataSource
