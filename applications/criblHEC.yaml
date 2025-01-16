@@ -61,7 +61,7 @@ spec:
   processors:
     - CriblHECAdjustment
   router: "{{ .Application }}-{{ .AppInstance }}"
-  priority: 0
+  priority: 100
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
@@ -82,7 +82,7 @@ spec:
   sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
   router: "{{ .Application }}-{{ .AppInstance }}"
-  priority: 3000
+  priority: 30000
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor

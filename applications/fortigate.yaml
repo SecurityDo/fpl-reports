@@ -2,23 +2,23 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: Fortigate_NGFW
+  name: FortiGate_NGFW
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fortinet-via-syslog-sq.png"
   category: onpremise
   resourceGroups:
     - Fortigate
-  description: "Fortigate Firewall Events via Syslog"
-  displayName: "Fortigate NGFW Syslog"
+  description: "FortiGate Firewall Events via Syslog"
+  displayName: "FortiGate NGFW Syslog"
   parameters:
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
 metadata:
-  name: Fortigate-FWLog
+  name: FortiGate-FWLog
 spec:
   type: parser
-  local: Fortigate_FWLog
+  local: FortiGate_FWLog
 ---
 apiVersion: application.ingext.io/v1
 kind: Pipe
@@ -27,7 +27,7 @@ metadata:
 spec:
   name: main
   processors:
-    - Fortigate-FWLog
+    - FortiGate-FWLog
   sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
   router: SyslogRouter
