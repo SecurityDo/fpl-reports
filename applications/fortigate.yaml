@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fortinet-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - Fortigate
   description: "Fortigate Firewall Events via Syslog"
   displayName: "Fortigate NGFW Syslog"
   parameters:
@@ -16,7 +18,7 @@ metadata:
   name: Fortigate-FWLog
 spec:
   type: parser
-  local: Fortigate_NGFW
+  local: Fortigate_FWLog
 ---
 apiVersion: application.ingext.io/v1
 kind: Pipe
