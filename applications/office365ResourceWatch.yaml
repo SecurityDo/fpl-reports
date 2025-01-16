@@ -2,7 +2,7 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: Office365Resource
+  name: Office365ResourceWatch
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/office365-blue.png"
   category: office
