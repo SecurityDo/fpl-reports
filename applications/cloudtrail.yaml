@@ -7,14 +7,14 @@ spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/aws-cloudtrail.png"
   category: aws
   description: "AWS CloudTrail event import"
-  displayName: "AWS CloudTrail"  
+  displayName: "AWS CloudTrail"
   parameters:
     - name: Region
       description: "AWS Region"
       dataType: string
       defaultValue: "us-east-1"
       enums:
-        - label: "US N.Virginia" 
+        - label: "US N.Virginia"
           value: us-east-1
         - label: "US Ohio"
           value: us-east-2
@@ -56,7 +56,7 @@ spec:
       description: "IAM access secret"
       dataType: string
       optional: true
-      sensitive: true            
+      sensitive: true
 ---
 apiVersion: application.ingext.io/v1
 kind: Router
@@ -73,10 +73,10 @@ spec:
   name: main
   processors:
     - AWS-CloudTrail-Parser
-  sinks: 
+  sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
   router: "{{ .Application }}-{{ .AppInstance }}"
-  priority: 1000 
+  priority: 1000
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor

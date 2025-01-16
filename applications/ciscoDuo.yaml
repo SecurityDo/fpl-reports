@@ -19,6 +19,7 @@ spec:
       description: "Admin API Secret key"
       dataType: string
       defaultValue: ""
+      sensitive: true
     - name: apiHostname
       description: "Admin API hostname"
       dataType: string

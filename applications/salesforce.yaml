@@ -23,6 +23,7 @@ spec:
       description: "Consumer Secret"
       dataType: string
       defaultValue: ""
+      sensitive: true
 ---
 apiVersion: application.ingext.io/v1
 kind: Integration

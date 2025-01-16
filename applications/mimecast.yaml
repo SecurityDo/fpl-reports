@@ -31,6 +31,7 @@ spec:
       description: "Secret Key"
       dataType: string
       defaultValue: ""
+      sensitive: true
 ---
 apiVersion: application.ingext.io/v1
 kind: Integration
