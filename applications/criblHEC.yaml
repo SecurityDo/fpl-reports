@@ -28,11 +28,11 @@ spec:
 apiVersion: application.ingext.io/v1
 kind: DataSource
 metadata:
-  name: CriblHECImport
+  name: "{{ .Application }}-{{ .AppInstance }}
 spec:
   type: hec
   format: json
-  router: CriblRouter
+  router: "{{ .Application }}-{{ .AppInstance }}"
   config:
     hec:
       ack: false
@@ -48,7 +48,7 @@ spec:
 apiVersion: application.ingext.io/v1
 kind: Router
 metadata:
-  name: CriblRouter
+  name: "{{ .Application }}-{{ .AppInstance }}"
 spec:
   threadCount: 1
 ---
@@ -60,7 +60,7 @@ spec:
   name: main
   processors:
     - CriblHECAdjustment
-  router: CriblRouter
+  router: "{{ .Application }}-{{ .AppInstance }}"
   priority: 0
 ---
 apiVersion: application.ingext.io/v1
@@ -81,7 +81,7 @@ spec:
     - CriblHECPassthrough
   sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
-  router: CriblRouter
+  router: "{{ .Application }}-{{ .AppInstance }}"
   priority: 3000
 ---
 apiVersion: application.ingext.io/v1
