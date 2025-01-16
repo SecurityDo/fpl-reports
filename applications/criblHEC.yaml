@@ -1,0 +1,103 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: CriblHEC
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cribl-via-hec-sq.png"
+  category: system
+  description: "Data input from Cribl Stream via Splunk-compatible HEC"
+  displayName: "Cribl Stream HEC"
+  output:
+    - name: url
+      description: "HEC URL"
+      dataType: string
+      valueRef:
+        kind: DataSource
+        resource: HECImport
+        name: url
+    - name: token
+      description: "HEC security token"
+      dataType: string
+      sensitive: true
+      valueRef:
+        kind: DataSource
+        resource: CriblHECImport
+        name: token
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: CriblHECImport
+spec:
+  type: hec
+  format: json
+  router: CriblRouter
+  config:
+    hec:
+      ack: false
+  output:
+    - name: url
+      description: "HEC URL"
+      dataType: string
+    - name: token
+      description: "HEC Security Token"
+      dataType: string
+      sensitive: true
+---
+apiVersion: application.ingext.io/v1
+kind: Router
+metadata:
+  name: CriblRouter
+spec:
+  threadCount: 1
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: CriblHEC_Adjustment
+spec:
+  name: main
+  processors:
+    - CriblHECAdjustment
+  router: CriblRouter
+  priority: 0
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CriblHECAdjustment
+spec:
+  type: parser
+  local: CriblHEC_Adjustment
+---
+apiVersion: application.ingext.io/v1
+kind: Pipe
+metadata:
+  name: CriblHEC_Passthrough
+spec:
+  name: main
+  processors:
+    - CriblHECPassthrough
+  sinks:
+    - "{{ .Application }}-{{ .AppInstance }}"
+  router: CriblRouter
+  priority: 3000
+---
+apiVersion: application.ingext.io/v1
+kind: Processor
+metadata:
+  name: CriblHECPassthrough
+spec:
+  type: parser
+  local: CriblHEC_Passthrough
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
