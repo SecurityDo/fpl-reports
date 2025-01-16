@@ -7,7 +7,7 @@ spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/linux-rhel-via-syslog-sq.png"
   category: onpremise
   resourceGroups:
-    - SophosEDR
+    - Linux
   description: "Red Hat Enterprise Linux (RHEL) Syslog Events"
   displayName: "Linux (RHEL) Syslog"
   parameters:
@@ -27,7 +27,7 @@ metadata:
 spec:
   name: main
   processors:
-    - LinuxSrv-FWLog
+    - LinuxSrv-Syslog
   sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
   router: SyslogRouter
