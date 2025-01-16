@@ -34,10 +34,10 @@ spec:
   config:
     Duo:
       integrationKey: "{{ .UserInput.integrationKey }}"
-      secretKey: "{{ .UserInput.secretKey }}"
+      apiHostname: "{{ .UserInput.apiHostname }}"
   secret:
     DuoSecret:
-      apiHostname: "{{ .UserInput.apiHostname }}"
+      secretKey: "{{ .UserInput.secretKey }}"
 ---
 apiVersion: application.ingext.io/v1
 kind: DataSource

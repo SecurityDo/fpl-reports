@@ -33,8 +33,8 @@ spec:
   type: DefenderATP
   config:
     DefenderATP:
-      tenantID: "{{ .UserInput.tenantID }}"
-      clientID: "{{ .UserInput.clientID }}"
+      tenantId: "{{ .UserInput.tenantID }}"
+      clientId: "{{ .UserInput.clientID }}"
   secret:
     DefenderATPSecret:
       clientSecret: "{{ .UserInput.clientSecret }}"
