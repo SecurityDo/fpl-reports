@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/mimecast.png"
   category: email
+  resourceGroups:
+    - Mimecast
   description: "Mimecast SIEM Events via API Integration"
   displayName: "Mimecast Events"
   parameters:

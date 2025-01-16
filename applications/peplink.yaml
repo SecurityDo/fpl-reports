@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/peplink-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - Peplink
   description: "Peplink Router / Firewall Events via Syslog"
   displayName: "Peplink Router Syslog"
   parameters:

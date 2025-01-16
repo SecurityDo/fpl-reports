@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/sonicwall-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - SonicWall
   description: "SonicWall Firewall Events via Syslog"
   displayName: "SonicWall NGFW Syslog"
   parameters:

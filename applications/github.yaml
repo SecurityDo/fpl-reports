@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/github-via-webhook-sq.png"
   category: office
+  resourceGroups:
+    - GitHub
   description: "GitHub Audit via Webhook (with Validation)"
   displayName: "GitHub Audit"
   parameters:

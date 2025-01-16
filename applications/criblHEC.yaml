@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cribl-via-hec-sq.png"
   category: system
+  resourceGroups:
+    - Cribl
   description: "Data input from Cribl Stream via Splunk-compatible HEC"
   displayName: "Cribl Stream HEC"
   output:

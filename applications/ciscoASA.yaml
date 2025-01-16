@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-asa-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - CiscoASA
   description: "Cisco ASA Firewall Events via Syslog"
   displayName: "Cisco ASA Syslog"
   parameters:

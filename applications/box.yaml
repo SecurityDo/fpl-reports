@@ -6,8 +6,10 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/boxcom.png"
   category: cloud
+  resourceGroups:
+    - BoxCom
   displayName: "box.com"
-  description: "box.com audit event import"  
+  description: "box.com audit event import"
   parameters:
     - name: ClientID
       description: ""
@@ -38,9 +40,9 @@ spec:
   name: main
   processors:
     - Plugin_Passthrough
-  sinks: 
+  sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
-  router: "{{ .Application }}-{{ .AppInstance }}" 
+  router: "{{ .Application }}-{{ .AppInstance }}"
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
@@ -83,12 +85,12 @@ spec:
       path: ""
       method: "POST"
       variables:
-      - name: CLIENT_ID   
+      - name: CLIENT_ID
         value: "{{ .UserInput.ClientID }}"
-      - name: CLIENT_SECRET   
+      - name: CLIENT_SECRET
         value: "{{ .UserInput.ClientSecret }}"
         sensitive: true
-      - name: ENTERPRISE_ID   
+      - name: ENTERPRISE_ID
         value: "{{ .UserInput.EnterpriseID }}"
 ---
 apiVersion: application.ingext.io/v1

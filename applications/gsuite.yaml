@@ -6,9 +6,11 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/google.png"
   category: office
+  resourceGroups:
+    - GSuites
   description: "Google GSuite audit events"
   displayName: "Google GSuite"
-  adminConsent: true  
+  adminConsent: true
   parameters:
     - name: adminConsentEmail
       description: "admin email address"
@@ -30,9 +32,9 @@ spec:
   name: main
   processors:
     - GSuite-Adjustments
-  sinks: 
+  sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
-  router: "{{ .Application }}-{{ .AppInstance }}" 
+  router: "{{ .Application }}-{{ .AppInstance }}"
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor

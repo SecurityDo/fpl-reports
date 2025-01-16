@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fluency-collector-via-syslog-sq.png"
   category: system
+  resourceGroups:
+    - System
   description: "Syslog Endpoint on AWS Cloud for Data Import"
   displayName: "Cloud Syslog Endpoint"
 ---

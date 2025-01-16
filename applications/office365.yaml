@@ -6,9 +6,11 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/office365.png"
   category: office
+  resourceGroups:
+    - Office365
   description: "Office365 audit event"
   displayName: "Office365"
-  adminConsent: true  
+  adminConsent: true
   parameters:
     - name: adminConsentEmail
       description: "Admin Email address"
@@ -30,9 +32,9 @@ spec:
   name: main
   processors:
     - Office365-Adjustments
-  sinks: 
+  sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
-  router: "{{ .Application }}-{{ .AppInstance }}" 
+  router: "{{ .Application }}-{{ .AppInstance }}"
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor

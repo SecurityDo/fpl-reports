@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/s1-via-syslog-sq.png"
   category: endpoint
+  resourceGroups:
+    - SentinelOne
   description: "Alerts / Events from SentinelOne Syslog integration via Syslog"
   displayName: "Fortigate NGFW Syslog"
   parameters:
@@ -29,7 +31,7 @@ spec:
   sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
   router: SyslogRouter
-  priority: 1000
+  priority: 2000
 ---
 apiVersion: application.ingext.io/v1
 kind: DataSink

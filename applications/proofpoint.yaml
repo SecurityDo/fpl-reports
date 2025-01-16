@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/proofpoint.png"
   category: email
+  resourceGroups:
+    - Proofpoint
   description: "Proofpoint Events via API Integration"
   displayName: "Proofpoint Events"
   parameters:

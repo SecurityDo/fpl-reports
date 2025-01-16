@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/sophos-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - Sophos
   description: "Sophos Firewall Events via Syslog"
   displayName: "Sophos Firewall Syslog"
   parameters:

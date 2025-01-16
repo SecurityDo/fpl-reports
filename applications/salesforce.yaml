@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/salesforce.jpg"
   category: business
+  resourceGroups:
+    - Salesforce
   description: "Salesforce EventLogs via API Integration"
   displayName: "Salesforce Event Monitoring"
   parameters:

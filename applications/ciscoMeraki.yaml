@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-meraki-via-syslog-sq.png"
   category: onpremise
+  resourceGroups:
+    - CiscoMeraki
   description: "Cisco Meraki Router / Firewall Events via Syslog"
   displayName: "Cisco Meraki Router Syslog"
   parameters:

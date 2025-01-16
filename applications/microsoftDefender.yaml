@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/defender-atp.png"
   category: endpoint
+  resourceGroups:
+    - MicrosoftDefender
   description: "Microsoft Defender XDR Incidents via Entra Application"
   displayName: "Microsoft Defender XDR Incidents"
   parameters:
