@@ -5,6 +5,7 @@ metadata:
   name: CiscoUmbrella_ProxyLogs
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-umbrella-via-s3-sq.png"
+  category: network
   resourceGroups:
     - OpenDNS
   description: "CiscoUmbrella (proxylogs) import via a Cisco-managed S3 Bucket"

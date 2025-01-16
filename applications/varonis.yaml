@@ -5,9 +5,9 @@ metadata:
   name: Varonis_DatAdvantage
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/varonis-via-syslog-sq.png"
+  category: onpremise
   resourceGroups:
     - Varonis
-  category: onpremise
   description: "Varonis DatAdvantage Events via (CEF) Syslog"
   displayName: "Varonis DatAdvantage Syslog"
   parameters:
