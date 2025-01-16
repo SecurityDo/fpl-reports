@@ -6,13 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fluency-collector-via-syslog-sq.png"
   category: system
-  description: "Syslog import on AWS Cloud"
-  displayName: "Cloud Syslog"
-  parameters:
-    - name: Region
-      description: "AWS Region"
-      dataType: string
-      defaultValue: ""
+  description: "Syslog Endpoint on AWS Cloud for Data Import"
+  displayName: "Cloud Syslog Endpoint"
 ---
 apiVersion: application.ingext.io/v1
 kind: Router
@@ -24,13 +19,11 @@ spec:
 apiVersion: application.ingext.io/v1
 kind: Pipe
 metadata:
-  name: CloudSyslogTimestampAdjustment
-spec:
   name: Timestamp_Adjustment
+spec:
+  name: main
   processors:
     - TimestampAdjustment
-  sinks:
-    - EventWatch
   router: SyslogRouter
   priority: 0
 ---
@@ -45,9 +38,9 @@ spec:
 apiVersion: application.ingext.io/v1
 kind: Pipe
 metadata:
-  name: CloudSyslogPassthrough
-spec:
   name: Syslog_Passthrough
+spec:
+  name: main
   processors:
     - SyslogPassthrough
   sinks:
@@ -73,4 +66,4 @@ spec:
   router: SyslogRouter
   config:
     syslog:
-      path: ""
+      path: "/var/log/remote"
