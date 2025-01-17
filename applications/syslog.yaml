@@ -6,6 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fluency-collector-via-syslog-sq.png"
   category: system
+  resourceGroups:
+    - System
   description: "Syslog Endpoint on AWS Cloud for Data Import"
   displayName: "Cloud Syslog Endpoint"
 ---
@@ -25,7 +27,7 @@ spec:
   processors:
     - TimestampAdjustment
   router: SyslogRouter
-  priority: 0
+  priority: 100
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
@@ -46,7 +48,7 @@ spec:
   sinks:
     - EventWatch
   router: SyslogRouter
-  priority: 3000
+  priority: 30000
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
