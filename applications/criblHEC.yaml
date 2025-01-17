@@ -19,18 +19,18 @@ spec:
         resource: HECImport
         name: url
     - name: token
-      description: "HEC security token"
+      description: "HEC Security Token"
       dataType: string
       sensitive: true
       valueRef:
         kind: DataSource
-        resource: CriblHECImport
+        resource: HECImport
         name: token
 ---
 apiVersion: application.ingext.io/v1
 kind: DataSource
 metadata:
-  name: "{{ .Application }}-{{ .AppInstance }}
+  name: "{{ .Application }}-{{ .AppInstance }}"
 spec:
   type: hec
   format: json

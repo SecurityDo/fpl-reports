@@ -51,7 +51,6 @@ spec:
   router: "{{ .Application }}-{{ .AppInstance }}"
   priority: 1000
 ---
----
 apiVersion: application.ingext.io/v1
 kind: Processor
 metadata:
