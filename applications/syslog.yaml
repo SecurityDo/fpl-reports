@@ -69,3 +69,13 @@ spec:
   config:
     syslog:
       path: "/var/log/remote"
+---
+apiVersion: application.ingext.io/v1
+kind: DataSink
+metadata:
+  name: "EventWatch"
+spec:
+  type: redis
+  config:
+    redis:
+      queue: "queue:LVDBService:FileQueue"
