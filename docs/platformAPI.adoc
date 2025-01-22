@@ -317,6 +317,7 @@ function main({from="-24h@h", to="@h"}) {
     
     return "pass"
 ----
+
 * Platform_DataObject_Save(partition, props, data)
 ** Save data object to a partition. props is a property map for the data object
 ** return the data object id
@@ -328,7 +329,7 @@ function main({from="-24h@h", to="@h"}) {
 ** return {props, data} if found 
 * Platform_DataObject_Delete(partition, id)
 ** Delete data object from a partition
----
+----
 let partition = "mydata"
 let props = {name: "foo", count: 100}
 let id = Platform_DataObject_Save(partition, props, {table1, stream2})
@@ -337,7 +338,8 @@ let ids = Platform_DataObject_Search(partition, (props) => {
 })
 let {props, data} = Platform_DataObject_Get(partition, id)
 Platform_DataObject_Delete(partition, id)
----
+----
+
 * Platform_Cache_Check(cacheName)
 ** return true if cache exists 
 * Platform_Cache_Register(cacheName, options)
