@@ -1,0 +1,57 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: SentinelOne
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/sentinelOne.png"
+  category: endpoint
+  resourceGroups:
+    - SentinelOne
+  description: "SentinelOne EDR API Integration"
+  displayName: "SentinelOne API"
+  adminConsent: true
+  parameters:
+    - name: URL
+      description: "Base URL"
+      dataType: string
+      defaultValue: ""
+    - name: accountIDs
+      description: "Account IDs"
+      dataType: string
+      isList: true
+    - name: username
+      description: "Site IDs"
+      dataType: string
+      isList: true
+    - name: APIToken
+      description: "API Token"
+      dataType: string
+      defaultValue: ""
+      sensitive: true
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: SentinelOne
+  config:
+    SentinelOne:
+      URL: "{{ .UserInput.baseURL }}"
+      accountIDs: "{{ .UserInput.accountIDs }}"
+      siteIDs: "{{ .UserInput.siteIDs }}"
+  secret:
+    SentinelOneSecret:
+      APIToken: "{{ .UserInput.APIToken }}"
