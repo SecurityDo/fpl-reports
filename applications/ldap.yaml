@@ -1,0 +1,67 @@
+---
+apiVersion: application.ingext.io/v1
+kind: AppConfig
+metadata:
+  name: LDAP
+spec:
+  icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/ldap.png"
+  category: endpoint
+  resourceGroups:
+    - LDAP
+  description: "Local LDAP Connector"
+  displayName: "LDAP Connector"
+  adminConsent: true
+  parameters:
+    - name: collector
+      description: "Local Fluency Collector Name"
+      dataType: string
+      defaultValue: ""
+    - name: serverIP
+      description: "AD/LDAP Server IP"
+      dataType: string
+      defaultValue: ""
+    - name: serverPort
+      description: "AD/LDAP Server Port"
+      dataType: string
+      defaultValue: ""
+    - name: baseDN
+      description: "BaseDN String"
+      dataType: string
+      defaultValue: ""
+    - name: username
+      description: "Username"
+      dataType: string
+      defaultValue: ""
+    - name: password
+      description: "Password"
+      dataType: string
+      defaultValue: ""
+      sensitive: true
+---
+apiVersion: application.ingext.io/v1
+kind: DataSource
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: plugin
+  format: json
+  config:
+    plugin:
+      integration: "{{ .Application }}-{{ .AppInstance }}"
+---
+apiVersion: application.ingext.io/v1
+kind: Integration
+metadata:
+  name: "{{ .Application }}-{{ .AppInstance }}"
+spec:
+  type: LDAP
+  config:
+    LDAP:
+      collector: "{{ .UserInput.collector }}"
+      serverIP: "{{ .UserInput.serverIP }}"
+      serverPort: "{{ .UserInput.serverPort }}"
+      baseDN: "{{ .UserInput.baseDN }}"
+      username: "{{ .UserInput.username }}"
+  secret:
+    LDAPSecret:
+      password: "{{ .UserInput.password }}"
