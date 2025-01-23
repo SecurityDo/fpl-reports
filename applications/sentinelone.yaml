@@ -10,7 +10,6 @@ spec:
     - SentinelOne
   description: "SentinelOne EDR API Integration"
   displayName: "SentinelOne API"
-  adminConsent: true
   parameters:
     - name: URL
       description: "Base URL"
@@ -19,10 +18,12 @@ spec:
     - name: accountIDs
       description: "Account IDs"
       dataType: string
+      optional: true
       isList: true
-    - name: username
+    - name: siteIDs
       description: "Site IDs"
       dataType: string
+      optional: true
       isList: true
     - name: APIToken
       description: "API Token"
@@ -49,9 +50,9 @@ spec:
   type: SentinelOne
   config:
     SentinelOne:
-      URL: "{{ .UserInput.baseURL }}"
-      accountIDs: "{{ .UserInput.accountIDs }}"
-      siteIDs: "{{ .UserInput.siteIDs }}"
+      URL: "{{ .UserInput.URL }}"
+      acccountIDs : {{ .UserInput.AccountIDs }}
+      siteIDs : {{ .UserInput.siteIDs }}
   secret:
     SentinelOneSecret:
       APIToken: "{{ .UserInput.APIToken }}"
