@@ -2,7 +2,7 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: WindowsSrv_NxLog
+  name: WindowsSrvNxLog
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/windows-via-nxlog-syslog-sq.png"
   category: endpoint

@@ -2,7 +2,7 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: FortiGate_NGFW
+  name: FortiGateFWLog
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/fortinet-via-syslog-sq.png"
   category: onpremise

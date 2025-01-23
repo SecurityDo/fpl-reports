@@ -2,7 +2,7 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: Salesforce_EventMonitoring
+  name: Salesforce
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/salesforce.jpg"
   category: business

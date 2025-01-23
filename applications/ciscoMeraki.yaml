@@ -2,7 +2,7 @@
 apiVersion: application.ingext.io/v1
 kind: AppConfig
 metadata:
-  name: CiscoMeraki_FWLog
+  name: CiscoMerakiFWLog
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/cisco-meraki-via-syslog-sq.png"
   category: onpremise
