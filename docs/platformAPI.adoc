@@ -318,6 +318,27 @@ function main({from="-24h@h", to="@h"}) {
     return "pass"
 ----
 
+* Platform_DataObject_Save(partition, props, data)
+** Save data object to a partition. props is a property map for the data object
+** return the data object id
+* Platform_DataObject_Search(partition, (props) => {})
+** Search data object from a partition. the search lambda function return true if the data object match the search criteria.
+** return a list of data object ids
+* Platform_DataObject_Get(partition, id)
+** Get data object from a partition
+** return {props, data} if found 
+* Platform_DataObject_Delete(partition, id)
+** Delete data object from a partition
+----
+let partition = "mydata"
+let props = {name: "foo", count: 100}
+let id = Platform_DataObject_Save(partition, props, {table1, stream2})
+let ids = Platform_DataObject_Search(partition, (props) => {
+  return props.name == "foo"
+})
+let {props, data} = Platform_DataObject_Get(partition, id)
+Platform_DataObject_Delete(partition, id)
+----
 
 * Platform_Cache_Check(cacheName)
 ** return true if cache exists 
