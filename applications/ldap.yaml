@@ -6,11 +6,8 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/ldap.png"
   category: endpoint
-  resourceGroups:
-    - LDAP
   description: "Local LDAP Connector"
   displayName: "LDAP Connector"
-  adminConsent: true
   parameters:
     - name: collector
       description: "Local Fluency Collector Name"
@@ -23,7 +20,7 @@ spec:
     - name: serverPort
       description: "AD/LDAP Server Port"
       dataType: string
-      defaultValue: ""
+      defaultValue: "389"
     - name: baseDN
       description: "BaseDN String"
       dataType: string
@@ -59,7 +56,7 @@ spec:
     LDAP:
       collector: "{{ .UserInput.collector }}"
       serverIP: "{{ .UserInput.serverIP }}"
-      serverPort: "{{ .UserInput.serverPort }}"
+      serverPort: {{ .UserInput.serverPort }}
       baseDN: "{{ .UserInput.baseDN }}"
       username: "{{ .UserInput.username }}"
   secret:
