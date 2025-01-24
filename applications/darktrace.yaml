@@ -11,8 +11,16 @@ spec:
   description: "Darktrace Threat Visualizer API Integration"
   displayName: "Darktrace Threats"
   parameters:
+    - name: url
+      description: "URL"
+      dataType: string
+      defaultValue: ""
+    - name: publicToken
+      description: "Public Token"
+      dataType: string
+      defaultValue: ""
     - name: privateToken
-      description: "API Token"
+      description: "Private Token"
       dataType: string
       defaultValue: ""
       sensitive: true
@@ -23,6 +31,10 @@ metadata:
   name: "{{ .Application }}-{{ .AppInstance }}"
 spec:
   type: Darktrace
+  config:
+    Darktrace:
+      url: "{{ .UserInput.url }}"
+      publicToken: "{{ .UserInput.publicToken }}"
   secret:
     DarktraceSecret:
       privateToken: "{{ .UserInput.privateToken }}"
