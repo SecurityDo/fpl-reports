@@ -9,7 +9,7 @@ spec:
   resourceGroups:
     - SentinelOne
   description: "Alerts / Events from SentinelOne Syslog integration via Syslog"
-  displayName: "Fortigate NGFW Syslog"
+  displayName: "SentinelOne Syslog"
   parameters:
 ---
 apiVersion: application.ingext.io/v1
