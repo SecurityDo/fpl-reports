@@ -9,7 +9,7 @@ spec:
   resourceGroups:
     - MicrosoftDefender
   description: "Microsoft Defender XDR Incidents via Entra Application"
-  displayName: "Microsoft Defender XDR Incidents"
+  displayName: "Microsoft Defender"
   parameters:
     - name: tenantID
       description: "Tenant ID"

@@ -8,7 +8,7 @@ spec:
   category: email
   resourceGroups:
     - Darktrace
-  description: "Darktrace Threat Visualizer API Integration"
+  description: "Darktrace Threat Visualizer API integration"
   displayName: "Darktrace Threats"
   parameters:
     - name: url

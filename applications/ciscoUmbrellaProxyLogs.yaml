@@ -9,7 +9,7 @@ spec:
   resourceGroups:
     - OpenDNS
   description: "CiscoUmbrella (proxylogs) import via a Cisco-managed S3 Bucket"
-  displayName: "CiscoUmbrella_ProxyLogs"
+  displayName: "CiscoUmbrella ProxyLogs"
   parameters:
     - name: Region
       description: "AWS Region"

@@ -6,11 +6,11 @@ metadata:
 spec:
   icon: "https://fluency-public.s3.us-east-1.amazonaws.com/icons/azure-eventhub.png"
   category: cloud
-  description: "Azure Event Hubs"
-  displayName: "Azure Event Hubs"  
+  description: "Connector to Azure Event Hubs"
+  displayName: "Azure Event Hubs"
   parameters:
     - name: Endpoint
-      description: "EventHub endpoint"
+      description: "Event Hub endpoint"
       dataType: string
       defaultValue: ""
     - name: Description
@@ -33,9 +33,9 @@ spec:
   name: main
   processors:
     - Azure-EventHubs-Adjustments
-  sinks: 
+  sinks:
     - "{{ .Application }}-{{ .AppInstance }}"
-  router: "{{ .Application }}-{{ .AppInstance }}" 
+  router: "{{ .Application }}-{{ .AppInstance }}"
 ---
 apiVersion: application.ingext.io/v1
 kind: Processor
@@ -65,7 +65,7 @@ spec:
   type: AzureEventHubs
   config:
     AzureEventHubs:
-      eventhubs: 
+      eventhubs:
         - endpoint: "{{ .UserInput.Endpoint }}"
           description: "{{ .UserInput.Description }}"
 ---

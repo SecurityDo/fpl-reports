@@ -8,7 +8,7 @@ spec:
   category: business
   resourceGroups:
     - Salesforce
-  description: "Salesforce EventLogs via API Integration"
+  description: "Salesforce EventLogs via API integration"
   displayName: "Salesforce Event Monitoring"
   parameters:
     - name: baseURL

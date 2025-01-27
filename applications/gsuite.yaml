@@ -8,8 +8,8 @@ spec:
   category: office
   resourceGroups:
     - GSuites
-  description: "Google GSuite audit events"
-  displayName: "Google GSuite"
+  description: "Google Workspace (G-Suite) audit events"
+  displayName: "Google Workspace"
   adminConsent: true
   parameters:
     - name: adminConsentEmail

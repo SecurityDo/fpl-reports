@@ -8,8 +8,8 @@ spec:
   category: cloud
   resourceGroups:
     - BoxCom
+  description: "box.com audit events via API"
   displayName: "box.com"
-  description: "box.com audit event import"
   parameters:
     - name: ClientID
       description: ""

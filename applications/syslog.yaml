@@ -8,7 +8,7 @@ spec:
   category: system
   resourceGroups:
     - System
-  description: "Syslog Endpoint on AWS Cloud for Data Import"
+  description: "Syslog Endpoint on AWS Cloud for data import"
   displayName: "Cloud Syslog Endpoint"
 ---
 apiVersion: application.ingext.io/v1

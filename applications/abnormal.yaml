@@ -8,8 +8,8 @@ spec:
   category: email
   resourceGroups:
     - Abnormal
-  description: "Abnormal Security Events via API Integration"
-  displayName: "Abnormal Security Events"
+  description: "Abnormal Security events via API integration"
+  displayName: "Abnormal Security"
   parameters:
     - name: token
       description: "API Token"

@@ -8,7 +8,7 @@ spec:
   category: onpremise
   resourceGroups:
     - Linux
-  description: "Red Hat Enterprise Linux (RHEL) Syslog Events"
+  description: "Red Hat Enterprise Linux (RHEL) Syslog events"
   displayName: "Linux (RHEL) Syslog"
   parameters:
 ---

@@ -8,7 +8,7 @@ spec:
   category: office
   resourceGroups:
     - CiscoDuo
-  description: "Cisco Duo Events via Admin API Integration"
+  description: "Cisco Duo Events via Admin API integration"
   displayName: "Cisco Duo Admin API"
   parameters:
     - name: integrationKey

@@ -8,7 +8,7 @@ spec:
   category: office
   resourceGroups:
     - GitHub
-  description: "GitHub Audit via Webhook (with Validation)"
+  description: "GitHub Audit via Webhook (with validation)"
   displayName: "GitHub Audit"
   parameters:
     - name: SecurityToken

@@ -8,7 +8,7 @@ spec:
   category: endpoint
   resourceGroups:
     - CrowdStrike
-  description: "CrowdStrike Falcon XDR Incidents"
+  description: "CrowdStrike Falcon XDR incidents"
   displayName: "CrowdStrike Falcon"
   parameters:
     - name: baseURL

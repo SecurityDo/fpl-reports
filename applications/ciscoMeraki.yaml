@@ -9,7 +9,7 @@ spec:
   resourceGroups:
     - CiscoMeraki
   description: "Cisco Meraki Router / Firewall Events via Syslog"
-  displayName: "Cisco Meraki Router Syslog"
+  displayName: "Cisco Meraki Syslog"
   parameters:
 ---
 apiVersion: application.ingext.io/v1
