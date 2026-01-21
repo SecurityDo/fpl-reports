@@ -13,7 +13,7 @@ Fluency Platform support all three methods.
 
 * Step 1: Setup IAM Roles for Cloudwatch and Firehose service. 
 ** Create a S3 bucket to hold the loggroup data. (shared by all loggroups)
-** Create a new IAM role, allow Firehose to write to S3 bucket.
+** Create a new IAM role, allow Firehose to write to the S3 bucket just created.
 ** Create a new IAM role, allow Cloudwatch to write to the Firehose stream.
 ** https://fluency-cloudformation.s3.us-east-2.amazonaws.com/FluencyCloudWatchFirehose.yaml[Cloudformation Template]
 ** Cloudformation Parameters: 
