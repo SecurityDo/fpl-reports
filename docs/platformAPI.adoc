@@ -515,6 +515,18 @@ Platform_Action_Endpoint("FluencySupport", doc)
    }
 ----
 
+== Platform Resource API:  Resource Search and Lookup
+
+* Fluency_ResourceLoad(vendor, resourceType, query, (obj, customer) => {})
+* Fluency_ResourceLookup(vendor, resourceType, customer, key)
+----
+function main() {
+  let {entry, exist} = Fluency_ResourceLookup("Office365", "user", "*", "foo@gmail.com")
+  printf("exist: %t, value: %s", exist, entry)
+
+}
+----
+
 == Platform Asset API:  Asset management
 
 * Platform_Asset_Refresh(plugin, entries)
