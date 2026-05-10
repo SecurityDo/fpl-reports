@@ -215,6 +215,7 @@ try {
 
 * toLower(string) => string
 ** returns the string in lowercase
+** also accessible as `tolower(string)` (lowercase alias)
 ----
 toLower("HELLO") // return the string "hello"
 toLower(" World") // return the string " world"
@@ -222,6 +223,7 @@ toLower(" World") // return the string " world"
 
 * toUpper(string) => string
 ** returns the string in uppercase
+** also accessible as `toupper(string)` (lowercase alias)
 ----
 toUpper("hello") // return the string "HELLO"
 toUpper("wORld") // return the string "WORLD"
@@ -256,13 +258,14 @@ contains("hello", "He") // return false
 ----
 
 * content(string1, string2) => bool
-** returns true if string1 equals string2 false otherwise
-** is case and whitespace sensitive
+** returns true if string1 equals string2 (case-insensitive), false otherwise
+** uses Unicode case folding (Go's strings.EqualFold)
+** is whitespace sensitive
 ----
 let s = "hello"
 content(s, "hello") // return true
-content(s, "Hello") // return false
-content(s, "hello ") // return false
+content(s, "Hello") // return true (case-insensitive)
+content(s, "hello ") // return false (trailing space)
 ----
 
 * trim(s, cutset) => string
@@ -458,8 +461,9 @@ let c = concat(a, b) // c is now [1, 2, 3, 4]
 ----
 
 * delete(map, key)
-** map must be primitive map, jsonObject or object map. 
+** map must be primitive map, jsonObject or object map.
 ** key must be primitive string
+** also available as `fplDel(map, key)` — preferred when avoiding the JS reserved word `delete`
 ----
 let m = {first: 10, second: 20}
 delete(m, "first") // m is now the map {second: 20}
@@ -475,10 +479,11 @@ setEnv("to", "@h")
 ----
 
 * typeof(variable)
-** if variable is primitive value, returns the type of the primitive value: 
+** if variable is primitive value, returns the type of the primitive value:
 ***       "string", "int64", "float64", "bool", "null", "undefined", "list", "map", "jsonObj", "jsonArray"
-** else return the type of the object: 
+** else return the type of the object:
 ***       "Tuple", "Map", "Lambda", "Table", "MetricStream", "Alert"
+** also available as `fplType(variable)` — preferred when avoiding the JS reserved word `typeof`
 ----
 typeof(2) // return the string "int64"
 typeof([1, 2, 3]) // return the string "list"
@@ -699,6 +704,95 @@ let t3 = mergeTable(t1, t2) // t3 is a new table with data from t1 followed by t
 |US
 |===
 
+* trimSpace(s) => string
+** returns s with all leading and trailing whitespace removed (Unicode-aware)
+----
+trimSpace("  Hello World  ") // returns the string "Hello World"
+trimSpace("\t\nfoo\r\n")     // returns the string "foo"
+----
+
+* uuid() => string
+** generate a random UUID v4 string
+----
+let id = uuid() // e.g. "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+----
+
+* sleep(milliseconds)
+** pause execution for the specified number of milliseconds
+----
+sleep(500) // sleep 500ms
+----
+
+* parseXML(text)
+** parse an XML string into a JSON object
+** XML attributes and elements are converted following standard XML→JSON rules
+----
+let obj = parseXML("<root><a>1</a><b>2</b></root>")
+----
+
+* parseIPv4(s)
+** parse an IPv4 string into a 32-bit integer
+----
+parseIPv4("192.168.1.1") // returns the int64 value 3232235777
+----
+
+* isNaN(value) => bool
+** returns true if value is NaN (Not-a-Number), false otherwise
+----
+isNaN(0/0)       // true
+isNaN(parseFloat("abc")) // true
+isNaN(42)        // false
+----
+
+* Number(value) => number
+** convert value to a number (int64 or float64). Returns NaN on failure.
+** accepts string, bool, number, null
+----
+Number("3.14")  // returns 3.14
+Number("abc")   // returns NaN
+Number(true)    // returns 1
+Number(null)    // returns 0
+----
+
+* jsonFlat(jsonValue)
+** flatten a nested JSON object into a single-level object with dotted-path keys
+----
+let obj = {a:{b:1, c:{d:2}}, e:3}
+let flat = jsonFlat(obj)
+// flat = {"a.b":1, "a.c.d":2, "e":3}
+----
+
+* jsonGetTag(jsonObj, tagArrayPath, keyField, keyValue, valueField)
+** look up a value inside a tag-style JSON array (an array of objects with key/value fields).
+** scans the array at tagArrayPath; returns the valueField from the first element where keyField equals keyValue.
+** returns undefined if not found
+----
+/*
+  obj = {
+    "Tags": [
+      {"Key": "Name", "Value": "my-instance"},
+      {"Key": "Env",  "Value": "prod"}
+    ]
+  }
+*/
+let name = jsonGetTag(obj, "Tags", "Key", "Name", "Value") // "my-instance"
+----
+
+* jsonGetAWSTag(jsonObj, tagName)
+** convenience wrapper for AWS-style Tag arrays. equivalent to jsonGetTag(obj, "Tags", "Key", tagName, "Value").
+----
+let name = jsonGetAWSTag(obj, "Name") // "my-instance"
+----
+
+* htmlTemplate(text, variableMap)
+** same as template() but HTML-escapes variable values to safely render into HTML output
+** the template format is Golang's html/template (auto-escapes interpolations)
+----
+let t = `<p>Hello {{.user}}</p>`
+let s = htmlTemplate(t, {user: "<b>foo</b>"})
+// s = "<p>Hello &lt;b&gt;foo&lt;/b&gt;</p>"
+----
+
 == Sort Function
 
 * sort(list, <lambda>)
@@ -880,6 +974,144 @@ let t1 = j.Table( (_, obj) => {
 ----
 let arr = [1, 2, 3]
 let s = arr.Join(",") // s is now the string "1,2,3"
+----
+* every(lambda)
+** return true if all elements satisfy the predicate lambda, false otherwise
+** short-circuits on the first false result
+----
+let arr = [2, 4, 6]
+arr.every((_, v) => v % 2 == 0) // true
+arr.every((_, v) => v > 3)      // false
+----
+* findIndex(lambda)
+** return the index of the first element for which the lambda returns true
+** return -1 if no element matches
+----
+let arr = [{ID:"a"}, {ID:"b"}, {ID:"c"}]
+let i = arr.findIndex((_, e) => e.ID == "b") // 1
+----
+* forEach(lambda)
+** alias of Each(); iterate through the collection and apply the lambda function
+** included for JavaScript-style ergonomics
+
+=== List Methods
+
+* List Methods apply to primitive list types and behave like JavaScript Array methods.
+* Lambda parameters follow the JS convention: `(value, index, array)` is supported but `(value)` or `(value, index)` is also fine.
+
+* at(index)
+** return the element at index. Negative indexes count from the end. Returns undefined if out of range.
+----
+let a = [10, 20, 30]
+a.at(0)   // 10
+a.at(-1)  // 30
+a.at(99)  // undefined
+----
+
+* concat(other...)
+** return a new list that is the concatenation of the calling list and the arguments
+----
+let a = [1, 2]
+let b = a.concat([3, 4], [5]) // b is [1,2,3,4,5]; a unchanged
+----
+
+* every(lambda)
+** return true if all elements satisfy the predicate, false otherwise
+
+* some(lambda)
+** return true if at least one element satisfies the predicate
+
+* filter(lambda)
+** return a new list containing only the elements for which the lambda returns true
+
+* find(lambda)
+** return the first element for which the lambda returns true, or undefined
+
+* findIndex(lambda)
+** return the index of the first element for which the lambda returns true, or -1
+
+* forEach(lambda)
+** call the lambda for each element. Returns undefined.
+
+* map(lambda)
+** return a new list populated with the results of the lambda applied to each element
+
+* reduce(lambda, initialValue?)
+** apply lambda(accumulator, currentValue, index) for each element, returning the final accumulator
+** if initialValue is omitted, the first element is used as the initial accumulator
+----
+let sum = [1,2,3,4].reduce((acc, v) => acc + v, 0) // 10
+----
+
+* includes(value, fromIndex?)
+** return true if value exists in the list (starting from fromIndex if given)
+
+* indexOf(value, fromIndex?)
+** return the index of the first occurrence of value (starting from fromIndex if given), or -1
+
+* join(separator)
+** return a string formed by joining all elements with separator (alias of Join with primitive list semantics)
+
+* keys()
+** return an iterator of indexes (0..len-1)
+
+* values()
+** return an iterator of element values
+
+* entries()
+** return an iterator of [index, value] tuples
+
+* slice(start, end?)
+** return a new list containing elements from start (inclusive) to end (exclusive)
+** negative indexes count from the end. omitting end reads through the last element.
+----
+let a = [1,2,3,4,5]
+a.slice(1, 3)  // [2,3]
+a.slice(-2)    // [4,5]
+----
+
+* splice(start, deleteCount, items...)
+** in-place modification: remove deleteCount elements starting at start, then insert items at that position
+** returns a list of removed elements
+----
+let a = [1,2,3,4]
+let removed = a.splice(1, 2, 90, 91) // a is now [1,90,91,4]; removed is [2,3]
+----
+
+* push(items...)
+** in-place: append items to the end of the list. returns the new length.
+* pop()
+** in-place: remove and return the last element (undefined if empty)
+* shift()
+** in-place: remove and return the first element (undefined if empty)
+* unshift(items...)
+** in-place: prepend items to the beginning. returns the new length.
+
+* sort(lambda?)
+** in-place sort. without lambda, sorts ascending for numbers/strings.
+** with a comparator lambda `(a, b) => number|bool`, follows the same convention as the global sort() function.
+
+* reverse()
+** in-place reverse the order of elements
+
+=== Map Methods
+
+* Map methods apply to JS Map / primitive map type values via dot notation.
+
+* get(key)
+** return the value associated with key, or undefined if not present
+* set(key, value)
+** set/replace the value for key. Returns the map for chaining.
+* has(key) => bool
+** return true if key exists in the map
+* delete(key) => bool
+** remove key from the map. Returns true if the key existed.
+----
+let m = {a:1, b:2}
+m.get("a")     // 1
+m.has("c")     // false
+m.set("c", 3)  // m is now {a:1, b:2, c:3}
+m.delete("a")  // returns true; m is now {b:2, c:3}
 ----
 
 === Time Methods
@@ -1273,6 +1505,17 @@ function main() {
 }
 ----
 
+* GetColumnValue(key, columnName)
+** return the cell value at the given key (ID column value) and column name.
+** returns undefined if the row or column is missing.
+----
+let v = bucketTable.GetColumnValue("my-bucket", "Total_Bytes")
+----
+
+* GroupBy( ({col1, col2 ...}) => { groupBy:{...}, columns:{...} } )
+** like Aggregate(), but returns the grouped row buckets instead of building a new aggregated table.
+** lower-level primitive used internally; prefer Aggregate() for typical use.
+
 == Metric Stream Methods
 
 * IsEmpty()
@@ -1347,12 +1590,20 @@ function main() {
 }
 ----
 
-* SetTags(assetTable) 
+* SetTags(assetTable)
 ** convert asset table columns into tags for the metric stream key
 * SetUnit(unit)
 ** set unit for metric stream
 * ApplyDivider(divider)
 ** apply divider to the metric stream. (value /= divider)
+
+* GetInterval()
+** return the data-point interval (in seconds) of the metric stream
+** typically equals the period that was requested when loading the metric (e.g. 3600 for `period:"1h"`).
+----
+// rate-of-change per second across the stream's interval
+let perSecond = totalBytes / totalBytes.GetInterval()
+----
 
 === FplAlert Methods
 
